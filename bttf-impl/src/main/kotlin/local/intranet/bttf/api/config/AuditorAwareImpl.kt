@@ -1,29 +1,35 @@
 package local.intranet.bttf.api.config
 
+import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
+import org.springframework.data.domain.AuditorAware
+import org.springframework.security.core.context.SecurityContextHolder
 import java.util.Optional
 
-import org.springframework.data.domain.AuditorAware
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
-
 /**
- * 
+ *
  * {@link AuditorAwareImpl} for {@link local.intranet.bttf.BttfApplication}
  *
  */
-class AuditorAwareImpl: AuditorAware<String> {
+@ConditionalOnExpression("\${bttf.envers.enabled}")
+class AuditorAwareImpl : AuditorAware<String> {
 
-	/**
-	 * 
-	 * Get current auditor
-	 * @return {@link Optional}&lt;{@link String}&gt;
-	 */
-    override fun getCurrentAuditor(): Optional<String>  {
+    val logger = LoggerFactory.getLogger(AuditorAwareImpl::class.java)
+
+    /**
+     *
+     * Get current auditor
+     * @return {@link Optional}&lt;{@link String}&gt;
+     */
+    override fun getCurrentAuditor(): Optional<String> {
+        val ret: Optional<String>
         val authentication = SecurityContextHolder.getContext().getAuthentication()
         if (authentication.isAuthenticated()) {
-            return Optional.ofNullable(authentication.principal as String)
+            ret = Optional.ofNullable(authentication.principal as String)
         } else {
-            return Optional.empty()
+            ret = Optional.empty()
         }
+        logger.debug("{}", ret)
+        return ret
     }
 }

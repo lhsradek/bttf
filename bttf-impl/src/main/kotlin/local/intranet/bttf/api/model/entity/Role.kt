@@ -27,7 +27,7 @@ class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int? = null
+    val id: Long? = null
 
     @NotNull
     @Column(name = "role_name", nullable = false)
@@ -41,7 +41,7 @@ class Role {
      * Returns a string representation of the object.
      */
     override fun toString(): String {
-     	return "Role [id=" + id + ", roleName=" + roleName + ", enabled=" + enabled + "]"
+        return "Role [id=" + id + ", roleName=" + roleName + ", enabled=" + enabled + "]"
     }
 
 }

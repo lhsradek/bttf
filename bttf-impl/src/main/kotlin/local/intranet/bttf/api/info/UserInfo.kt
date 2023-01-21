@@ -3,10 +3,10 @@ package local.intranet.bttf.api.info
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
 /**
- * 
+ *
  * {@link UserInfo} for {@link local.intranet.bttf.api.service.UserService}
  * and {@link local.intranet.bttf.api.controller.IndexController#signin}
- * 
+ *
  * @author Radek Kádner
  *
  */

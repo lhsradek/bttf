@@ -32,27 +32,27 @@ import local.intranet.bttf.api.domain.BttfController
 @Tag(name = BttfController.STATUS_TAG)
 class StatusController {
 
-	val logger = LoggerFactory.getLogger(StatusController::class.java)
+    val logger = LoggerFactory.getLogger(StatusController::class.java)
 
     @Autowired
     private lateinit var applicationContext: ApplicationContext
 
     @Value("\${bttf.app.stage}")
     private lateinit var stage: String
-    
+
     @Value("\${spring.profiles.active}")
     private lateinit var profiles: String
-    
+
     /**
      *
      * text/plain: "OK"
      * <p>
      * Accessible to the
      * {@link local.intranet.bttf.api.domain.type.RoleType#USER_ROLE}
-     * 
+     *
      * @see <a href="/bttf/swagger-ui/#/status-controller/getPlainStatus" target=
      *      "_blank">bttf/swagger-ui/#/status-controller/getPlainStatus</a>
-     * 
+     *
      * @return "OK" if BTTF API is running
      */
     @GetMapping(value = arrayOf("/status"), produces = arrayOf(MediaType.TEXT_PLAIN_VALUE))
@@ -66,9 +66,11 @@ class StatusController {
     )
     @PreAuthorize("hasRole('ROLE_userRole')")
     fun getPlainStatus(): String {
-        return BttfController.STATUS_OK
+        val ret = BttfController.STATUS_OK
+        logger.debug("{}", ret)
+        return ret
     }
-        
+
     /**
      *
      * Implementation version
@@ -78,21 +80,24 @@ class StatusController {
      */
     // TODO Stub
     fun getImplementationVersion(): String {
+        val list = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
+        val keyFirstElement = list.keys.first() // Get key.
+        val valueOfElement = list.getValue(keyFirstElement)
         val ret = BttfController.STATUS_UNKNOWN
-        // logger.debug("{}", ret)
+        logger.debug("{} {} {}", ret, keyFirstElement, valueOfElement)
         return ret
     }
-    
+
     /**
      *
      * Get stage
      * <p>
      * Accessible to the
      * {@link local.intranet.bttf.api.domain.type.RoleType#USER_ROLE}
-     * 
+     *
      * @see <a href="/bttf/swagger-ui/#/status-controller/getStage" target=
      *      "_blank">bttf/swagger-ui/#/status-controller/getStage</a>
-     * 
+     *
      * @return ${bttf.app.stage}
      */
     @GetMapping(value = arrayOf("/stage"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
@@ -110,7 +115,7 @@ class StatusController {
             "stage" to stage,
             "spring.profiles.active" to profiles
         )
-        // logger.debug("{}", ret)
+        logger.debug("{}", ret)
         return ret
     }
 

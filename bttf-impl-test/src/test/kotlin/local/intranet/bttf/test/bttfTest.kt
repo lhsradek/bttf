@@ -19,7 +19,8 @@ class bttfTest {
     fun givenTest() {
         assertThat(statusController).isNotNull
     	assertThat(statusController.getPlainStatus()).isNotBlank
-    	assertThat(statusController.getStage()).isNotNull
+        assertThat(statusController.getImplementationVersion()).isNotBlank
+    	assertThat(statusController.getStage()).isNotEmpty
     }
     
 }

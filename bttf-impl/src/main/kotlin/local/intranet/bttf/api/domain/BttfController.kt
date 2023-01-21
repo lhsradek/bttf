@@ -45,7 +45,7 @@ object BttfController {
      * STATUS_BASE_INFO = "/status"
      */
     const val STATUS_BASE_INFO = "/status"
-    
+
     /**
      *
      * STATUS_IMPLEMENTATION_VERSION = "implementationVersion"

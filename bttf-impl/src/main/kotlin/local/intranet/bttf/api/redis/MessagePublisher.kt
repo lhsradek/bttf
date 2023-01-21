@@ -1,7 +1,7 @@
 package local.intranet.bttf.api.redis
 
 /**
- * 
+ *
  * {@link MessagePublisher} for
  * {@link local.intranet.bttf.BttfApplication}.
  * <p>
@@ -13,12 +13,12 @@ package local.intranet.bttf.api.redis
  */
 interface MessagePublisher {
 
-	/**
-	 * 
-	 * Publish message
-	 * 
-	 * @param message {@link String}
-	 */
-	fun publish(message: String)
+    /**
+     *
+     * Publish message
+     *
+     * @param message {@link String}
+     */
+    fun publish(message: String)
 
 }

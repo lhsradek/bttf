@@ -1,5 +1,11 @@
 package local.intranet.bttf.api.config
 
+import java.util.Collections
+import java.util.EnumSet
+import java.util.TimeZone
+
+import javax.servlet.SessionTrackingMode
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,11 +17,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
+import org.springframework.security.web.session.HttpSessionEventPublisher
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer
 import org.springframework.web.WebApplicationInitializer
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler
-import java.util.*
 import javax.servlet.ServletContext
 import javax.sql.DataSource
 
@@ -31,7 +37,6 @@ import javax.sql.DataSource
 @Configuration
 @EnableAutoConfiguration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
-@ConfigurationProperties(prefix = "")
 public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionApplicationInitializer() {
 
     val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
@@ -49,7 +54,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	@ConditionalOnExpression("\${#strings.length(spring.datasource.url) > 0}")
 	fun dataSource(): DataSource {
 		val ret: DataSource = DataSourceBuilder.create().build()
-        logger.debug("{}", ret.toString())
+        // logger.debug("{}", ret)
 		return ret
 	}
 
@@ -65,7 +70,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	@ConditionalOnExpression("\${#strings.length(spring.secondaryDatasource.url) > 0}")
 	fun secondaryDataSource(): DataSource {
 		val ret: DataSource = DataSourceBuilder.create().build()
-        logger.debug("{}", ret.toString())
+        // logger.debug("{}", ret)
 		return ret
 	}
 
@@ -76,8 +81,11 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
      * @return {@link AuditorAware}&lt;{@link String}&gt;
      */
     @Bean
+    @ConditionalOnExpression("\${bttf.envers.enabled}")
     fun auditorProvider(): AuditorAware<String> {
-        return AuditorAwareImpl()
+        val ret = AuditorAwareImpl()
+        logger.debug("{}", ret)
+        return ret
     }
 
 	/**
@@ -87,13 +95,14 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	 * https://www.baeldung.com/spring-security-session
 	 * 
 	 * @return {@link HttpSessionEventPublisher}
+     */
 	@Bean
 	fun sessionEventPublisher(): HttpSessionEventPublisher {
 		val ret = HttpSessionEventPublisher()
 		servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE))
+        // logger.debug("{}", ret)
 		return ret
 	}
-     */
 
 	/**
 	 * 
@@ -112,6 +121,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 		val ret = SimpleUrlHandlerMapping()
 		ret.setOrder(Int.MIN_VALUE)
 		ret.setUrlMap(Collections.singletonMap("/favicon.*", faviconRequestHandler()))
+        // logger.debug("{}", ret)
 		return ret
 	}
 
@@ -127,6 +137,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	protected fun faviconRequestHandler(): ResourceHttpRequestHandler {
 		val ret = ResourceHttpRequestHandler()
 		ret.setLocationValues(arrayOf("res/").asList())
+        // logger.debug("{}", ret)
 		return ret
 	}
 
@@ -138,7 +149,9 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
      */
 	@Autowired
 	fun configureJackson(objectMapper: ObjectMapper) {
-		objectMapper.setTimeZone(TimeZone.getDefault())
+        val tzd = TimeZone.getDefault()
+		objectMapper.setTimeZone(tzd)
+        logger.debug("{}", tzd)
 	}
 
 }

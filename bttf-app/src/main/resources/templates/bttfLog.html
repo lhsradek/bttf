@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="head">
+</head>
+<body>
+  <h1><span>
+    <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
+    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/>
+    <a th:href="'/'"><img th:src="@{/res/poweredby.png}" th:width="'88px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
+  <div th:class="'content'" th:with="dateFormat=${T(local.intranet.bttf.api.domain.Contented).CONTENT_DATE_FORMAT}">
+    <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>
+    <div th:class="'content-middle'">
+      <div th:class="'top'">
+        <h2><span>
+          <th:block th:utext="'Back to the Future\'s Log'"/>
+          <small th:utext="'\'' + ${stage} + '\' on '"/>
+          <small th:utext="${serverSoftware} + ' - \'' + ${activeProfiles} + '\''"/>
+        </span></h2>
+        <h5><span>
+          <a th:href="@{/logout}" th:text="'Log out'"/> <small><th:block th:text="' - You are logged as '"/>
+          <a th:href="@{/login?logout}" th:utext="'\'' + ${username} + '\''"/>
+          <th:block th:utext="' with \'' + ${role} + '\''"/></small>
+          <small><a th:href="@{/page/0}" th:text="'Tombola'"/></small>
+          <small><a th:href="@{/manager/page/0}" th:text="'Manager'"/></small>
+          <small><a th:href="@{/audit}" th:text="'Audit'"/></small>
+          <small th:if="${userRoles.get('adminRole')}"><a th:href="@{/properties}" th:text="'Properties'"/></small>
+          <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:target="'_blank'" th:text="'Swagger'"/></small>
+        </span></h5>
+        <code th:if="${logsTotal.size() > 0}"><span>
+        <table th:class="'data-table'">
+<thead><tr><th th:class="'left'"><img th:src="@{/res/hibernate.png}" th:width="'12px'" th:height="'13px'" th:class="'borderoff'"/></th>
+<th><big th:utext="'Level &#8681;'"/></big></th>
+<th><big th:text="'Total'"/></th></tr></thead>
+<tr th:class="${k.level.toLowerCase()}" th:each="k : ${logsTotal}">
+<td><small><strong th:text="${logsTotalCounter.incrementAndGet()}"/></small></td>
+<td th:class="'left'"><small><strong><a th:class="'decorationblack'" th:href="@{|/tombolaLog/page/0/sort/idD/filter/${k.level}|}" th:text="${k.level}"/></strong></small></td>
+<td th:class="'right'"><small><strong th:utext="${k.total}"/></small></td>
+</tr></table></span></code>
+        <h5 th:if="${tombolaLogs.size() > 0}"><span>
+          <span th:if="${logsPage <= 1}" th:class="'disabled'" th:utext="' &#8681; '"/><a th:if="${logsPage > 1}" th:utext="' &#8681; '" th:href="@{|/tombolaLog/page/0/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          <span th:if="${logsPage == 0}" th:class="'disabled'" th:utext="' &#8678; '"/><a th:if="${logsPage > 0}" th:utext="' &#8678; '" th:href="@{|/tombolaLog/page/${prev}/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          <th:block th:text="'Logback'"/><th:block th:if="${logsFilter != '0'}" th:text="' '"/><a th:if="${logsFilter != '0'}" th:href="@{/tombolaLog}" th:text="${logsFilter}"/><th:block th:text="' Count:' + ${logsCnt} + ' [' + ${logsPage + 1} + '/' + ${logsMax + 1} + ']'"/>
+          <span th:if="${logsPage >= logsMax}" th:class="'disabled'" th:utext="' &#8680; '"/><a th:if="${logsPage < logsMax}" th:utext="' &#8680; '" th:href="@{|/tombolaLog/page/${next}/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          <span th:if="${(logsPage + 1) >= logsMax}" th:class="'disabled'" th:utext="' &#8679; '"/><a th:if="${(logsPage + 1) < logsMax}" th:utext="' &#8679; '" th:href="@{|/tombolaLog/page/${logsMax}/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          </span></h5>
+        <code th:if="${tombolaLogs.size() > 0}"><span>
+        <table th:class="'data-table'" th:width="'100%'">
+<thead><tr><th th:width="'2%'" th:class="'left'"><img th:src="@{/res/hibernate.png}" th:width="'12px'" th:height="'13px'" th:class="'borderoff'"/></th>
+<th th:width="'10%'"><big><a th:if="${(!logsSort.startsWith('id'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/idD/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Date'"/></a><a th:if="${(logsSort == 'idD')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/idU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Date&nbsp;&#8681;'"/></a><a th:if="${logsSort == 'idU'}" th:href="@{|/tombolaLog/page/${logsPage}/sort/idD/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Date&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'23%'"><big><a th:if="${(!logsSort.startsWith('m'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/mU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Message'"/></a><a th:if="${(logsSort == 'mD')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/mU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Message&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'mU')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/mD/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Message&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'8%'"><big><a th:if="${(!logsSort.startsWith('a0'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a0U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A0'"/></a><a th:if="${(logsSort == 'a0D')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a0U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A0&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'a0U')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a0D/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A0&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'14%'"><big><a th:if="${(!logsSort.startsWith('a1'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a1U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A1'"/></a><a th:if="${(logsSort == 'a1D')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a1U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A1&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'a1U')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a1D/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A1&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'14%'"><big><a th:if="${(!logsSort.startsWith('a2'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a2U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A2'"/></a><a th:if="${(logsSort == 'a2D')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a2U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A2&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'a2U')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a2D/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A2&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'8%'"><big><a th:if="${(!logsSort.startsWith('a3'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a3U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A3'"/></a><a th:if="${(logsSort == 'a3D')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a3U/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A3&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'a3U')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/a3D/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'A3&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'18%'"><big><a th:if="${(!logsSort.startsWith('c'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/cU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Caller'"/></a><a th:if="${(logsSort == 'cD')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/cU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Caller&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'cU')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/cD/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'Caller&nbsp;&#8679;'"/></a></big></th>
+<th th:width="'3%'"><big><a th:if="${(!logsSort.startsWith('l'))}" th:href="@{|/tombolaLog/page/${logsPage}/sort/lU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'L'"/></a><a th:if="${(logsSort == 'lD')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/lU/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'L&nbsp;&#8681;'"/></a><a th:if="${(logsSort == 'lU')}" th:href="@{|/tombolaLog/page/${logsPage}/sort/lD/filter/${logsFilter}|}" th:class="'decorationoff'"><strong th:utext="'L&nbsp;&#8679;'"/></a></big></th>
+</tr></thead>
+<tr th:class="${((k.callerClass == 'TombolaService') and (k.callerMethod == 'patchPrizeTicket')) or ((k.callerClass == 'IndexController') and (k.callerMethod == 'managerSet')) ? 'win' : k.levelString.toLowerCase()}" th:each="k : ${tombolaLogs}">
+<td th:class="'right nowrap'"><small><strong th:text="${k.id}"/></small></td>
+<td th:class="'center nowrap'"><small th:text="${#dates.format(k.date, dateFormat)}"/></td>
+<td th:class="'left'"><small th:utext="${k.formattedMessage}"/></td>
+<td th:class="'left'"><small><smaller th:if="${k.arg0 == '[NULL]'}" th:class="'data'" th:text="${k.arg0}"/><strong th:if="${k.arg0 != '[NULL]'}" th:utext="${k.arg0}"/></small></td>
+<td th:class="'left'"><small><smaller th:if="${k.arg1 == '[NULL]'}" th:class="'data'" th:text="${k.arg1}"/><strong th:if="${k.arg1 != '[NULL]'}" th:utext="${k.arg1}"/></small></td>
+<td th:class="'left'"><small><smaller th:if="${k.arg2 == '[NULL]'}" th:class="'data'" th:text="${k.arg2}"/><strong th:if="${k.arg2 != '[NULL]'}" th:utext="${k.arg2}"/></small></td>
+<td th:class="'left'"><small><smaller th:if="${k.arg3 == '[NULL]'}" th:class="'data'" th:text="${k.arg3}"/><strong th:if="${k.arg3 != '[NULL]'}" th:utext="${k.arg3}"/></small></td>
+<td th:class="'left'"><small th:utext="${k.callerClass}"/><br/><small><strong th:utext="${k.callerMethod}"/></small></td>
+<td th:class="'left'"><small><strong th:text="${k.levelString}"/></small></td>
+</tr></table></span></code>
+        <h5 th:if="${tombolaLogs.size() > 0}"><span>
+          <span th:if="${logsPage <= 1}" th:class="'disabled'" th:utext="' &#8681; '"/><a th:if="${logsPage > 1}" th:utext="' &#8681; '" th:href="@{|/tombolaLog/page/0/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          <span th:if="${logsPage == 0}" th:class="'disabled'" th:utext="' &#8678; '"/><a th:if="${logsPage > 0}" th:utext="' &#8678; '" th:href="@{|/tombolaLog/page/${prev}/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          <th:block th:text="'Logback'"/><th:block th:if="${logsFilter != '0'}" th:text="' '"/><a th:if="${logsFilter != '0'}" th:href="@{/tombolaLog}" th:text="${logsFilter}"/><th:block th:text="' Count:' + ${logsCnt} + ' [' + ${logsPage + 1} + '/' + ${logsMax + 1} + ']'"/>
+          <span th:if="${logsPage >= logsMax}" th:class="'disabled'" th:utext="' &#8680; '"/><a th:if="${logsPage < logsMax}" th:utext="' &#8680; '" th:href="@{|/tombolaLog/page/${next}/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          <span th:if="${(logsPage + 1) >= logsMax}" th:class="'disabled'" th:utext="' &#8679; '"/><a th:if="${(logsPage + 1) < logsMax}" th:utext="' &#8679; '" th:href="@{|/tombolaLog/page/${logsMax}/sort/${logsSort}/filter/${logsFilter}|}" th:class="'decorationoff'"/>
+          </span></h5>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

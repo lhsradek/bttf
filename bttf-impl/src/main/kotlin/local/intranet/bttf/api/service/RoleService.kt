@@ -6,16 +6,16 @@ import org.springframework.transaction.annotation.Transactional
 import local.intranet.bttf.api.info.RoleInfo
 
 /**
- * 
+ *
  * {@link RoleService} for
  * {@link local.intranet.bttf.api.controller.InfoController#getRoleInfo}
- * 
+ *
  * @author Radek Kádner
  *
  */
 @Service
 class RoleService {
-    
+
     @Transactional(readOnly = true)
     fun getRoleInfo(): RoleInfo {
         val roleInfo = RoleInfo()

@@ -30,7 +30,7 @@ class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int? = null
+    val id: Long? = null
 
     @NotNull
     @Column(name = "user_name", nullable = false)
@@ -64,7 +64,7 @@ class User {
      */
     override fun toString(): String {
         return "User [id=" + id + ", userName=" + userName + ", password=" + BttfController.STATUS_PROTECTED +
-                ", credentialsNonExpired=" + credentialsNonExpired + ", enabled=" + enabled + ", role=" + role +"]"
+                ", credentialsNonExpired=" + credentialsNonExpired + ", enabled=" + enabled + ", role=" + role + "]"
     }
 
 }

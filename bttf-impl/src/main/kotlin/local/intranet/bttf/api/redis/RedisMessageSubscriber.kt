@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable
 import org.springframework.stereotype.Service
 
 /**
- * 
+ *
  * {@link RedisMessageSubscriber} for
  * {@link local.intranet.bttf.BttfApplication}.
  * <p>
@@ -19,18 +19,18 @@ import org.springframework.stereotype.Service
  *
  */
 @Service
-class RedisMessageSubscriber: MessageListener {
+class RedisMessageSubscriber : MessageListener {
 
-   	val logger = LoggerFactory.getLogger(RedisMessageSubscriber::class.java)
+    val logger = LoggerFactory.getLogger(RedisMessageSubscriber::class.java)
 
-	/**
-	 * 
-	 * On message
-	 * 
-	 * @param message {@link Message}
-	 * @param pattern {@link ByteArray?}
-	 */
-	override fun onMessage(message: Message, @Nullable pattern: ByteArray?) {
-		logger.info("OnMessage '{}'", String(message.body))
-	}
+    /**
+     *
+     * On message
+     *
+     * @param message {@link Message}
+     * @param pattern {@link ByteArray?}
+     */
+    override fun onMessage(message: Message, @Nullable pattern: ByteArray?) {
+        logger.info("OnMessage '{}'", String(message.body))
+    }
 }
