@@ -50,7 +50,7 @@ class OpenApiConfig {
 	 * @return {@link OpenAPI}
 	 */
 	@Bean
-	fun tombolaOpenApi(): OpenAPI {
+	fun bttfOpenApi(): OpenAPI {
 		val ret = OpenAPI()
             .info(Info().title(API)
                 .description("Back to the Future API")
