@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>bttf-impl-test</artifactId>
+    <name>bttf-impl-test</name>
+    <packaging>jar</packaging>
+    <description>Back to the Future - impl - test</description>
+    
+    <parent>
+        <groupId>local.intranet</groupId>
+        <artifactId>bttf-parent</artifactId>
+        <version>3.14.15-SNAPSHOT</version>
+        <relativePath>../bttf-parent</relativePath>
+    </parent>
+    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>bttf-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <finalName>bttf-impl-test</finalName>
+        <sourceDirectory>${project.basedir}/src/test/kotlin</sourceDirectory>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>default</spring.profiles.active>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>src/test/resources</directory>
+                        <includes>
+                            <include>application.properties</include>
+                            <include>logback-spring.xml</include>
+                            <include>application.default</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>bttf-app</artifactId>
+    <name>bttf-app</name>
+    <packaging>war</packaging>
+    <description>Back to the Future - app</description>
+    
+    <parent>
+        <artifactId>bttf-parent</artifactId>
+        <groupId>local.intranet</groupId>
+        <version>3.14.15-SNAPSHOT</version>
+        <relativePath>../bttf-parent</relativePath>
+    </parent>
+    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>bttf-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    
+   <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>default</spring.profiles.active>
+            </properties>
+            <build>
+                <finalName>bttf</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.3.2</version>
+                        <configuration>
+                            <failOnMissingWebXml>false</failOnMissingWebXml>
+                            <archive>
+                                <manifest>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                                    <Specification-Title>${project.description}</Specification-Title>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                </plugins>
+                <resources>
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>application.properties</include>
+                            <include>application-${spring.profiles.active}.properties</include>
+                            <include>templates/</include>
+                            <include>logback-spring.xml</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+
+        </profile>
+    </profiles>
+</project>
