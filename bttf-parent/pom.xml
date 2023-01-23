@@ -395,6 +395,7 @@
                     <artifactId>spring-boot-devtools</artifactId>
                     <optional>true</optional>
                 </dependency>
+<!-- Sessions in Spring Boot had problems with drivers for mariadb. This is why I define the secondary data source in the ApplicationConfig -->
                 <dependency>
                     <groupId>mysql</groupId>
                     <artifactId>mysql-connector-java</artifactId>
@@ -444,12 +445,17 @@
             <properties>
                 <spring.profiles.active>production-mariadb</spring.profiles.active>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
-            </dependencies>
+<!-- Sessions in Spring Boot had problems with drivers for mariadb. This is why I define the secondary data source in the ApplicationConfig -->
+            <dependency>
+                 <groupId>mysql</groupId>
+                 <artifactId>mysql-connector-java</artifactId>
+                 <version>8.0.28</version>
+             </dependency>
+             <dependency>
+                 <groupId>org.mariadb.jdbc</groupId>
+                 <artifactId>mariadb-java-client</artifactId>
+                 <version>3.0.3</version>
+             </dependency>
         </profile>
     </profiles>
 </project>
