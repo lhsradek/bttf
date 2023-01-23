@@ -29,7 +29,7 @@ public class BttfDbAppender : DBAppender() {
     override fun doAppend(eventObject: ILoggingEvent) {
         fixFormattedMessage(eventObject)
         while (eventObject.throwableProxy != null) {
-            var throwableProxy = eventObject.throwableProxy
+            var throwableProxy: IThrowableProxy = eventObject.throwableProxy
             fixMessage(throwableProxy)
             throwableProxy = throwableProxy.cause
             if (throwableProxy == null)
@@ -47,8 +47,8 @@ public class BttfDbAppender : DBAppender() {
      */
     fun fixMessage(throwableProxy: IThrowableProxy) {
         try {
-            val message = throwableProxy.message
-            val fixedMessage = fixMessage(message)
+            val message: String = throwableProxy.message
+            val fixedMessage: String = fixMessage(message)
             if (!message.equals(fixedMessage)) {
                 FieldUtils.writeField(throwableProxy, "message", fixedMessage, true)
             }
@@ -69,12 +69,12 @@ public class BttfDbAppender : DBAppender() {
      */
     fun fixFormattedMessage(eventObject: ILoggingEvent) {
         try {
-            val formattedMessage = eventObject.formattedMessage
-            var fixedMessage = fixMessage(formattedMessage)
+            val formattedMessage: String = eventObject.formattedMessage
+            var fixedMessage: String = fixMessage(formattedMessage)
             if (!formattedMessage.equals(fixedMessage)) {
                 FieldUtils.writeField(eventObject, "formattedMessage", fixedMessage, true)
             }
-            val message = eventObject.message
+            val message: String = eventObject.message
             fixedMessage = fixMessage(message)
             if (!message.equals(fixedMessage)) {
                 FieldUtils.writeField(eventObject, "message", fixedMessage, true)
@@ -86,8 +86,8 @@ public class BttfDbAppender : DBAppender() {
     }
 
     fun fixMessage(message: String): String {
-        val maxLength = 240 // Only 200 because prefix is added lately. 240 By radek.kadner
-        var fixedMessage = message
+        val maxLength: Int = 240 // Only 200 because prefix is added lately. 240 By radek.kadner
+        var fixedMessage: String = message
         if (message.contains("\u0000") || message.contains("\\x00") || message.length >= maxLength) {
             // Workaround -> We have replace null characters by empty space, for case when
             // exception will persisted in a Postgresql DB.

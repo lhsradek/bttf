@@ -16,10 +16,12 @@ import local.intranet.bttf.api.info.RoleInfo
 @Service
 class RoleService {
 
+    /*
     @Transactional(readOnly = true)
     fun getRoleInfo(): RoleInfo {
         val roleInfo = RoleInfo()
         return roleInfo
     }
+    */
 
 }

@@ -38,9 +38,9 @@ import org.springframework.web.WebApplicationInitializer
 @EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *")
 class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {
 
-    val logger = LoggerFactory.getLogger(BttfApplication::class.java)
+    private val logger = LoggerFactory.getLogger(BttfApplication::class.java)
 
-    val ENTERING_APPLICATION = "Entering application."
+    private val ENTERING_APPLICATION = "Entering application."
 
     /**
      *

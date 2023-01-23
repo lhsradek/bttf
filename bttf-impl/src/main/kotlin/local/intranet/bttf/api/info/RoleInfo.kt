@@ -10,8 +10,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
  *
  * @author Radek Kádner
  *
+ * @param name             {@link String}
+ * @param roleInfo         {@link RoleInfo}
+ * @param isEnabled        {@link Boolean}
  */
 @JsonPropertyOrder("name", "roles", "enabled")
-class RoleInfo {
+data class RoleInfo(val name: String, val roleInfo: RoleInfo, val isEnabled: Boolean) {
+
+    /**
+     *
+     * Returns a string representation of the object.
+     */
+    override fun toString(): String {
+        return "RoleInfo [name=" + name + ", roleInfo=" + roleInfo + ", enabled=" + isEnabled + "]"
+    }
 
 }

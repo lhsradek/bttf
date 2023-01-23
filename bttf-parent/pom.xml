@@ -31,9 +31,11 @@
         <maven.compiler.target>17</maven.compiler.target>
         <spring.profiles.active>default</spring.profiles.active>
         <openapi.version>1.6.14</openapi.version>
+        <!-- <kotlin.version>1.6.21</kotlin.version> -->
         <kotlin.version>1.8.0</kotlin.version>
         <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
         <spring-boot.version>2.4.13</spring-boot.version>
+        <guava.version>31.1-jre</guava.version>
         <!-- <spring-boot.version>2.3.12.RELEASE</spring-boot.version> -->
     </properties>
 
@@ -99,6 +101,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -173,6 +179,11 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-javadoc</artifactId>
             <version>${openapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>

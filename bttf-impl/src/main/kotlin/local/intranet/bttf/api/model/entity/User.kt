@@ -13,7 +13,7 @@ import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-import local.intranet.bttf.api.domain.BttfController
+import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.DefaultFieldLengths
 
 /**
@@ -56,14 +56,14 @@ class User {
     @Column(nullable = true)
     @OneToMany(cascade = [CascadeType.ALL])
     @JoinTable(name = "bttf_user_role")
-    val role: Set<Role>? = null
+    var role = mutableListOf<Role>()
 
     /**
      *
      * Returns a string representation of the object.
      */
     override fun toString(): String {
-        return "User [id=" + id + ", userName=" + userName + ", password=" + BttfController.STATUS_PROTECTED +
+        return "User [id=" + id + ", userName=" + userName + ", password=" + BttfConst.STATUS_PROTECTED +
                 ", credentialsNonExpired=" + credentialsNonExpired + ", enabled=" + enabled + ", role=" + role + "]"
     }
 

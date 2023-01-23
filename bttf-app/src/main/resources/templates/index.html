@@ -6,15 +6,12 @@
 <body>
   <h1><span>
     <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
-    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/>
-    <a th:href="'/'"><img th:src="@{/res/poweredby.png}" th:width="'88px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
+    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/><!--/* <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo on Black RGB.svg}" th:width="'173px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1> */-->
+    <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo Mark RGB.svg}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
   <div th:class="'content'" th:with="dateFormat=${T(local.intranet.bttf.api.domain.Contented).CONTENT_DATE_FORMAT}">
     <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>
     <div th:class="'content-middle'">
       <div th:class="'top'">
-        <div th:align="'center'">
-          <img th:src="@{/res/Back-to-the-future-logo.svg}" th:width="'500px'" th:height="'222px'" th:class="'borderoff'"/>
-        </div>
         <h2><span>
           <th:block th:text="'Back to the Future'"/>
           <small th:utext="'\'' + ${stage} + '\' on '"/>
@@ -25,11 +22,19 @@
           <th:block th:utext="${bttfApi} + ' ' + ${implementationVersion}"/>
           <small th:text="' (Spring Boot ' + ${springBootVersion} + ', Spring ' + ${springVersion} + ') with '"/>
           <small><a th:href="@{/license}" th:text="'The MIT License'"/></small> 
-          <!-- 
           <small th:if="${userRoles.get('adminRole')}"><a th:href="@{/properties}" th:text="'Properties'"/></small>
           <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:target="'_blank'" th:text="'Swagger'"/></small>
-           -->
         </span></h5>
+        <div th:align="'center'">
+        <p>
+        <img th:src="@{/res/Back-to-the-future-logo.svg}" th:width="'500px'" th:height="'222px'" th:class="'borderoff'"/>
+        </p>
+        <p><span>
+        <th:block th:utext="'&quot;Programming described the three programmer\'s virtues: hubris, laziness, and impatience.&quot;'"/>
+        <i th:text="'Larry Wall'"/>
+        </span>
+        </p>
+        </div>
       </div>
     </div>
     <div th:class="'content-columns'">

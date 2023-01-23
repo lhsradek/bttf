@@ -11,7 +11,7 @@ package local.intranet.bttf.api.info
  * @param level {@link String}
  * @param total {@link Long}
  */
-class LevelCount(val level: String, val total: Long) {
+data class LevelCount(val level: String, val total: Long) {
 
     /**
      *

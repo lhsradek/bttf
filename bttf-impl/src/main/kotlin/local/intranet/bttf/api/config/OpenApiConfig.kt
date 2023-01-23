@@ -24,9 +24,9 @@ import org.springframework.context.annotation.Configuration
 @ConditionalOnExpression("\${bttf.springdoc.enabled}")
 class OpenApiConfig {
 
-    val logger = LoggerFactory.getLogger(OpenApiConfig::class.java)
+    private val logger = LoggerFactory.getLogger(OpenApiConfig::class.java)
 
-    val API = "BTTF API"
+    private val API = "BTTF API"
 
     @Autowired
     private lateinit var statusController: StatusController

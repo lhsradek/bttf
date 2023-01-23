@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
  */
 class BttfException : ConnectException {
 
-    val logger = LoggerFactory.getLogger(BttfException::class.java)
+    private val logger = LoggerFactory.getLogger(BttfException::class.java)
 
     /**
      *

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
-import local.intranet.bttf.api.domain.BttfController
+import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
@@ -28,11 +28,11 @@ import local.intranet.bttf.api.service.UserService
  *
  */
 @RestController
-@RequestMapping(BttfController.API + BttfController.INFO_VERSION_PATH + BttfController.INFO_BASE_INFO)
-@Tag(name = BttfController.INFO_TAG)
+@RequestMapping(BttfConst.API + BttfConst.INFO_VERSION_PATH + BttfConst.INFO_BASE_INFO)
+@Tag(name = BttfConst.INFO_TAG)
 public class InfoController {
 
-    val logger = LoggerFactory.getLogger(InfoController::class.java)
+    private val logger = LoggerFactory.getLogger(InfoController::class.java)
 
     @Autowired
     private lateinit var userService: UserService
@@ -50,8 +50,6 @@ public class InfoController {
      * Used {@link local.intranet.bttf.api.service.UserService#getUserInfo}.
      * <p>
      *
-     * @see {@link #getIndexInfo}
-     *
      * @see <a href="/bttf/swagger-ui/#/info-controller/getUserInfo" target=
      *      "_blank">swagger-ui/#/info-controller/getUserInfo</a>
      * @return {@link UserInfo}
@@ -64,17 +62,17 @@ public class InfoController {
                 + "This method is calling UserService.getUserInfo\n\n"
                 + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
                 + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
-        tags = arrayOf(BttfController.INFO_TAG)
+        tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasRole('ROLE_userRole')")
     @Throws(BttfException::class)
     fun getUserInfo(): UserInfo {
         try {
-            val ret = userService.getUserInfo()
+            val ret: UserInfo = userService.getUserInfo()
             // logger.debug("{}", ret.toString())
             return ret
         } catch (e: BttfException) {
-            logger.error(e.message, e)
+            // logger.error(e.message, e)
             throw e
         }
     }
@@ -89,12 +87,9 @@ public class InfoController {
      * Used {@link local.intranet.bttf.api.service.RoleService#getRoleInfo}.
      * <p>
      *
-     * @see {@link #getIndexInfo}
-     *
      * @see <a href="/bttf/swagger-ui/#/info-controller/getRoleInfo" target=
      *      "_blank">swagger-ui/#/info-controller/getRoleInfo</a>
      * @return {@link RoleInfo}
-     */
     @GetMapping(value = arrayOf("/role"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "getRoleInfo",
@@ -109,13 +104,14 @@ public class InfoController {
     @Throws(BttfException::class)
     fun getRoleInfo(): RoleInfo {
         try {
-            val ret = roleService.getRoleInfo()
+            val ret: RoleInfo = roleService.getRoleInfo()
             // logger.debug("{}", ret.toString())
             return ret
         } catch (e: BttfException) {
-            logger.error(e.message, e)
+            // logger.error(e.message, e)
             throw e
         }
     }
+     */
 
 }

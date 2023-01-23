@@ -14,7 +14,7 @@ import java.util.Optional
 @ConditionalOnExpression("\${bttf.envers.enabled}")
 class AuditorAwareImpl : AuditorAware<String> {
 
-    val logger = LoggerFactory.getLogger(AuditorAwareImpl::class.java)
+    private val logger = LoggerFactory.getLogger(AuditorAwareImpl::class.java)
 
     /**
      *

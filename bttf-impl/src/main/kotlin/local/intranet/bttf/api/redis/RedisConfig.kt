@@ -10,6 +10,8 @@ import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 import org.springframework.data.redis.serializer.GenericToStringSerializer
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  *
@@ -33,16 +35,16 @@ class RedisConfig {
     private lateinit var password: String
 
     @Value("\${spring.redis.database}")
-    private lateinit var database: String
+    private lateinit var database: String // toInt
 
     @Value("\${spring.redis.host}")
     private lateinit var host: String
 
     @Value("\${spring.redis.port}")
-    private lateinit var port: String
+    private lateinit var port: String // toInt
 
     @Value("\${spring.redis.timeout}")
-    private lateinit var timeout: String
+    private lateinit var timeout: String // toLong
 
     /**
      *

@@ -39,7 +39,7 @@ import javax.sql.DataSource
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionApplicationInitializer() {
 
-    val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
+    private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
     
 	@Autowired
 	private lateinit var servletContext: ServletContext
@@ -151,7 +151,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	fun configureJackson(objectMapper: ObjectMapper) {
         val tzd = TimeZone.getDefault()
 		objectMapper.setTimeZone(tzd)
-        logger.debug("{}", tzd)
+        // logger.debug("{}", tzd)
 	}
 
 }

@@ -14,13 +14,15 @@ class bttfTest {
 
     @Autowired
     private lateinit var statusController: StatusController
-    
+
     @Test
     fun givenTest() {
         assertThat(statusController).isNotNull
-    	assertThat(statusController.getPlainStatus()).isNotBlank
+        assertThat(statusController.getPlainStatus()).isNotBlank
         assertThat(statusController.getImplementationVersion()).isNotBlank
-    	assertThat(statusController.getStage()).isNotEmpty
+        assertThat(statusController.getStage()).isNotBlank
+        assertThat(statusController.getActiveProfiles()).isNotBlank
+        assertThat(statusController.getServerSoftware()).isNotBlank
     }
-    
+
 }

@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Operation
 
 import java.util.Optional
 
+import javax.servlet.ServletContext
+
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-import local.intranet.bttf.api.domain.BttfController
+import local.intranet.bttf.BttfApplication
+import local.intranet.bttf.api.domain.BttfConst
 
 /**
  *
@@ -28,21 +31,24 @@ import local.intranet.bttf.api.domain.BttfController
  *
  */
 @RestController
-@RequestMapping(BttfController.API + BttfController.INFO_VERSION_PATH + BttfController.STATUS_BASE_INFO)
-@Tag(name = BttfController.STATUS_TAG)
+@RequestMapping(BttfConst.API + BttfConst.INFO_VERSION_PATH + BttfConst.STATUS_BASE_INFO)
+@Tag(name = BttfConst.STATUS_TAG)
 class StatusController {
 
-    val logger = LoggerFactory.getLogger(StatusController::class.java)
-
-    @Autowired
-    private lateinit var applicationContext: ApplicationContext
+    private val logger = LoggerFactory.getLogger(StatusController::class.java)
 
     @Value("\${bttf.app.stage}")
     private lateinit var stage: String
 
-    @Value("\${spring.profiles.active}")
-    private lateinit var profiles: String
+    @Autowired
+    private lateinit var servletContext: ServletContext
 
+    @Autowired
+    private lateinit var applicationContext: ApplicationContext
+
+    @Autowired
+    private lateinit var environment: Environment
+    
     /**
      *
      * text/plain: "OK"
@@ -62,11 +68,11 @@ class StatusController {
         description = "Get OK if BTTF API is running\n\n" +
                 "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getPlainStatus()\" " +
                 "target=\"_blank\">StatusController.getPlainStatus</a>",
-        tags = arrayOf(BttfController.STATUS_TAG)
+        tags = arrayOf(BttfConst.STATUS_TAG)
     )
-    @PreAuthorize("hasRole('ROLE_userRole')")
+    @PreAuthorize("permitAll()")
     fun getPlainStatus(): String {
-        val ret = BttfController.STATUS_OK
+        val ret: String = BttfConst.STATUS_OK
         logger.debug("{}", ret)
         return ret
     }
@@ -75,48 +81,91 @@ class StatusController {
      *
      * Implementation version
      *
-     * @return version from RequestContextUtils - HttpServletRequest -
-     *         {@link Package#getImplementationVersion()}
+     * @return version BttfApplication
      */
-    // TODO Stub
     fun getImplementationVersion(): String {
-        val list = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
-        val keyFirstElement = list.keys.first() // Get key.
-        val valueOfElement = list.getValue(keyFirstElement)
-        val ret = BttfController.STATUS_UNKNOWN
-        logger.debug("{} {} {}", ret, keyFirstElement, valueOfElement)
+        // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
+        // val keyFirstElement: String = list.keys.first()
+        // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
+        // val ret: String = Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse(BttfConst.STATUS_UNKNOWN)
+    	val ret: String = Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion)
+            .orElse(BttfConst.STATUS_UNKNOWN)
+        logger.debug("{}", ret)
         return ret
     }
 
     /**
      *
      * Get stage
-     * <p>
-     * Accessible to the
-     * {@link local.intranet.bttf.api.domain.type.RoleType#USER_ROLE}
-     *
-     * @see <a href="/bttf/swagger-ui/#/status-controller/getStage" target=
-     *      "_blank">bttf/swagger-ui/#/status-controller/getStage</a>
      *
      * @return ${bttf.app.stage}
      */
-    @GetMapping(value = arrayOf("/stage"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
-    @Operation(
-        operationId = "getStage",
-        summary = "Get Stage",
-        description = "Get Stage from bttf.app.stage and spring.profiles.active\n\n" +
-                "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getStage()\" " +
-                "target=\"_blank\">StatusController.getStage</a>",
-        tags = arrayOf(BttfController.STATUS_TAG)
-    )
-    @PreAuthorize("hasRole('ROLE_userRole')")
-    fun getStage(): Map<String, String> {
-        val ret = mapOf(
-            "stage" to stage,
-            "spring.profiles.active" to profiles
-        )
+    fun getStage(): String {
+        val ret: String = stage
         logger.debug("{}", ret)
         return ret
     }
 
+    /**
+     *
+     * Active profiles
+     *
+     * @return environment.getActiveProfiles()
+     */
+    fun getActiveProfiles(): String {
+        val ret: String = environment.getActiveProfiles().joinToString(separator = " ")
+        logger.debug("{}", ret)
+        return ret
+    }
+
+    /**
+     *
+     * Get server name
+     *
+     * @return serverName (The second word) from {@link #getVirtualServerName()}
+     */
+    fun getServerName(): String {
+        val ret: String = getVirtualServerName().split("/").last()
+        logger.debug("{}", ret)
+        return ret
+    }
+
+    /**
+     *
+     * Get server software
+     *
+     * @return serverSoftware's name (The first word) without version from
+     *         {@link #getServerInfo()}
+     */
+    fun getServerSoftware(): String {
+        val ret = getServerInfo().split("/").first()
+        logger.debug("{}", ret)
+        return ret
+    }
+
+    /**
+     *
+     * Get virtualServerName from ServletContext.getVirtualServerName()
+     *
+     * @return getVirtualServerName()
+     */
+    protected fun getVirtualServerName(): String {
+        val ret: String = servletContext.getVirtualServerName()
+        logger.debug("{}", ret)
+        return ret
+    }
+        
+    /**
+     *
+     * Get server info from ServletContext.getServerInfo()
+     *
+     * @return servletContext.getServerInfo()
+     */
+    protected fun getServerInfo(): String {
+        val ret: String = servletContext.getServerInfo()
+        logger.debug("{}", ret)
+        return ret
+    }
+    
+    
 }

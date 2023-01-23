@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="head">
+</head>
+<body>
+  <h1><span>
+    <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
+    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/>
+    <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo on Black RGB.svg}" th:width="'173px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
+  <div th:class="'content'">
+    <div th:class="'content-middle'">
+      <div th:class="'top'">
+        <h2><span>
+        <th:block th:if="${status} == 200" th:text="'Everything is OK'"/><th:block th:if="${status} != 200" th:text="'Error'"/>
+        </span></h2>
+        <h5><span>
+        <th:block th:if="${status} == 200" th:text="'If you can see this message, Everything is OK'"/><th:block th:if="${statusCode} != 200" th:text="'If you can see this message, Something is wrong'"/><br/><br/>
+        <th:block th:text="${status}"/><th:block th:if="${error} != ''" th:utext="' \'' + ${error} + '\''"/></span>
+        </h5>
+        <ul>
+          <li><a th:href="@{/}" th:text="'Go Home'"/></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,7 +1,6 @@
 package local.intranet.bttf.api.model.entity
 
 import local.intranet.bttf.api.domain.DefaultFieldLengths
-// import org.hibernate.annotations.Immutable
 import javax.annotation.concurrent.Immutable
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -47,17 +46,21 @@ class LoggingEvent {
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
     val callerMethod: String = ""
 
+    @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg0: String = ""
+    val arg0: String? = null
 
+    @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg1: String = ""
+    val arg1: String? = null
 
+    @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg2: String = ""
+    val arg2: String? = null
 
+    @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg3: String = ""
+    val arg3: String? = null
 
     val timestmp: Long = 0L
 
