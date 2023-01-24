@@ -39,7 +39,7 @@ class StatusController {
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
-    
+
     @Value("\${bttf.app.stage}")
     private lateinit var stage: String
 
@@ -51,7 +51,7 @@ class StatusController {
 
     @Autowired
     private lateinit var environment: Environment
-    
+
     /**
      *
      * text/plain: "OK"
@@ -91,7 +91,7 @@ class StatusController {
         // val keyFirstElement: String = list.keys.first()
         // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
         // val ret: String = Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse(BttfConst.STATUS_UNKNOWN)
-    	val ret: String = Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion)
+        val ret: String = Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion)
             .orElse(BttfConst.STATUS_UNKNOWN)
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
@@ -157,7 +157,7 @@ class StatusController {
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
-        
+
     /**
      *
      * Get server info from ServletContext.getServerInfo()
@@ -169,6 +169,6 @@ class StatusController {
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
-    
-    
+
+
 }

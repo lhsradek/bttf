@@ -56,6 +56,7 @@ interface LoggingEventRepository : JpaRepository<LoggingEvent, Long> {
      */
     @Query(value = "select u from LoggingEvent u where u.callerClass in ?1 and u.callerMethod in ?2 and levelString in ?3")
     fun findPageByCaller(
-        pageable: Pageable, callerClass: List<String>, callerMethod: List<String>, levelString: List<String>): Page<LoggingEvent>
+        pageable: Pageable, callerClass: List<String>, callerMethod: List<String>, levelString: List<String>
+    ): Page<LoggingEvent>
 
 }

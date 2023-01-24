@@ -45,12 +45,12 @@ import org.springframework.web.filter.CorsFilter
 // )
 // class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 class SecurityConfig : WebSecurityConfigurerAdapter() {
-    
+
     private val log = LoggerFactory.getLogger(SecurityConfig::class.java)
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
-    
+
     @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
     private lateinit var authenticated: List<String>
 
@@ -157,15 +157,15 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .and()
             .frameOptions().disable().frameOptions().sameOrigin()
             .and().httpBasic()
-        // .and().formLogin()
-        // .loginPage("/login").permitAll().failureUrl("/login?error=true")
-        // .and().exceptionHandling().accessDeniedPage("/login?error=403")
-           .and()
-           .logout().logoutSuccessHandler(userService.logoutSuccess())
-        // .logoutRequestMatcher(AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
-           .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
-        // .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
-           .maximumSessions(1);
+            // .and().formLogin()
+            // .loginPage("/login").permitAll().failureUrl("/login?error=true")
+            // .and().exceptionHandling().accessDeniedPage("/login?error=403")
+            .and()
+            .logout().logoutSuccessHandler(userService.logoutSuccess())
+            // .logoutRequestMatcher(AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
+            .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
+            // .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
+            .maximumSessions(1);
     }
 
 }

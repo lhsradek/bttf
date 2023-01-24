@@ -37,7 +37,7 @@ import local.intranet.bttf.api.model.repository.LoggingEventRepository
 public class LoggingEventService {
 
     private val log = LoggerFactory.getLogger(LoggingEventService::class.java)
-    
+
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
 
@@ -78,14 +78,14 @@ public class LoggingEventService {
         try {
             val pa: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, levelString)
             val list = mutableListOf<LoggingEventInfo>()
-            for (l in pa) {
+            for (l: LoggingEvent in pa) {
                 list.add(makeLoggingEventInfo(l))
             }
             val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
-            
+
             if (dbg.toBoolean()) log.debug("{}", ret)
             return ret
-            
+
         } catch (e: Exception) {
             log.error(e.message, e)
             throw e
@@ -109,8 +109,7 @@ public class LoggingEventService {
     @Transactional(readOnly = true)
     @Throws(Exception::class)
     fun findPageByCaller(
-        page: Int, @NotNull cnt: Int, sort: Sort, callerClass: List<String>,
-        callerMethod: List<String>
+        page: Int, @NotNull cnt: Int, sort: Sort, callerClass: List<String>, callerMethod: List<String>
     ): Page<LoggingEventInfo> {
         try {
             var s: String = sort.toString()
@@ -123,14 +122,14 @@ public class LoggingEventService {
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
             val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
             val list = mutableListOf<LoggingEventInfo>()
-            for (l in pa) {
+            for (l: LoggingEvent in pa) {
                 list.add(makeLoggingEventInfo(l))
             }
-            
+
             val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
             if (dbg.toBoolean()) log.debug("{}", ret)
             return ret
-            
+
         } catch (e: Exception) {
             log.error(e.message, e)
             throw e

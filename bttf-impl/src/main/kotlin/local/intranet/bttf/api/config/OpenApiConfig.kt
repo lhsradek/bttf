@@ -31,7 +31,7 @@ class OpenApiConfig {
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
-    
+
     @Autowired
     private lateinit var statusController: StatusController
 

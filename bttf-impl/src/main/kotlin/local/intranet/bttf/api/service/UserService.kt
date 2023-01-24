@@ -52,13 +52,13 @@ class UserService : UserDetailsService {
     private lateinit var httpSession: HttpSession
 
     /**
-     * 
+     *
      * Bean for logout
      * {@link local.intranet.tombola.api.security.LogoutSuccess#onLogoutSuccess}.
      * <p>
      * Login is in
      * {@link local.intranet.tombola.api.controller.IndexController#signin}
-     * 
+     *
      * @return {@link LogoutSuccess}
      */
     @Bean
@@ -79,8 +79,10 @@ class UserService : UserDetailsService {
      *                                   Makes no assertion as to whether or not the credentials were valid.
      */
     @Transactional(readOnly = true)
-    @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
-        AccountExpiredException::class)
+    @Throws(
+        UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
+        AccountExpiredException::class
+    )
     fun getUserInfo(): UserInfo {
         val ret = loadUserByUsername(getUsername())
         if (dbg.toBoolean()) log.debug("{}", ret)
@@ -100,8 +102,10 @@ class UserService : UserDetailsService {
      *                                   Makes no assertion as to whether or not the credentials were valid.
      */
     @Transactional(readOnly = true)
-    @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
-        AccountExpiredException::class)
+    @Throws(
+        UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
+        AccountExpiredException::class
+    )
     override fun loadUserByUsername(username: String): UserInfo {
         val ret: UserInfo
         // val ip: String = statusController.getClientIP()

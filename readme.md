@@ -7,5 +7,7 @@
 </p>
 
 <p>
-<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project is at the beginning. Fasten your seatbelts. Let's start traveling through time!
+My <img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project is at the beginning.
 </p>
+
+Soon we will start traveling through time!

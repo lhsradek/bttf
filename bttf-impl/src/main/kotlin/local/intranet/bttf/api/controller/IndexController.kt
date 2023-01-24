@@ -32,7 +32,7 @@ public class IndexController {
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
-    
+
     @Value("\${bttf.app.headerSoftware:false}")
     private lateinit var headerSoftware: String
 
@@ -99,7 +99,11 @@ public class IndexController {
         model.addAttribute(INDEX_STATUS_SPRING_VERSION, SpringVersion.getVersion())
         model.addAttribute(INDEX_API, BttfApplication::class.java.name.split(".").last())
         model.addAttribute(BttfConst.IMPLEMENTATION_VERSION, statusController.getImplementationVersion())
-        if (dbg.toBoolean()) log.debug("GetIndex '{}' {}", model.asMap().get(INDEX_USERNAME), request.getRequestedSessionId())
+        if (dbg.toBoolean()) log.debug(
+            "GetIndex '{}' {}",
+            model.asMap().get(INDEX_USERNAME),
+            request.getRequestedSessionId()
+        )
         // model.asMap().forEach({ logger.debug("key:{} value:{}", it.key, it.value.toString()) })
         return INDEX
     }
@@ -118,12 +122,13 @@ public class IndexController {
      */
     @RequestMapping(
         value = arrayOf("/error"),
-        method = arrayOf(RequestMethod.GET, RequestMethod.POST), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
+        method = arrayOf(RequestMethod.GET, RequestMethod.POST), produces = arrayOf(MediaType.TEXT_HTML_VALUE)
+    )
     @PreAuthorize("permitAll()")
     fun getError(request: HttpServletRequest, model: Model): String {
         try {
             var statusCode: Int = 200
-            val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE) 
+            val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
             status?.let {
                 statusCode = Integer.valueOf(status.toString())
             }

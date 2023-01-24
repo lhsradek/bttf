@@ -19,7 +19,7 @@ class AuditorAwareImpl : AuditorAware<String> {
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
-    
+
     /**
      *
      * Get current auditor

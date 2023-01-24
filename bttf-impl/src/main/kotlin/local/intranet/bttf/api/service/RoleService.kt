@@ -19,7 +19,7 @@ import local.intranet.bttf.api.info.RoleInfo
 class RoleService {
 
     private val log = LoggerFactory.getLogger(RoleService::class.java)
-    
+
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
 
