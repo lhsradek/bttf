@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -35,7 +36,10 @@ import local.intranet.bttf.api.model.repository.LoggingEventRepository
 @Service
 public class LoggingEventService {
 
-    private val logger = LoggerFactory.getLogger(LoggingEventService::class.java)
+    private val log = LoggerFactory.getLogger(LoggingEventService::class.java)
+    
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
     @Autowired
     private lateinit var loggingEventRepository: LoggingEventRepository
@@ -52,7 +56,7 @@ public class LoggingEventService {
     @Transactional(readOnly = true)
     fun countTotalLoggingEvents(): List<LevelCount> {
         val ret = loggingEventRepository.countTotalLoggingEvents()
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -78,10 +82,12 @@ public class LoggingEventService {
                 list.add(makeLoggingEventInfo(l))
             }
             val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
-            // logger.debug("{}", ret)
+            
+            if (dbg.toBoolean()) log.debug("{}", ret)
             return ret
+            
         } catch (e: Exception) {
-            logger.error(e.message, e)
+            log.error(e.message, e)
             throw e
         }
     }
@@ -120,11 +126,13 @@ public class LoggingEventService {
             for (l in pa) {
                 list.add(makeLoggingEventInfo(l))
             }
+            
             val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
-            // logger.debug("{}", ret)
+            if (dbg.toBoolean()) log.debug("{}", ret)
             return ret
+            
         } catch (e: Exception) {
-            logger.error(e.message, e)
+            log.error(e.message, e)
             throw e
         }
     }
@@ -142,13 +150,13 @@ public class LoggingEventService {
         val arg1: String = loggingEvent.arg1?.let { loggingEvent.arg1 } ?: "[NULL]"
         val arg2: String = loggingEvent.arg2?.let { loggingEvent.arg2 } ?: "[NULL]"
         val arg3: String = loggingEvent.arg3?.let { loggingEvent.arg3 } ?: "[NULL]"
-        // logger.debug("arg0:{} arg1:{} arg2:{} arg3:{}", arg0, arg1, arg2, arg3)
+        // if (dbg.toBoolean()) logger.debug("arg0:{} arg1:{} arg2:{} arg3:{}", arg0, arg1, arg2, arg3)
         val ret: LoggingEventInfo = LoggingEventInfo(
             loggingEvent.id?.let { loggingEvent.id } ?: 0L, loggingEvent.formattedMessage,
             loggingEvent.levelString, if (s.size > 0) s.last() else "", loggingEvent.callerMethod,
             arg0, arg1, arg2, arg3, Date(loggingEvent.timestmp)
         )
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 

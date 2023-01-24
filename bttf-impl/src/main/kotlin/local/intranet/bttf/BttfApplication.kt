@@ -21,6 +21,11 @@ import org.springframework.web.WebApplicationInitializer
  * {@link local.intranet.bttf.api.config.ApplicationConfig}
  * <p>
  * Redis is configured in {@link local.intranet.bttf.api.redis.RedisConfig}
+ * For RedisHttpSession:
+ * <p>
+ * <code>
+ * &#64;EnableRedisHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = ..)
+ * </code>
  * <p>
  * For JdbcHttpSession:
  * <p>
@@ -38,7 +43,7 @@ import org.springframework.web.WebApplicationInitializer
 @EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *")
 class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {
 
-    private val logger = LoggerFactory.getLogger(BttfApplication::class.java)
+    private val log = LoggerFactory.getLogger(BttfApplication::class.java)
 
     private val ENTERING_APPLICATION = "Entering application."
 
@@ -59,7 +64,7 @@ class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer(
      * @see SpringApplicationBuilder
      */
     override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
-        logger.info(ENTERING_APPLICATION)
+        log.info(ENTERING_APPLICATION)
         val ret = builder.sources(BttfApplication::class.java)
         builder.bannerMode(Banner.Mode.OFF)
         return ret

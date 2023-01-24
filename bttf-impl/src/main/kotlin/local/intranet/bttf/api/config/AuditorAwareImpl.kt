@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.config
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.data.domain.AuditorAware
 import org.springframework.security.core.context.SecurityContextHolder
@@ -14,8 +15,11 @@ import java.util.Optional
 @ConditionalOnExpression("\${bttf.envers.enabled}")
 class AuditorAwareImpl : AuditorAware<String> {
 
-    private val logger = LoggerFactory.getLogger(AuditorAwareImpl::class.java)
+    private val log = LoggerFactory.getLogger(AuditorAwareImpl::class.java)
 
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+    
     /**
      *
      * Get current auditor
@@ -29,7 +33,7 @@ class AuditorAwareImpl : AuditorAware<String> {
         } else {
             ret = Optional.empty()
         }
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 }

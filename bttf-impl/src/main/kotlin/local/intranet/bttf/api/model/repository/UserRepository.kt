@@ -20,7 +20,7 @@ interface UserRepository : CrudRepository<User, Long> {
      * Find by name
      *
      * @param userName {@link String}
-     * @return {@link User}
+     * @return {@link User}?
      */
     @Query(value = "select u from User u where u.userName = ?1")
     fun findByName(userName: String): User?

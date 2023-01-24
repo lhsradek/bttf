@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.info.License
 import local.intranet.bttf.api.controller.StatusController
 import org.slf4j.LoggerFactory
 import org.springdoc.core.GroupedOpenApi
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.context.annotation.Bean
@@ -24,10 +25,13 @@ import org.springframework.context.annotation.Configuration
 @ConditionalOnExpression("\${bttf.springdoc.enabled}")
 class OpenApiConfig {
 
-    private val logger = LoggerFactory.getLogger(OpenApiConfig::class.java)
+    private val log = LoggerFactory.getLogger(OpenApiConfig::class.java)
 
     private val API = "BTTF API"
 
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+    
     @Autowired
     private lateinit var statusController: StatusController
 
@@ -44,7 +48,7 @@ class OpenApiConfig {
             .group("bttf")
             .displayName(API)
             .build()
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -79,7 +83,7 @@ class OpenApiConfig {
                     .description("Java Documentation")
                     .url("/bttf-javadoc/")
             )
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 

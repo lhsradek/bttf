@@ -42,12 +42,36 @@ class User {
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
     val password: String = ""
 
+    /**
+     *
+     * accountNonExpired
+     *
+     * If expired in {@link local.intranet.bttf.api.service.UserService#loadUserByUsername}
+     *  -> AccountExpiredException
+     *
+     */
     @Column(name = "account_non_expired")
     val accountNonExpired: Boolean = true
 
+    /**
+     *
+     * accountNonLocked
+     *
+     * If locked in {@link local.intranet.bttf.api.service.UserService#loadUserByUsername}
+     *  -> LockedException
+     *
+     */
     @Column(name = "account_non_locked")
     val accountNonLocked: Boolean = true
 
+    /**
+     *
+     * credentialsNonExpired
+     *
+     * iIf expired in {@link local.intranet.bttf.api.service.UserService#loadUserByUsername}
+     *  -> BadCredentialsException
+     *
+     */
     @Column(name = "credentials_non_expired")
     val credentialsNonExpired: Boolean = true
 

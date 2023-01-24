@@ -106,5 +106,16 @@ object BttfConst {
      */
     const val ERROR_USERNAME_NOT_FOUND: String = "Username not found!"
 
+    /**
+     *
+     * ERROR_BAD_CREDENTIALS= "Bad credetials!"
+     */
+    const val ERROR_BAD_CREDENTIALS: String = "Bad credetials!"
+
+    /**
+     *
+     * ERROR_ACCOUNT_EXPIRED = "Account expired!"
+     */
+    const val ERROR_ACCOUNT_EXPIRED: String = "Account expired!"
 
 }

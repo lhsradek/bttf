@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.security;
 
+import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.service.UserService
 import org.slf4j.LoggerFactory
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -43,8 +45,12 @@ import org.springframework.web.filter.CorsFilter
 // )
 // class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 class SecurityConfig : WebSecurityConfigurerAdapter() {
-    private val logger = LoggerFactory.getLogger(SecurityConfig::class.java)
+    
+    private val log = LoggerFactory.getLogger(SecurityConfig::class.java)
 
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+    
     @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
     private lateinit var authenticated: List<String>
 
@@ -80,19 +86,19 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
      * For {@link local.intranet.tombola.api.controller.IndexController#signin}
      *
      * @return {@link AuthenticationManager}
-     * @throws {@link TombolaException}
+     * @throws {@link BttfException}
      */
     @Bean
-    @Throws(BttfException::class)
+    @Throws(BttfException::class, AccountExpiredException::class)
     override fun authenticationManagerBean(): AuthenticationManager {
         try {
             val ret: AuthenticationManager = super.authenticationManagerBean()
             return ret
         } catch (e: Exception) {
-            logger.error(e.message, e)
+            log.error(e.message, e)
             e.message?.let {
                 throw BttfException(e.message!!)
-            } ?: throw BttfException("")
+            } ?: throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
         }
     }
 
@@ -150,16 +156,16 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .httpStrictTransportSecurity()
             .and()
             .frameOptions().disable().frameOptions().sameOrigin()
-            .and().httpBasic();
+            .and().httpBasic()
         // .and().formLogin()
         // .loginPage("/login").permitAll().failureUrl("/login?error=true")
         // .and().exceptionHandling().accessDeniedPage("/login?error=403")
-        // .and()
-        // .logout().logoutSuccessHandler(userService.logoutSuccess())
+           .and()
+           .logout().logoutSuccessHandler(userService.logoutSuccess())
         // .logoutRequestMatcher(AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
-        // .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
+           .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
         // .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
-        // .maximumSessions(1);
+           .maximumSessions(1);
     }
 
 }

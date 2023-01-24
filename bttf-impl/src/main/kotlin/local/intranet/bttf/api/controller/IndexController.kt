@@ -11,6 +11,7 @@ import org.springframework.core.SpringVersion
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -20,14 +21,18 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.client.HttpServerErrorException.InternalServerError
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.servlet.RequestDispatcher
 import javax.servlet.http.HttpServletRequest
 
 @Controller
 public class IndexController {
 
-    private val logger = LoggerFactory.getLogger(IndexController::class.java)
+    private val log = LoggerFactory.getLogger(IndexController::class.java)
 
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+    
     @Value("\${bttf.app.headerSoftware:false}")
     private lateinit var headerSoftware: String
 
@@ -69,6 +74,7 @@ public class IndexController {
     fun getLicense(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
         // model.asMap().forEach({ logger.debug("key:{} value:{}", it.key, it.value.toString()) })
+        log.debug("GetLicense '{}' {}", model.asMap().get(INDEX_USERNAME), request.getRequestedSessionId())
         return INDEX_LICENSE
     }
 
@@ -93,7 +99,7 @@ public class IndexController {
         model.addAttribute(INDEX_STATUS_SPRING_VERSION, SpringVersion.getVersion())
         model.addAttribute(INDEX_API, BttfApplication::class.java.name.split(".").last())
         model.addAttribute(BttfConst.IMPLEMENTATION_VERSION, statusController.getImplementationVersion())
-        // logger.debug("GetIndex '{}' {}", model.asMap().get(INDEX_USERNAME), request.getRequestedSessionId())
+        if (dbg.toBoolean()) log.debug("GetIndex '{}' {}", model.asMap().get(INDEX_USERNAME), request.getRequestedSessionId())
         // model.asMap().forEach({ logger.debug("key:{} value:{}", it.key, it.value.toString()) })
         return INDEX
     }
@@ -129,19 +135,20 @@ public class IndexController {
         } catch (e: Exception) {
             when (e) {
                 is UsernameNotFoundException,
+                is AccountExpiredException,
                 is BadCredentialsException,
                 is LockedException,
                 is InternalServerError -> {
                     if (e is InternalServerError) {
-                        logger.error(e.message + " " + e.getStackTrace(), e)
+                        log.error(e.message + " " + e.getStackTrace(), e)
+                        throw e
                     } else {
-                        logger.error(e.message, e)
+                        log.error(e.message, e)
                     }
                 }
                 else -> throw e
             }
         }
-        // logger.debug("AddModel model:'{}'", request)
         return INDEX_ERROR;
     }
 
@@ -166,8 +173,8 @@ public class IndexController {
         }
         model.addAttribute(INDEX_USER_ROLES, userService.getUserRoles())
         model.addAttribute(INDEX_ROLE, userService.getAuthoritiesRoles().joinToString(separator = " "))
-        model.asMap().forEach({ logger.debug("key:{} value:{}", it.key, it.value.toString()) })
-        logger.debug("AddModel model:'{}'", request.toString())
+        // if (dbg.toBoolean()) model.asMap().forEach({ logger.debug("key:{} value:{}", it.key, it.value.toString()) })
+        if (dbg.toBoolean()) log.debug("AddModel model:'{}'", request.toString())
     }
 
 }

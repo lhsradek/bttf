@@ -20,7 +20,7 @@ interface RoleRepository : CrudRepository<Role, Long> {
      * Find by name
      *
      * @param roleName {@link String}
-     * @return {@link Role}
+     * @return {@link Role}?
      */
     @Query(value = "select u from Role u where u.roleName = ?1")
     fun findByName(roleName: String): Role?

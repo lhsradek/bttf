@@ -2,8 +2,13 @@ package local.intranet.bttf.api.controller
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.authentication.AccountExpiredException
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.LockedException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -32,7 +37,10 @@ import local.intranet.bttf.api.service.UserService
 @Tag(name = BttfConst.INFO_TAG)
 public class InfoController {
 
-    private val logger = LoggerFactory.getLogger(InfoController::class.java)
+    private val log = LoggerFactory.getLogger(InfoController::class.java)
+
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
     @Autowired
     private lateinit var userService: UserService
@@ -53,6 +61,12 @@ public class InfoController {
      * @see <a href="/bttf/swagger-ui/#/info-controller/getUserInfo" target=
      *      "_blank">swagger-ui/#/info-controller/getUserInfo</a>
      * @return {@link UserInfo}
+     * @throws LockedException           if the user is locked.
+     * @throws UsernameNotFoundException if the user could not be found or the user has no GrantedAuthority
+     * @throws BadCredentialsException   if the credentials are invalid
+     * @throws AccountExpiredException   if an authentication request is rejected because the account has expired.
+     *                                   Makes no assertion as to whether or not the credentials were valid.
+     *
      */
     @GetMapping(value = arrayOf("/user"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -65,15 +79,24 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasRole('ROLE_userRole')")
-    @Throws(BttfException::class)
+    @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class)
     fun getUserInfo(): UserInfo {
         try {
             val ret: UserInfo = userService.getUserInfo()
-            // logger.debug("{}", ret.toString())
+            if (dbg.toBoolean()) log.debug("{}", ret.toString())
             return ret
-        } catch (e: BttfException) {
-            // logger.error(e.message, e)
-            throw e
+        } catch (e: Exception) {
+            if (dbg.toBoolean()) log.error(e.message, e)
+            when (e) {
+                is UsernameNotFoundException,
+                is LockedException,
+                is AccountExpiredException,
+                is BadCredentialsException -> {
+                    log.error(e.message, e)
+                    throw e
+                }
+                else -> throw e
+            }
         }
     }
 
@@ -92,25 +115,25 @@ public class InfoController {
      * @return {@link RoleInfo}
     @GetMapping(value = arrayOf("/role"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-        operationId = "getRoleInfo",
-        summary = "Get Role Info",
-        description = "Get Role Info\n\n"
-                + "This method is calling RoleService.getRoleInfo\n\n"
-                + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
-        tags = arrayOf(BttfController.INFO_TAG)
+    operationId = "getRoleInfo",
+    summary = "Get Role Info",
+    description = "Get Role Info\n\n"
+    + "This method is calling RoleService.getRoleInfo\n\n"
+    + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+    + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
+    tags = arrayOf(BttfController.INFO_TAG)
     )
     @PreAuthorize("hasRole('ROLE_userRole')")
     @Throws(BttfException::class)
     fun getRoleInfo(): RoleInfo {
-        try {
-            val ret: RoleInfo = roleService.getRoleInfo()
-            // logger.debug("{}", ret.toString())
-            return ret
-        } catch (e: BttfException) {
-            // logger.error(e.message, e)
-            throw e
-        }
+    try {
+    val ret: RoleInfo = roleService.getRoleInfo()
+    if (dbg.toBoolean()) logger.debug("{}", ret.toString())
+    return ret
+    } catch (e: BttfException) {
+    // logger.error(e.message, e)
+    throw e
+    }
     }
      */
 

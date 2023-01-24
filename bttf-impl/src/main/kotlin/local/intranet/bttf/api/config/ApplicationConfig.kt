@@ -9,6 +9,7 @@ import javax.servlet.SessionTrackingMode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -39,7 +40,10 @@ import javax.sql.DataSource
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionApplicationInitializer() {
 
-    private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
+    private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
+    
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String  // toBoolean
     
 	@Autowired
 	private lateinit var servletContext: ServletContext
@@ -54,7 +58,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	@ConditionalOnExpression("\${#strings.length(spring.datasource.url) > 0}")
 	fun dataSource(): DataSource {
 		val ret: DataSource = DataSourceBuilder.create().build()
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
 		return ret
 	}
 
@@ -70,7 +74,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	@ConditionalOnExpression("\${#strings.length(spring.secondaryDatasource.url) > 0}")
 	fun secondaryDataSource(): DataSource {
 		val ret: DataSource = DataSourceBuilder.create().build()
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
 		return ret
 	}
 
@@ -84,7 +88,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
     @ConditionalOnExpression("\${bttf.envers.enabled}")
     fun auditorProvider(): AuditorAware<String> {
         val ret = AuditorAwareImpl()
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -100,7 +104,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	fun sessionEventPublisher(): HttpSessionEventPublisher {
 		val ret = HttpSessionEventPublisher()
 		servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE))
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
 		return ret
 	}
 
@@ -121,7 +125,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 		val ret = SimpleUrlHandlerMapping()
 		ret.setOrder(Int.MIN_VALUE)
 		ret.setUrlMap(Collections.singletonMap("/favicon.*", faviconRequestHandler()))
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
 		return ret
 	}
 
@@ -137,7 +141,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	protected fun faviconRequestHandler(): ResourceHttpRequestHandler {
 		val ret = ResourceHttpRequestHandler()
 		ret.setLocationValues(arrayOf("res/").asList())
-        // logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
 		return ret
 	}
 
@@ -151,7 +155,7 @@ public class ApplicationConfig: WebApplicationInitializer, AbstractHttpSessionAp
 	fun configureJackson(objectMapper: ObjectMapper) {
         val tzd = TimeZone.getDefault()
 		objectMapper.setTimeZone(tzd)
-        // logger.debug("{}", tzd)
+        if (dbg.toBoolean()) log.debug("{}", tzd)
 	}
 
 }

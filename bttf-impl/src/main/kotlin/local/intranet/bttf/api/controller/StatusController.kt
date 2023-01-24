@@ -35,8 +35,11 @@ import local.intranet.bttf.api.domain.BttfConst
 @Tag(name = BttfConst.STATUS_TAG)
 class StatusController {
 
-    private val logger = LoggerFactory.getLogger(StatusController::class.java)
+    private val log = LoggerFactory.getLogger(StatusController::class.java)
 
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+    
     @Value("\${bttf.app.stage}")
     private lateinit var stage: String
 
@@ -73,7 +76,7 @@ class StatusController {
     @PreAuthorize("permitAll()")
     fun getPlainStatus(): String {
         val ret: String = BttfConst.STATUS_OK
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -90,7 +93,7 @@ class StatusController {
         // val ret: String = Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse(BttfConst.STATUS_UNKNOWN)
     	val ret: String = Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion)
             .orElse(BttfConst.STATUS_UNKNOWN)
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -102,7 +105,7 @@ class StatusController {
      */
     fun getStage(): String {
         val ret: String = stage
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -114,7 +117,7 @@ class StatusController {
      */
     fun getActiveProfiles(): String {
         val ret: String = environment.getActiveProfiles().joinToString(separator = " ")
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -126,7 +129,7 @@ class StatusController {
      */
     fun getServerName(): String {
         val ret: String = getVirtualServerName().split("/").last()
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -139,7 +142,7 @@ class StatusController {
      */
     fun getServerSoftware(): String {
         val ret = getServerInfo().split("/").first()
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -151,7 +154,7 @@ class StatusController {
      */
     protected fun getVirtualServerName(): String {
         val ret: String = servletContext.getVirtualServerName()
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
         
@@ -163,7 +166,7 @@ class StatusController {
      */
     protected fun getServerInfo(): String {
         val ret: String = servletContext.getServerInfo()
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
     

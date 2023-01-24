@@ -7,7 +7,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.IThrowableProxy
 import org.apache.commons.lang3.reflect.FieldUtils
 
-
 /**
  *
  * {@link BttfDbAppender}. Implementation of log DBAppender. Only purpose is
@@ -15,33 +14,33 @@ import org.apache.commons.lang3.reflect.FieldUtils
  *
  * @author Radek Kadner
  *
+ * Inspired by Vít Švanda
+ *
  * @since 11.0.0
  */
 public class BttfDbAppender : DBAppender() {
 
     /**
      *
-     * This is where an appender accomplishes its work. Note that the argument is of
-     * type Object.
+     * This is where an appender accomplishes its work. Note that the argument is of type Object.
      *
      * @param eventObject {@link ILoggingEvent}
      */
     override fun doAppend(eventObject: ILoggingEvent) {
         fixFormattedMessage(eventObject)
         while (eventObject.throwableProxy != null) {
-            var throwableProxy: IThrowableProxy = eventObject.throwableProxy
-            fixMessage(throwableProxy)
-            throwableProxy = throwableProxy.cause
-            if (throwableProxy == null)
-                break
+            val throwableProxy: IThrowableProxy? = eventObject.throwableProxy
+            throwableProxy?.let {
+            	fixMessage(throwableProxy)
+            	throwableProxy.cause
+            }?: break
         }
         super.doAppend(eventObject)
     }
 
     /**
      *
-     * Fix message in DBAppender (max message length, forbidden characters in
-     * Postgresql).
+     * Fix message in DBAppender (max message length, forbidden characters)
      *
      * @param throwableProxy {@link IThrowableProxy}
      */
@@ -53,10 +52,7 @@ public class BttfDbAppender : DBAppender() {
                 FieldUtils.writeField(throwableProxy, "message", fixedMessage, true)
             }
         } catch (e: IllegalAccessException) {
-            // System out is OK here.
-            System.out.println(
-                MessageFormat.format("BttfDbAppender error during fixing message: {0}", e.message)
-            )
+            println(MessageFormat.format("BttfDbAppender error during fixing message: {0}", e.message))
         }
     }
 
@@ -86,19 +82,15 @@ public class BttfDbAppender : DBAppender() {
     }
 
     fun fixMessage(message: String): String {
-        val maxLength: Int = 240 // Only 200 because prefix is added lately. 240 By radek.kadner
-        var fixedMessage: String = message
+        val maxLength: Int = 240 // Only 240 because prefix is added lately
+        var ret: String = message
         if (message.contains("\u0000") || message.contains("\\x00") || message.length >= maxLength) {
-            // Workaround -> We have replace null characters by empty space, for case when
-            // exception will persisted in a Postgresql DB.
-            fixedMessage = message.replace("\u0000", "").replace("\\x00", "")
-            // Workaround for https://jira.qos.ch/browse/LOGBACK-493. -> DB tables has
-            // limitation for max 254 characters.
-            if (fixedMessage.length >= maxLength) {
-                fixedMessage = fixedMessage.substring(0, maxLength - 1)
+            ret = message.replace("\u0000", "").replace("\\x00", "")
+            if (ret.length >= maxLength) {
+                ret = ret.substring(0, maxLength - 1)
             }
         }
-        return fixedMessage
+        return ret
     }
 
 }

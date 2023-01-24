@@ -7,8 +7,13 @@ import local.intranet.bttf.api.domain.type.RoleType
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
+import local.intranet.bttf.api.security.LogoutSuccess
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.authentication.AccountExpiredException
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
@@ -16,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,7 +38,10 @@ import javax.servlet.http.HttpSession
 @Service
 class UserService : UserDetailsService {
 
-    private val logger = LoggerFactory.getLogger(UserService::class.java)
+    private val log = LoggerFactory.getLogger(UserService::class.java)
+
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
     val USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL: Int = 3600
 
@@ -42,15 +51,57 @@ class UserService : UserDetailsService {
     @Autowired
     private lateinit var httpSession: HttpSession
 
-    @Transactional(readOnly = true)
-    fun getUserInfo(): UserInfo {
-        val ret = loadUserByUsername(getUsername())
-        logger.debug("{}", ret)
+    /**
+     * 
+     * Bean for logout
+     * {@link local.intranet.tombola.api.security.LogoutSuccess#onLogoutSuccess}.
+     * <p>
+     * Login is in
+     * {@link local.intranet.tombola.api.controller.IndexController#signin}
+     * 
+     * @return {@link LogoutSuccess}
+     */
+    @Bean
+    fun logoutSuccess(): LogoutSuccessHandler {
+        val ret: LogoutSuccessHandler = LogoutSuccess()
         return ret
     }
 
+    /**
+     *
+     * For {@link local.intranet.bttf.api.controller.InfoController#getUserInfo}
+     *
+     * @return {@link UserInfo}
+     * @throws LockedException           if the user is locked.
+     * @throws UsernameNotFoundException if the user could not be found or the user has no GrantedAuthority
+     * @throws BadCredentialsException   if the credentials are invalid
+     * @throws AccountExpiredException   if an authentication request is rejected because the account has expired.
+     *                                   Makes no assertion as to whether or not the credentials were valid.
+     */
     @Transactional(readOnly = true)
-    @Throws(UsernameNotFoundException::class, LockedException::class)
+    @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
+        AccountExpiredException::class)
+    fun getUserInfo(): UserInfo {
+        val ret = loadUserByUsername(getUsername())
+        if (dbg.toBoolean()) log.debug("{}", ret)
+        return ret
+    }
+
+    /**
+     *
+     * Locates the user based on the username.
+     *
+     * @param username the username identifying the user whose data is required.
+     * @return a fully populated user record (never <code>null</code>)
+     * @throws LockedException           if the user is locked.
+     * @throws UsernameNotFoundException if the user could not be found or the user has no GrantedAuthority
+     * @throws BadCredentialsException   if the credentials are invalid
+     * @throws AccountExpiredException   if an authentication request is rejected because the account has expired.
+     *                                   Makes no assertion as to whether or not the credentials were valid.
+     */
+    @Transactional(readOnly = true)
+    @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
+        AccountExpiredException::class)
     override fun loadUserByUsername(username: String): UserInfo {
         val ret: UserInfo
         // val ip: String = statusController.getClientIP()
@@ -58,23 +109,27 @@ class UserService : UserDetailsService {
         //     throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
         // }
         val user: User? = userRepository.findByName(username)
-        
-        logger.debug("{}", user)
+
+        // if (dbg.toBoolean()) logger.debug("{}", user)
 
         user?.let {
-            if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired
-                && user.enabled
+            if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired && user.enabled
             ) {
                 val authorities = mutableListOf<GrantedAuthority>()
                 user.role.forEach {
                     authorities.add(SimpleGrantedAuthority(BttfConst.ROLE_PREFIX + it.roleName))
                 }
                 ret = UserInfo(user.userName, user.password, true, true, true, true, authorities)
-                
-                logger.debug("{}", ret)
+
+                if (dbg.toBoolean()) log.debug("{}", ret)
                 return ret
 
             } else {
+                if (!user.credentialsNonExpired) {
+                    throw BadCredentialsException(BttfConst.ERROR_BAD_CREDENTIALS)
+                } else if (!user.accountNonExpired) {
+                    throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
+                }
                 throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
         } ?: throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
@@ -96,7 +151,7 @@ class UserService : UserDetailsService {
             }
             ret = auth.getName()
         }
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("'{}'", ret)
         return ret
     }
 
@@ -109,7 +164,7 @@ class UserService : UserDetailsService {
     fun isAuthenticated(): Boolean {
         val list = getAuthoritiesRoles()
         val ret: Boolean = if (list.size > 0 && !list.first().equals(BttfConst.USER_ANONYMOUS)) true else false
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -130,7 +185,10 @@ class UserService : UserDetailsService {
             }
             ret.sort()
         }
-        logger.debug("{}", ret)
+        if (ret.size == 0) {
+            ret.add(RoleType.ANONYMOUS_ROLE.toString())
+        }
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -152,10 +210,11 @@ class UserService : UserDetailsService {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
         for (r: RoleType in RoleType.values()) {
-            if (!r.equals(RoleType.ANONYMOUS_ROLE))
+            if (!r.equals(RoleType.ANONYMOUS_ROLE)) {
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))
+            }
         }
-        logger.debug("{}", ret)
+        if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
