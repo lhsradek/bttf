@@ -7,7 +7,11 @@ import local.intranet.bttf.api.model.repository.LoggingEventRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.*
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Order
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.jpa.domain.JpaSort
 import org.springframework.stereotype.Service
@@ -16,6 +20,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.validation.constraints.NotNull
+import org.springframework.data.domain.PageImpl
 
 
 /**
