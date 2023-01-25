@@ -28,7 +28,7 @@ import org.springframework.web.filter.CorsFilter
 
 /**
  *
- * {@link SecurityConfig} for {@link local.intranet.tombola.TombolaApplication}.
+ * {@link SecurityConfig} for {@link local.intranet.bttf.BttfApplication}.
  * <p>
  * https://www.baeldung.com/spring-security-csp <br>
  * https://www.baeldung.com/spring-security-session <br>
@@ -88,7 +88,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
      *
      * Create AuthenticationManager
      * <p>
-     * For {@link local.intranet.tombola.api.controller.IndexController#signin}
+     * For {@link local.intranet.bttf.api.controller.IndexController#signin}
      *
      * @return {@link AuthenticationManager}
      * @throws {@link BttfException}
@@ -135,7 +135,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
      *
      * Configure {@link HttpSecurity}
      * <p>
-     * {@link local.intranet.tombola.api.security.LogoutSuccess} invalidates
+     * {@link local.intranet.bttf.api.security.LogoutSuccess} invalidates
      * {@link javax.servlet.http.HttpSession}.
      *
      * @param http {@link HttpSecurity}

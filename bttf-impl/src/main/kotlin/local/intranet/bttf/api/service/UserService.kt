@@ -54,10 +54,10 @@ class UserService : UserDetailsService {
     /**
      *
      * Bean for logout
-     * {@link local.intranet.tombola.api.security.LogoutSuccess#onLogoutSuccess}.
+     * {@link local.intranet.bttf.api.security.LogoutSuccess#onLogoutSuccess}.
      * <p>
      * Login is in
-     * {@link local.intranet.tombola.api.controller.IndexController#signin}
+     * {@link local.intranet.bttf.api.controller.IndexController#signin}
      *
      * @return {@link LogoutSuccess}
      */
@@ -208,7 +208,7 @@ class UserService : UserDetailsService {
      * @return get all roles with boolean for Heavy Check &#x2714; or Heavy Ballot
      *         &#x2718; if user haves role in
      *         {@link Map}&lt;{@link String},{@link Boolean}&gt; It's displayed in
-     *         {@link local.intranet.tombola.api.controller.IndexController#getLogin}
+     *         {@link local.intranet.bttf.api.controller.IndexController#getLogin}
      *         if user is logged.
      */
     @JsonIgnore

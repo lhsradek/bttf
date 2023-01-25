@@ -41,7 +41,7 @@ import local.intranet.bttf.api.security.AESUtil
 
 /**
  *
- * {@link TombolaService} for {@link local.intranet.tombola.TombolaApplication}
+ * {@link BttfService} for {@link local.intranet.bttf.BttfApplication}
  *
  * @author Radek Kádner
  *

@@ -240,7 +240,7 @@ public class IndexController {
 
     /**
      *
-     * logSortByParam for {@link #getTombolaLog}
+     * logSortByParam for {@link #getBttfLog}
      *
      * @param srt {@link String} Sort by [idD, idU, mD, mU, a0D, a0U, a1D, a1U, a2D, a2U, a3D, a3U, cU, cD, lU, lD]
      * @return {@link List}&lt;{@link Order}&gt;
