@@ -31,20 +31,15 @@ class RedisConfig {
 
     private val BTTF_MESSAGE_QUEUE: String = "bttf:messageQueue"
 
-    @Value("\${spring.redis.password}")
-    private lateinit var password: String
+    @Value("\${spring.redis.password}") private lateinit var password: String
 
-    @Value("\${spring.redis.database}")
-    private lateinit var database: String // toInt
+    @Value("\${spring.redis.database}") private lateinit var database: String // toInt
 
-    @Value("\${spring.redis.host}")
-    private lateinit var host: String
+    @Value("\${spring.redis.host}") private lateinit var host: String
 
-    @Value("\${spring.redis.port}")
-    private lateinit var port: String // toInt
+    @Value("\${spring.redis.port}") private lateinit var port: String // toInt
 
-    @Value("\${spring.redis.timeout}")
-    private lateinit var timeout: String // toLong
+    @Value("\${spring.redis.timeout}") private lateinit var timeout: String // toLong
 
     /**
      *

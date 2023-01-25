@@ -17,6 +17,8 @@ import javax.validation.constraints.Size
  *
  * @author Radek Kádner
  *
+ * Constructor with parameters
+ *
  * @param username                {@link String}
  * @param password                {@link String}
  * @param isEnabled               {@link Boolean}
@@ -40,8 +42,7 @@ data class UserInfo(
     private val isCredentialsNonExpired: Boolean,
     private val isAccountNonExpired: Boolean,
     private val isAccountNonLocked: Boolean,
-    private val authorities: List<GrantedAuthority>
-) : UserDetails {
+    private val authorities: List<GrantedAuthority>) : UserDetails {
 
     /**
      *

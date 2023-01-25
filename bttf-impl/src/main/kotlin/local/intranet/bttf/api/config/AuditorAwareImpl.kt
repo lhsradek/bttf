@@ -1,11 +1,12 @@
 package local.intranet.bttf.api.config
 
+import java.util.Optional
+
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.data.domain.AuditorAware
 import org.springframework.security.core.context.SecurityContextHolder
-import java.util.Optional
 
 /**
  *
@@ -28,11 +29,10 @@ class AuditorAwareImpl : AuditorAware<String> {
     override fun getCurrentAuditor(): Optional<String> {
         val ret: Optional<String>
         val authentication = SecurityContextHolder.getContext().authentication
-        if (authentication.isAuthenticated()) {
+        if (authentication.isAuthenticated())
             ret = Optional.ofNullable(authentication.principal as String)
-        } else {
+        else
             ret = Optional.empty()
-        }
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

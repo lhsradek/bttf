@@ -58,10 +58,10 @@ class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer(
      * sources (e.g. config classes) because other settings have sensible defaults.
      * You might choose (for instance) to add default command line arguments, or set
      * an active Spring profile.
+     * @see SpringApplicationBuilder
      *
      * @param builder a builder for the application context
      * @return the application builder
-     * @see SpringApplicationBuilder
      */
     override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
         log.info(ENTERING_APPLICATION)

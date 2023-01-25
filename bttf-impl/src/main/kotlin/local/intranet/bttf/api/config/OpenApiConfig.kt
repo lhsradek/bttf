@@ -5,9 +5,13 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Contact
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.info.License
+
 import local.intranet.bttf.api.controller.StatusController
+
 import org.slf4j.LoggerFactory
+
 import org.springdoc.core.GroupedOpenApi
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
@@ -77,12 +81,12 @@ class OpenApiConfig {
                             .name("The MIT License")
                             .url("https://opensource.org/licenses/MIT")
                     )
-            )
+            ) /*
             .externalDocs(
                 ExternalDocumentation()
                     .description("Java Documentation")
                     .url("/bttf-javadoc/")
-            )
+            ) */
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

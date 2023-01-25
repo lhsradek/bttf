@@ -2,9 +2,11 @@ package local.intranet.bttf.test
 
 import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
+import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
+
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -29,17 +31,10 @@ import org.springframework.test.context.junit4.SpringRunner
 @SpringBootTest
 class bttfTest {
 
-    @Autowired
-    private lateinit var statusController: StatusController
-
-    @Autowired
-    private lateinit var infoController: InfoController
-
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var loggingEventService: LoggingEventService
+    @Autowired private lateinit var statusController: StatusController
+    @Autowired private lateinit var infoController: InfoController
+    @Autowired private lateinit var userService: UserService
+    @Autowired private lateinit var loggingEventService: LoggingEventService
     
     /**
      *
@@ -61,7 +56,7 @@ class bttfTest {
         assertThat(userService.isAuthenticated()).isNotNull
         assertThat(userService.getAuthoritiesRoles()).isNotEmpty
         assertThat(userService.getUserRoles().count() > 0)
-        assertThat(userService.loadUserByUsername("lhs")).isNotNull
+        assertThat(userService.loadUserByUsername(BttfConst.USER_ANONYMOUS)).isNotNull
         assertThrows<UsernameNotFoundException> {userService.loadUserByUsername("coco")}
 
         assertThat(loggingEventService.findPageByLevelString(

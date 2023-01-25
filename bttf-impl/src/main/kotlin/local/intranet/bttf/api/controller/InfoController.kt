@@ -1,6 +1,17 @@
 package local.intranet.bttf.api.controller
 
+import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.Operation
+
+import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.exception.BttfException
+import local.intranet.bttf.api.info.RoleInfo
+import local.intranet.bttf.api.info.UserInfo
+import local.intranet.bttf.api.service.RoleService
+import local.intranet.bttf.api.service.UserService
+
 import org.slf4j.LoggerFactory
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -12,15 +23,6 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-
-import io.swagger.v3.oas.annotations.tags.Tag
-import io.swagger.v3.oas.annotations.Operation
-import local.intranet.bttf.api.domain.BttfConst
-import local.intranet.bttf.api.exception.BttfException
-import local.intranet.bttf.api.info.RoleInfo
-import local.intranet.bttf.api.info.UserInfo
-import local.intranet.bttf.api.service.RoleService
-import local.intranet.bttf.api.service.UserService
 
 /**
  *
@@ -39,14 +41,11 @@ public class InfoController {
 
     private val log = LoggerFactory.getLogger(InfoController::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
-    @Autowired
-    private lateinit var userService: UserService
+    @Autowired private lateinit var userService: UserService
+    @Autowired private lateinit var roleService: RoleService
 
-    @Autowired
-    private lateinit var roleService: RoleService
 
     /**
      *
@@ -78,12 +77,13 @@ public class InfoController {
                 + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
-    @PreAuthorize("hasRole('ROLE_userRole')")
+    @PreAuthorize("permitAll()")
+    // @PreAuthorize("hasRole('ROLE_userRole')")
     @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class)
     fun getUserInfo(): UserInfo {
         try {
             val ret: UserInfo = userService.getUserInfo()
-            if (dbg.toBoolean()) log.debug("{}", ret.toString())
+            if (dbg.toBoolean()) log.debug("{}", ret)
             return ret
         } catch (e: Exception) {
             if (dbg.toBoolean()) log.error(e.message, e)
@@ -113,28 +113,28 @@ public class InfoController {
      * @see <a href="/bttf/swagger-ui/#/info-controller/getRoleInfo" target=
      *      "_blank">swagger-ui/#/info-controller/getRoleInfo</a>
      * @return {@link RoleInfo}
+     *
+     */
     @GetMapping(value = arrayOf("/role"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-    operationId = "getRoleInfo",
-    summary = "Get Role Info",
-    description = "Get Role Info\n\n"
-    + "This method is calling RoleService.getRoleInfo\n\n"
-    + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-    + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
-    tags = arrayOf(BttfController.INFO_TAG)
+        operationId = "getRoleInfo",
+        summary = "Get Role Info",
+        description = "Get Role Info\n\n"
+                + "This method is calling RoleService.getRoleInfo\n\n"
+                + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+                + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasRole('ROLE_userRole')")
-    @Throws(BttfException::class)
+    @Throws(Exception::class)
     fun getRoleInfo(): RoleInfo {
-    try {
-    val ret: RoleInfo = roleService.getRoleInfo()
-    if (dbg.toBoolean()) logger.debug("{}", ret.toString())
-    return ret
-    } catch (e: BttfException) {
-    // logger.error(e.message, e)
-    throw e
+        try {
+            val ret: RoleInfo = roleService.getRoleInfo()
+            if (dbg.toBoolean()) log.debug("{}", ret)
+            return ret
+        } catch (e: Exception) {
+            throw e
+        }
     }
-    }
-     */
 
 }

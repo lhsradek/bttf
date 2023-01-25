@@ -1,28 +1,49 @@
 package local.intranet.bttf.api.info
 
+import javax.validation.constraints.Size
+
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+
+import local.intranet.bttf.api.domain.DefaultFieldLengths
+import local.intranet.bttf.api.service.RoleService
 
 /**
  *
- * {@link RoleInfo} for
- * {@link local.intranet.bttf.api.service.RoleService#getRoleInfo} and
- * {@link local.intranet.bttf.api.controller.InfoController#getRoleInfo}
+ * {@link RoleInfo}
  *
  * @author Radek Kádner
  *
- * @param name             {@link String}
- * @param roleInfo         {@link RoleInfo}
- * @param isEnabled        {@link Boolean}
- */
-@JsonPropertyOrder("name", "roles", "enabled")
-data class RoleInfo(val name: String, val roleInfo: RoleInfo, val isEnabled: Boolean) {
+ * Constructor with parameter
+ *
+ * @param role {@link List}&lt;{@link RolePlain}&gt;
+*/
+@JsonPropertyOrder("name", "roles")
+data class RoleInfo(
+
+    @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val role: List<RolePlain>) {
+
+    /**
+     *
+     * Returns the rolename
+     *
+     * @return the rolename
+     */
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    fun name(): String {
+        val ret: String = RoleService::class.java.getSimpleName()
+        return ret
+    }
 
     /**
      *
      * Returns a string representation of the object.
      */
     override fun toString(): String {
-        return "RoleInfo [name=" + name + ", roleInfo=" + roleInfo + ", enabled=" + isEnabled + "]"
+        return "RoleInfo [name=" + name() + ", role=" + role + "]"
     }
 
 }

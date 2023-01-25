@@ -7,6 +7,8 @@ import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.JoinTable
+import javax.persistence.ManyToMany
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -36,12 +38,17 @@ class Role {
 
     val enabled: Boolean = true
 
+    @Column(nullable = true)
+    @ManyToMany(cascade = [CascadeType.ALL])
+    @JoinTable(name = "bttf_user_role")
+    val user = mutableListOf<User>()
+
     /**
      *
      * Returns a string representation of the object.
      */
     override fun toString(): String {
-        return "Role [id=" + id + ", roleName=" + roleName + ", enabled=" + enabled + "]"
+        return "Role [id=" + id + ", roleName=" + roleName + ", enabled=" + enabled + ", user=" + user + "]"
     }
 
 }

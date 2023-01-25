@@ -2,13 +2,18 @@ package local.intranet.bttf.api.service
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+
+import javax.servlet.http.HttpSession
+
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.type.RoleType
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
 import local.intranet.bttf.api.security.LogoutSuccess
+
 import org.slf4j.LoggerFactory
+
 import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -25,7 +30,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.servlet.http.HttpSession
 
 /**
  *
@@ -43,13 +47,13 @@ class UserService : UserDetailsService {
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
 
-    val USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL: Int = 3600
-
     @Autowired
     private lateinit var userRepository: UserRepository
 
     @Autowired
     private lateinit var httpSession: HttpSession
+
+    private val USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL: Int = 3600
 
     /**
      *
@@ -128,15 +132,14 @@ class UserService : UserDetailsService {
                 return ret
 
             } else {
-                if (!user.credentialsNonExpired) {
+                if (!user.credentialsNonExpired)
                     throw BadCredentialsException(BttfConst.ERROR_BAD_CREDENTIALS)
-                } else if (!user.accountNonExpired) {
+                else if (!user.accountNonExpired)
                     throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
-                }
                 throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
-        } ?: run {
-        	if (dbg.toBoolean()) log.debug("username:'{}' {}", username, BttfConst.ERROR_USERNAME_NOT_FOUND)
+        }?: run {
+            if (dbg.toBoolean()) log.debug("username:'{}' {}", username, BttfConst.ERROR_USERNAME_NOT_FOUND)
             throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
         }
     }
@@ -148,13 +151,12 @@ class UserService : UserDetailsService {
      * @return {@link String}
      */
     fun getUsername(): String {
-        var ret = ""
+        var ret = BttfConst.USER_ANONYMOUS
         val obj = httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)
         obj?.let {
             val auth: Authentication = SecurityContextHolder.getContext().authentication
-            if (httpSession.getMaxInactiveInterval() < USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL) {
+            if (httpSession.getMaxInactiveInterval() < USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL)
                 httpSession.setMaxInactiveInterval(USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL)
-            }
             ret = auth.getName()
         }
         // if (dbg.toBoolean()) log.debug("'{}'", ret)
@@ -186,14 +188,12 @@ class UserService : UserDetailsService {
         val obj = httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)
         obj?.let {
             val auth: Authentication = SecurityContextHolder.getContext().authentication
-            for (g: GrantedAuthority in auth.authorities) {
+            for (g: GrantedAuthority in auth.authorities)
                 ret.add(g.authority.replace(BttfConst.ROLE_PREFIX, ""))
-            }
             ret.sort()
         }
-        if (ret.size == 0) {
-            ret.add(RoleType.ANONYMOUS_ROLE.toString())
-        }
+        if (ret.size == 0)
+            ret.add(RoleType.ANONYMOUS_ROLE.role)
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
@@ -215,11 +215,9 @@ class UserService : UserDetailsService {
     fun getUserRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
-        for (r: RoleType in RoleType.values()) {
-            if (!r.equals(RoleType.ANONYMOUS_ROLE)) {
+        for (r: RoleType in RoleType.values())
+            if (!r.equals(RoleType.ANONYMOUS_ROLE))
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))
-            }
-        }
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

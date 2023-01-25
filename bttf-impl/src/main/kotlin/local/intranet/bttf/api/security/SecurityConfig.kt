@@ -3,7 +3,7 @@ package local.intranet.bttf.api.security;
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.service.UserService
-import org.slf4j.LoggerFactory
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -51,10 +51,6 @@ import org.springframework.web.filter.CorsFilter
 // )
 // class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 class SecurityConfig : WebSecurityConfigurerAdapter() {
-    private val log = LoggerFactory.getLogger(SecurityConfig::class.java)
-
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
 
     @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
     private lateinit var authenticated: List<String>
@@ -100,7 +96,6 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             val ret: AuthenticationManager = super.authenticationManagerBean()
             return ret
         } catch (e: Exception) {
-            log.error(e.message, e)
             e.message?.let {
                 throw BttfException(e.message!!)
             } ?: throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)

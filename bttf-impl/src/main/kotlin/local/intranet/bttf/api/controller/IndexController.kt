@@ -1,12 +1,19 @@
 package local.intranet.bttf.api.controller
 
+import java.util.concurrent.atomic.AtomicInteger
+
+import javax.servlet.RequestDispatcher
+import javax.servlet.http.HttpServletRequest
+
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
+
 import org.slf4j.LoggerFactory
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringBootVersion
@@ -31,32 +38,19 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.client.HttpServerErrorException.InternalServerError
-import java.util.concurrent.atomic.AtomicInteger
-import javax.servlet.RequestDispatcher
-import javax.servlet.http.HttpServletRequest
 
 @Controller
 public class IndexController {
 
     private val log = LoggerFactory.getLogger(IndexController::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.headerSoftware:false}") private lateinit var headerSoftware: String
+    @Value("\${bttf.app.logCnt:25}") private lateinit var logCnt: String // toInt
 
-    @Value("\${bttf.app.headerSoftware:false}")
-    private lateinit var headerSoftware: String
-
-    @Value("\${bttf.app.logCnt:25}")
-    private lateinit var logCnt: String // toInt
-
-    @Autowired
-    private lateinit var statusController: StatusController
-
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var loggingEventService: LoggingEventService
+    @Autowired private lateinit var statusController: StatusController
+    @Autowired private lateinit var userService: UserService
+    @Autowired private lateinit var loggingEventService: LoggingEventService
 
     private val INDEX: String = "index"
     private val INDEX_API: String = "bttfApi"
@@ -101,7 +95,7 @@ public class IndexController {
     fun getLicense(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        log.debug("GetLicense '{}' session:{}", model.asMap().get(INDEX_USERNAME), request.requestedSessionId)
+        log.info("GetLicense '{}' session:{}", model.asMap().get(INDEX_USERNAME), request.requestedSessionId)
         return INDEX_LICENSE
     }
 
@@ -109,7 +103,7 @@ public class IndexController {
      *
      * HTML Index
      * <p>
-     * The method getIndex for /
+     * The method getIndex for root /
      *
      * @param pg      {@link Int?}
      * @param request {@link HttpServletRequest}
@@ -129,9 +123,11 @@ public class IndexController {
         model.addAttribute(INDEX_API, BttfApplication::class.java.name.split(".").last())
         model.addAttribute(BttfConst.IMPLEMENTATION_VERSION, statusController.getImplementationVersion())
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        if (dbg.toBoolean()) log.debug(
+        log.info(
             "GetIndex '{}' page:{} session:{}",
-            model.asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId
+            model.asMap().get(INDEX_USERNAME),
+            page.get(),
+            request.requestedSessionId
         )
         return INDEX
     }
@@ -177,37 +173,33 @@ public class IndexController {
         var fil: String
         if (filter == null || filter.length == 0) {
             fil = "0"
-            for (l: LevelCount in ctle) {
+            for (l: LevelCount in ctle)
                 levelString.add(l.level)
-            }
         } else {
             fil = filter
             for (s: String in filter.split("\\+")) {
-                if (arrayOf("DEBUG", "ERROR", "INFO", "WARN").contains(s)) {
+                if (arrayOf("DEBUG", "ERROR", "INFO", "WARN").contains(s))
                     levelString.add(s)
-                } else {
+                else {
                     levelString.clear()
                     break
                 }
             }
             if (levelString.size == 0) {
                 fil = "0"
-                for (l: LevelCount in ctle) {
+                for (l: LevelCount in ctle)
                     levelString.add(l.level)
-                }
             }
         }
         // Up, Down
         val sort: String
         if (srt == null || srt.length == 0 || !arrayOf(
-                "idU", "idD", "mU", "mD", "a0U", "a0D", "a1U", "a1D", "a2U", "a2D", "a3U", "a3D", "cU", "cD",
-                "lU", "lD"
+                "idU", "idD", "mU", "mD", "a0U", "a0D", "a1U", "a1D", "a2U", "a2D", "a3U", "a3D", "cU", "cD", "lU", "lD"
             ).contains(srt)
-        ) {
+        )
             sort = "idD"
-        } else {
+        else
             sort = srt
-        }
         val page: AtomicInteger = getPage(pg, Integer.MAX_VALUE)
         addModel(request, model)
         val order: List<Order> = logSortByParam(sort)
@@ -231,10 +223,7 @@ public class IndexController {
         model.addAttribute(INDEX_LOGS_FILTER, fil)
         setPage(page, max, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        if (dbg.toBoolean()) log.debug(
-            "GetBttfLog '{}' page:{} session:{}",
-            model.asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId
-        )
+        // if (dbg.toBoolean()) log.debug( "GetBttfLog '{}' page:{} session:{}", model.asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId )
         return INDEX_LOG
     }
 
@@ -251,60 +240,46 @@ public class IndexController {
             "idU" -> ret.add(Order.asc("id"))
             "idD" -> ret.add(Order.desc("id"))
             "mU" -> {
-                ret.add(Order.asc("formattedMessage").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("formattedMessage").ignoreCase()); ret.add(Order.asc("id"))
             }
             "mD" -> {
-                ret.add(Order.desc("formattedMessage").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("formattedMessage").ignoreCase()); ret.add(Order.desc("id"))
             }
             "a0U" -> {
-                ret.add(Order.asc("arg0").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg0").ignoreCase()); ret.add(Order.asc("id"))
             }
             "a0D" -> {
-                ret.add(Order.desc("arg0").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg0").ignoreCase()); ret.add(Order.desc("id"))
             }
             "a1U" -> {
-                ret.add(Order.asc("arg1").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg1").ignoreCase()); ret.add(Order.asc("id"))
             }
             "a1D" -> {
-                ret.add(Order.desc("arg1").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg1").ignoreCase()); ret.add(Order.desc("id"))
             }
             "a2U" -> {
-                ret.add(Order.asc("arg2").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg2").ignoreCase()); ret.add(Order.asc("id"))
             }
             "a2D" -> {
-                ret.add(Order.desc("arg2").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg2").ignoreCase()); ret.add(Order.desc("id"))
             }
             "a3U" -> {
-                ret.add(Order.asc("arg3").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg3").ignoreCase()); ret.add(Order.asc("id"))
             }
             "a3D" -> {
-                ret.add(Order.desc("arg3").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg3").ignoreCase()); ret.add(Order.desc("id"))
             }
             "cU" -> {
-                ret.add(Order.asc("callerMethod").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("callerMethod").ignoreCase()); ret.add(Order.asc("id"))
             }
             "cD" -> {
-                ret.add(Order.desc("callerMethod").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("callerMethod").ignoreCase()); ret.add(Order.desc("id"))
             }
             "lU" -> {
-                ret.add(Order.asc("levelString").ignoreCase())
-                ret.add(Order.asc("id"))
+                ret.add(Order.asc("levelString").ignoreCase()); ret.add(Order.asc("id"))
             }
             "lD" -> {
-                ret.add(Order.desc("levelString").ignoreCase())
-                ret.add(Order.desc("id"))
+                ret.add(Order.desc("levelString").ignoreCase()); ret.add(Order.desc("id"))
             }
             else -> ret.add(Order.desc("id"))
         }
@@ -323,9 +298,8 @@ public class IndexController {
         val page = AtomicInteger()
         pg?.let {
             page.set(pg)
-            if (page.get() < 0 || page.get() > max) {
+            if (page.get() < 0 || page.get() > max)
                 page.set(0)
-            }
         } ?: page.set(0)
         return page
     }
@@ -339,16 +313,14 @@ public class IndexController {
      * @param model {@link Model}
      */
     protected fun setPage(page: AtomicInteger, max: Int, model: Model) {
-        if (page.get() > 0) {
+        if (page.get() > 0)
             model.addAttribute(INDEX_PREV, page.get() - 1)
-        } else {
+        else
             model.addAttribute(INDEX_PREV, page.get())
-        }
-        if (page.get() < max) {
+        if (page.get() < max)
             model.addAttribute(INDEX_NEXT, page.get() + 1)
-        } else {
+        else
             model.addAttribute(INDEX_NEXT, page.get())
-        }
     }
 
     /**
@@ -389,9 +361,8 @@ public class IndexController {
                     if (e is InternalServerError) {
                         log.error(e.message + " " + e.stackTrace, e)
                         throw e
-                    } else {
+                    } else
                         log.error(e.message, e)
-                    }
                 }
                 else -> throw e
             }

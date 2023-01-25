@@ -76,9 +76,8 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
      * @return {@link String}
      */
     override protected fun determineTargetUrl(request: HttpServletRequest, response: HttpServletResponse): String {
-        if (isAlwaysUseDefaultTargetUrl()) {
+        if (isAlwaysUseDefaultTargetUrl())
             return getDefaultTargetUrl()
-        }
         var targetUrl: String = ""
         targetUrlParameter?.let {
             targetUrl = request.getParameter(targetUrlParameter)

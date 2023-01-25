@@ -72,9 +72,9 @@ object BttfConst {
 
     /**
      *
-     * USER_ANONYMOUS = "ANONYMOUS"
+     * USER_ANONYMOUS = "anonymous"
      */
-    const val USER_ANONYMOUS: String = "ANONYMOUS"
+    const val USER_ANONYMOUS: String = "anonymous"
 
     /**
      *

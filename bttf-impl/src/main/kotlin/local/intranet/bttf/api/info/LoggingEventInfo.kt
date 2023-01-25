@@ -23,8 +23,16 @@ import java.time.ZonedDateTime
  * @param date             {@link ZonedDateTime}
  */
 data class LoggingEventInfo(
-    val id: Long, val formattedMessage: String, val levelString: String, val callerClass: String,
-    val callerMethod: String, val arg0: String, val arg1: String, val arg2: String, val arg3: String, val date: ZonedDateTime
+    val id: Long,
+    val formattedMessage: String,
+    val levelString: String,
+    val callerClass: String,
+    val callerMethod: String,
+    val arg0: String,
+    val arg1: String,
+    val arg2: String,
+    val arg3: String,
+    val date: ZonedDateTime
 ) {
 
     /**

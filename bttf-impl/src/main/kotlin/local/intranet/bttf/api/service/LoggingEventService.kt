@@ -41,11 +41,9 @@ public class LoggingEventService {
 
     private val log = LoggerFactory.getLogger(LoggingEventService::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
-    @Autowired
-    private lateinit var loggingEventRepository: LoggingEventRepository
+    @Autowired private lateinit var loggingEventRepository: LoggingEventRepository
 
     /**
      *
@@ -81,9 +79,8 @@ public class LoggingEventService {
         try {
             val pa: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, levelString)
             val list = mutableListOf<LoggingEventInfo>()
-            for (l: LoggingEvent in pa) {
+            for (l: LoggingEvent in pa)
                 list.add(makeLoggingEventInfo(l))
-            }
             val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
 
             if (dbg.toBoolean()) log.debug("{}", ret)
@@ -117,16 +114,14 @@ public class LoggingEventService {
         try {
             var s: String = sort.toString()
             var direction: Direction = Direction.ASC
-            if (s.contains(Direction.DESC.toString())) {
+            if (s.contains(Direction.DESC.toString()))
                 direction = Direction.DESC
-            }
             s = s.replace(Direction.ASC.toString(), "").replace(Direction.DESC.toString(), "").replace(":", "").trim()
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
             val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
             val list = mutableListOf<LoggingEventInfo>()
-            for (l: LoggingEvent in pa) {
+            for (l: LoggingEvent in pa)
                 list.add(makeLoggingEventInfo(l))
-            }
 
             val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
             if (dbg.toBoolean()) log.debug("{}", ret)
@@ -159,8 +154,7 @@ public class LoggingEventService {
             if (s.size > 0) s.last() else "",
             loggingEvent.callerMethod,
             arg0, arg1, arg2, arg3,
-            ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault())
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault())
         )
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret

@@ -7,6 +7,7 @@
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (1, 'adminRole', true);
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (2, 'managerRole', true);
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (3, 'userRole', true);
+INSERT INTO bttf_role (id, role_name, enabled) VALUES (4, 'anonymousRole', true);
 
 
 ----- TABLE bttf_user -----
@@ -26,6 +27,10 @@ INSERT INTO bttf_user
     VALUES (3, 'user',
     '243261243034244358565237544c4f3853754a6f695552384d386f572e5259693672486c6b6b4b36724163542e624c4b44716878365a735a306a6d75',
     true, true, true, true);
+INSERT INTO bttf_user
+  (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
+    VALUES (4, 'anonymous', '2432612431322447716c563344787354376f75464934724c6478586f75314b34553076664d72612e526466764f476557324c69554e5936566d504b65',
+    true, true, true, true);
 
     
 ----- TABLE bttf_user_role -----
@@ -41,6 +46,7 @@ INSERT INTO bttf_user
 -- INSERT INTO bttf_user_role (user_id, role_id) VALUES (2, 2);
 -- INSERT INTO bttf_user_role (user_id, role_id) VALUES (2, 3);
 -- INSERT INTO bttf_user_role (user_id, role_id) VALUES (3, 3);
+-- INSERT INTO bttf_user_role (user_id, role_id) VALUES (4, 4);
 
     
 -- For H2, Postgresql, MariaDB (MySQL)
@@ -71,4 +77,8 @@ INSERT INTO bttf_user_role (user_id, role_id) (
     SELECT id user_id, (SELECT id FROM bttf_role
     WHERE role_name='userRole') role_id
     FROM bttf_user WHERE user_name='user');
+INSERT INTO bttf_user_role (user_id, role_id) (
+    SELECT id user_id, (SELECT id FROM bttf_role
+    WHERE role_name='anonymousRole') role_id
+    FROM bttf_user WHERE user_name='anonymous');
    

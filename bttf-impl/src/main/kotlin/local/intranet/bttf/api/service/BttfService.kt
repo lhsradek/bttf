@@ -58,7 +58,7 @@ public class BttfService {
         @Throws(BttfException::class)
         fun secForPlayer(id: Long, secretKey: SecretKey, iv: IvParameterSpec): String {
             try {
-                val ret: String = AESUtil.setHex(AESUtil.encrypt("$id", secretKey, iv));
+                val ret: String = AESUtil.setHex(AESUtil.encrypt("$id", secretKey, iv))
                 return ret;
             } catch (e: Exception) {
                 when (e) {
@@ -69,8 +69,8 @@ public class BttfService {
                     is BadPaddingException,
                     is IllegalBlockSizeException -> {
                         e.message?.let {
-                        	throw BttfException(e.message!!, e)
-                        } ?: throw e
+                            throw BttfException(e.message!!, e)
+                        }?: throw e
                     }
                     else -> throw e
                 }

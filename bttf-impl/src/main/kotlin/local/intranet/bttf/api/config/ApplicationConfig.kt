@@ -1,7 +1,15 @@
 package local.intranet.bttf.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+
+import java.util.TimeZone
+
+import javax.servlet.ServletContext
+import javax.servlet.SessionTrackingMode
+import javax.sql.DataSource
+
 import org.slf4j.LoggerFactory
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -17,12 +25,6 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 import org.springframework.web.WebApplicationInitializer
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler
-
-import java.util.TimeZone
-
-import javax.servlet.ServletContext
-import javax.servlet.SessionTrackingMode
-import javax.sql.DataSource
 
 /**
  *
