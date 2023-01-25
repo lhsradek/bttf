@@ -1,43 +1,20 @@
 package local.intranet.bttf.api.service
 
+import local.intranet.bttf.api.controller.StatusController
+import local.intranet.bttf.api.exception.BttfException
+import local.intranet.bttf.api.security.AESUtil
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import java.security.InvalidAlgorithmParameterException
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.Collections
-import java.util.Date
-import java.util.HashSet
-import java.util.Optional
-import java.util.stream.Collectors
-
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
-import javax.validation.constraints.NotNull
-
-import org.apache.commons.lang3.StringUtils
-import org.hibernate.envers.AuditReader
-import org.hibernate.envers.RevisionType
-import org.hibernate.envers.query.AuditEntity
-import org.hibernate.envers.query.AuditQuery
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-
-import local.intranet.bttf.api.controller.StatusController
-import local.intranet.bttf.api.exception.BttfException
-import local.intranet.bttf.api.security.AESUtil
 
 /**
  *
