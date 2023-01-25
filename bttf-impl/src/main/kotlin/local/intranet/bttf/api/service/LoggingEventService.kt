@@ -1,26 +1,22 @@
 package local.intranet.bttf.api.service
 
-import java.util.Date
-
-import javax.validation.constraints.NotNull
-
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Direction
-import org.springframework.data.jpa.domain.JpaSort
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.model.entity.LoggingEvent
 import local.intranet.bttf.api.model.repository.LoggingEventRepository
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.*
+import org.springframework.data.domain.Sort.Direction
+import org.springframework.data.jpa.domain.JpaSort
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import javax.validation.constraints.NotNull
+
 
 /**
  *
@@ -68,7 +64,7 @@ public class LoggingEventService {
      * {@link local.intranet.bttf.api.model.repository.LoggingEventRepository#findPageByLevelString}
      *
      * @param pageable    {@link Pageable}
-     * @param levelString {@link List}&lt;{@link String}&gt;
+     * @param levelString {@link List}&lt;{@link String}&gt; Filter must be or empty result!
      *
      * @return {@link Page}&lt;{@link LoggingEventInfo}&gt;
      */
@@ -99,8 +95,8 @@ public class LoggingEventService {
      * Used
      * {@link local.intranet.bttf.api.model.repository.LoggingEventRepository#findPageByCaller}
      *
-     * @param pageable     int
-     * @param cnt          int
+     * @param pageable     {@link Int}
+     * @param cnt          {@link Int}
      * @param sort         {@link Sort}
      * @param callerClass  {@link List}&lt;{@link String}&gt;
      * @param callerMethod {@link List}&lt;{@link String}&gt;
@@ -117,8 +113,7 @@ public class LoggingEventService {
             if (s.contains(Direction.DESC.toString())) {
                 direction = Direction.DESC
             }
-            s = s.replace(Direction.ASC.toString(), "").replace(Direction.DESC.toString(), "").replace(":", "")
-            s = s.trim()
+            s = s.replace(Direction.ASC.toString(), "").replace(Direction.DESC.toString(), "").replace(":", "").trim()
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
             val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
             val list = mutableListOf<LoggingEventInfo>()
@@ -151,9 +146,14 @@ public class LoggingEventService {
         val arg3: String = loggingEvent.arg3?.let { loggingEvent.arg3 } ?: "[NULL]"
         // if (dbg.toBoolean()) logger.debug("arg0:{} arg1:{} arg2:{} arg3:{}", arg0, arg1, arg2, arg3)
         val ret: LoggingEventInfo = LoggingEventInfo(
-            loggingEvent.id?.let { loggingEvent.id } ?: 0L, loggingEvent.formattedMessage,
-            loggingEvent.levelString, if (s.size > 0) s.last() else "", loggingEvent.callerMethod,
-            arg0, arg1, arg2, arg3, Date(loggingEvent.timestmp)
+            loggingEvent.id?.let { loggingEvent.id } ?: 0L,
+            loggingEvent.formattedMessage,
+            loggingEvent.levelString,
+            if (s.size > 0) s.last() else "",
+            loggingEvent.callerMethod,
+            arg0, arg1, arg2, arg3,
+            ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault())
         )
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret

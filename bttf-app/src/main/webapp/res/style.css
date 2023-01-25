@@ -1,3 +1,15 @@
+/* Tablet Landscape */
+@media screen and (max-width: 1060px) {
+    #primary { width:67%; }
+    #secondary { width:30%; margin-left:3%;}
+}
+
+/* Tabled Portrait */
+@media screen and (max-width: 768px) {
+    #primary { width:100%; }
+    #secondary { width:100%; margin:0; border:none; }
+}
+
 body {
   background-color: #fff;
   color: #000;
@@ -38,7 +50,7 @@ hr {
   display: none;
 }
 code {
-  font-size: 0.95em;
+  font-size: 0.7em;
 }
 .content {
   padding: 2em 3.5em;
@@ -74,7 +86,120 @@ img {
   margin: 0px;
 }
 a:hover img {
-  border: 2px solid #f50;
+  border: 2px solid #0b2335;
+}
+.input {
+  color: #c00;
+  background-color: inherit;
+  border: none;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  height: auto;
+  width: auto;
+  font-size: 1em;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.input:hover {
+  color: #22437f;
+}
+.login {
+  font-family: Courier New; font-size: 0.8em;
+}
+.decorationoff {
+  text-decoration: none;
+}
+.wrapon {
+  word-break: break-all;
+}
+.disabled {
+  color: #999;
+}
+.data {
+  color: #22437f;
+}
+.data-table {
+  border: 2px solid #008dd0;
+  border-collapse: collapse;
+  word-break: break-all;
+}
+.data-table .win { 
+  background-color: #f0ffff;
+}                   
+.data-table .info { 
+  background-color: #fefffe;
+}                   
+.data-table .debug {
+  background-color: #ffd;
+}
+.data-table .warn { 
+  background-color: #fee;
+}
+.data-table .error {      
+  background-color: #fbb;
+}                     
+.data-table .borderoff {
+  border: none;
+}
+.data-table .decorationoff {
+  color: #fff;
+}
+.data-table .decorationoff:hover {
+  text-decoration: underline;
+}
+.data-table .decorationblack {
+  color: #000;
+  text-decoration: none;
+}
+.data-table .decorationblack:hover {
+  color: #22437f;
+  text-decoration: underline;
+}
+.data-table .left {
+  text-align: left;
+}
+.data-table .right {
+  text-align: right;
+}
+.data-table .center {
+  text-align: center;
+}
+.data-table .highlight {
+  border: 2px solid #008dd0;
+}
+.data-table .nowrap {
+  word-break: normal;
+}
+.data-table .input {
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #777;
+  border-radius: 3px;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+.data-table .input:hover {
+  background-color: #b4d5ff;
+  border: 1px solid #000;
+}
+.data-table th {
+  padding: 2px 2px;
+  color: #fff;
+  background-color: #000;
+  border: 1px solid #222;
+  word-break: normal;
+}
+.data-table td {
+  text-align: left;
+  padding: 2px 2px;
+  border: 1px solid #dadada;
+  word-break: break-all;
 }
 .data-table smaller {
   font-size: 0.6em;

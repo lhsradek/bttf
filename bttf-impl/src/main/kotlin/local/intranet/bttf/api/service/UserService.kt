@@ -117,8 +117,7 @@ class UserService : UserDetailsService {
         // if (dbg.toBoolean()) logger.debug("{}", user)
 
         user?.let {
-            if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired && user.enabled
-            ) {
+            if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired && user.enabled) {
                 val authorities = mutableListOf<GrantedAuthority>()
                 user.role.forEach {
                     authorities.add(SimpleGrantedAuthority(BttfConst.ROLE_PREFIX + it.roleName))
@@ -136,7 +135,10 @@ class UserService : UserDetailsService {
                 }
                 throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
-        } ?: throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
+        } ?: run {
+        	if (dbg.toBoolean()) log.debug("username:'{}' {}", username, BttfConst.ERROR_USERNAME_NOT_FOUND)
+            throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
+        }
     }
 
     /**
@@ -155,7 +157,7 @@ class UserService : UserDetailsService {
             }
             ret = auth.getName()
         }
-        if (dbg.toBoolean()) log.debug("'{}'", ret)
+        // if (dbg.toBoolean()) log.debug("'{}'", ret)
         return ret
     }
 
@@ -168,7 +170,7 @@ class UserService : UserDetailsService {
     fun isAuthenticated(): Boolean {
         val list = getAuthoritiesRoles()
         val ret: Boolean = if (list.size > 0 && !list.first().equals(BttfConst.USER_ANONYMOUS)) true else false
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -192,7 +194,7 @@ class UserService : UserDetailsService {
         if (ret.size == 0) {
             ret.add(RoleType.ANONYMOUS_ROLE.toString())
         }
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -218,7 +220,7 @@ class UserService : UserDetailsService {
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))
             }
         }
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 

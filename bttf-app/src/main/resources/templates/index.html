@@ -26,14 +26,13 @@
           <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:target="'_blank'" th:text="'Swagger'"/></small>
         </span></h5>
         <div th:align="'center'">
-        <p>
-        <img th:src="@{/res/Back-to-the-future-logo.svg}" th:width="'500px'" th:height="'222px'" th:class="'borderoff'"/>
-        </p>
-        <p><span>
-        <th:block th:utext="'&quot;Programming described the three programmer\'s virtues: hubris, laziness, and impatience.&quot;'"/>
-        <i th:text="'Larry Wall'"/>
-        </span>
-        </p>
+          <p>
+          <img th:src="@{/res/Back-to-the-future-logo.svg}" th:width="'500px'" th:height="'222px'" th:class="'borderoff'"/>
+          </p>
+          <h4><span>
+          <q><th:block th:utext="'Programming described the three programmer\'s virtues: hubris, laziness, and impatience.'"/></q>
+          <small><i th:text="'Larry Wall'"/></small>
+          </span></h4>
         </div>
       </div>
     </div>

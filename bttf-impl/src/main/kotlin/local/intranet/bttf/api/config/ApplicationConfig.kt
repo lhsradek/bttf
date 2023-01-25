@@ -1,11 +1,5 @@
 package local.intranet.bttf.api.config
 
-import java.util.Collections
-import java.util.EnumSet
-import java.util.TimeZone
-
-import javax.servlet.SessionTrackingMode
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +17,11 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 import org.springframework.web.WebApplicationInitializer
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler
+
+import java.util.TimeZone
+
 import javax.servlet.ServletContext
+import javax.servlet.SessionTrackingMode
 import javax.sql.DataSource
 
 /**
@@ -103,7 +101,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     @Bean
     fun sessionEventPublisher(): HttpSessionEventPublisher {
         val ret = HttpSessionEventPublisher()
-        servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE))
+        servletContext.setSessionTrackingModes(mutableSetOf(SessionTrackingMode.COOKIE))
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
@@ -124,7 +122,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     fun faviconHandlerMapping(): SimpleUrlHandlerMapping {
         val ret = SimpleUrlHandlerMapping()
         ret.setOrder(Int.MIN_VALUE)
-        ret.setUrlMap(Collections.singletonMap("/favicon.*", faviconRequestHandler()))
+        ret.setUrlMap(mapOf("/favicon.*" to faviconRequestHandler()))
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

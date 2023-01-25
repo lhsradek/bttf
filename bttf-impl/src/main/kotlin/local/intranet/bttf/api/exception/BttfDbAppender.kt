@@ -82,7 +82,7 @@ public class BttfDbAppender : DBAppender() {
     }
 
     fun fixMessage(message: String): String {
-        val maxLength: Int = 240 // Only 240 because prefix is added lately
+        val maxLength: Int = 240
         var ret: String = message
         if (message.contains("\u0000") || message.contains("\\x00") || message.length >= maxLength) {
             ret = message.replace("\u0000", "").replace("\\x00", "")

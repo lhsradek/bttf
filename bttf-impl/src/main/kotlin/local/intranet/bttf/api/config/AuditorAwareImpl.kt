@@ -27,7 +27,7 @@ class AuditorAwareImpl : AuditorAware<String> {
      */
     override fun getCurrentAuditor(): Optional<String> {
         val ret: Optional<String>
-        val authentication = SecurityContextHolder.getContext().getAuthentication()
+        val authentication = SecurityContextHolder.getContext().authentication
         if (authentication.isAuthenticated()) {
             ret = Optional.ofNullable(authentication.principal as String)
         } else {

@@ -1,6 +1,6 @@
 package local.intranet.bttf.api.info
 
-import java.util.Date
+import java.time.ZonedDateTime
 
 /**
  *
@@ -20,11 +20,11 @@ import java.util.Date
  * @param arg1             {@link String}
  * @param arg2             {@link String}
  * @param arg3             {@link String}
- * @param date             {@link Date}
+ * @param date             {@link ZonedDateTime}
  */
 data class LoggingEventInfo(
     val id: Long, val formattedMessage: String, val levelString: String, val callerClass: String,
-    val callerMethod: String, val arg0: String, val arg1: String, val arg2: String, val arg3: String, val date: Date
+    val callerMethod: String, val arg0: String, val arg1: String, val arg2: String, val arg3: String, val date: ZonedDateTime
 ) {
 
     /**

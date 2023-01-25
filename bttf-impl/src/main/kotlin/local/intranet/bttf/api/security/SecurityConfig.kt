@@ -12,10 +12,16 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
@@ -39,13 +45,12 @@ import org.springframework.web.filter.CorsFilter
 @EnableAutoConfiguration
 // @EnableWebSecurity
 // @EnableGlobalMethodSecurity(
-//     // securedEnabled = true,
-//     // jsr250Enabled = true,
-//     prePostEnabled = true
+//    // securedEnabled = true,
+//    // jsr250Enabled = true,
+//    prePostEnabled = true
 // )
 // class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 class SecurityConfig : WebSecurityConfigurerAdapter() {
-
     private val log = LoggerFactory.getLogger(SecurityConfig::class.java)
 
     @Value("\${bttf.app.debug:false}")
@@ -139,14 +144,12 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
-            //    .authorizeRequests{ authorizeRequests -> {
-            //    permitAll.filter { it -> it.length > 0 }.forEach{ key -> {
-            //		authorizeRequests.antMatchers(key).permitAll();
-            //	}}
-            //	authenticated.filter { it -> it.length > 0 }.forEach{ key -> {
-            //		authorizeRequests.antMatchers(key).authenticated();
-            //	}}
-            // }}
+            // .authorizeRequests { authorizeRequests ->
+            //    permitAll.filter { it -> it.length > 0 }
+            //        .forEach { key -> authorizeRequests.antMatchers(key).permitAll() }
+            //    authenticated.filter { it -> it.length > 0 }
+            //        .forEach { key -> authorizeRequests.antMatchers(key).authenticated() }
+            // }
             .headers()
             .xssProtection()
             .and()
@@ -162,9 +165,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             // .and().exceptionHandling().accessDeniedPage("/login?error=403")
             .and()
             .logout().logoutSuccessHandler(userService.logoutSuccess())
-            // .logoutRequestMatcher(AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
+            .logoutRequestMatcher(AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
             .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
-            // .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
+            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
             .maximumSessions(1);
     }
 

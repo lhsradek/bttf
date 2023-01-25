@@ -163,7 +163,7 @@ class AESUtil {
             val factory: SecretKeyFactory = SecretKeyFactory
                 .getInstance(AESUTIL_PBKDF2_WITH_HMAC_SHA256)
             val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt.toByteArray(), 65536, 256)
-            val ret: SecretKey = SecretKeySpec(factory.generateSecret(spec).getEncoded(), AESUTIL_AES)
+            val ret: SecretKey = SecretKeySpec(factory.generateSecret(spec).encoded, AESUTIL_AES)
             return ret;
         }
 

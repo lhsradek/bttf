@@ -3,14 +3,18 @@ package local.intranet.bttf.test
 import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.security.AESUtil
+import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Order
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.test.context.junit4.SpringRunner
 
@@ -34,6 +38,9 @@ class bttfTest {
     @Autowired
     private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var loggingEventService: LoggingEventService
+    
     /**
      *
      * givenTest
@@ -41,6 +48,26 @@ class bttfTest {
      */
     @Test
     fun givenTest() {
+        assertThat(statusController).isNotNull
+        assertThat(statusController.getPlainStatus()).isNotBlank
+        assertThat(statusController.getImplementationVersion()).isNotBlank
+        assertThat(statusController.getStage()).isNotBlank
+        assertThat(statusController.getActiveProfiles()).isNotBlank
+        assertThat(statusController.getServerSoftware()).isNotBlank
+
+        assertThat(infoController).isNotNull
+
+        assertThat(userService.getUsername()).isNotNull
+        assertThat(userService.isAuthenticated()).isNotNull
+        assertThat(userService.getAuthoritiesRoles()).isNotEmpty
+        assertThat(userService.getUserRoles().count() > 0)
+        assertThat(userService.loadUserByUsername("lhs")).isNotNull
+        assertThrows<UsernameNotFoundException> {userService.loadUserByUsername("coco")}
+
+        assertThat(loggingEventService.findPageByLevelString(
+            PageRequest.of(0, 10, Sort.by(listOf(Order.desc("id")))), listOf("DEBUG"))).isNotEmpty
+        assertThat(loggingEventService.countTotalLoggingEvents()).isNotNull
+        
         // a bit of Dadaism
         assertEquals(
             "We have a stuffed grandfather in the closet.",
@@ -60,25 +87,6 @@ class bttfTest {
             "4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521",
             AESUtil.setHex("My cork badtub is like your giraffe rye!")
         )
-
-        assertThat(statusController).isNotNull
-        assertThat(statusController.getPlainStatus()).isNotBlank
-        assertThat(statusController.getImplementationVersion()).isNotBlank
-        assertThat(statusController.getStage()).isNotBlank
-        assertThat(statusController.getActiveProfiles()).isNotBlank
-        assertThat(statusController.getServerSoftware()).isNotBlank
-
-        assertThat(infoController).isNotNull
-
-        assertThat(userService).isNotNull
-        assertThat(userService.getUsername()).isNotNull
-        assertThat(userService.isAuthenticated()).isNotNull
-        assertThat(userService.getAuthoritiesRoles()).isNotEmpty
-        assertThat(userService.getUserRoles().count() > 0)
-        assertThat(userService.loadUserByUsername("lhs")).isNotNull
-        assertThrows<UsernameNotFoundException> {
-            userService.loadUserByUsername("coco")
-        }
 
     }
 

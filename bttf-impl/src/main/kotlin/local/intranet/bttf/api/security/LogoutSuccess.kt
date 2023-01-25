@@ -36,17 +36,15 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
      * {@link local.intranet.bttf.api.controller.IndexController#signin}
      */
     override fun onLogoutSuccess(
-        request: HttpServletRequest, response: HttpServletResponse,
-        authentication: Authentication
-    ) {
+        request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
         // auditService.track("Logout from: " + refererUrl)
         try {
             val id: String = request.getSession().getId()
             val refererUrl: String = request.getHeader("Referer")
-            if (request.getCookies() != null) {
-                for (cookie in request.getCookies()) {
+            if (request.cookies != null) {
+                for (cookie in request.cookies) {
                     cookie?.let {
-                        val cookieName: String = cookie.getName()
+                        val cookieName: String = cookie.name
                         val cookieToDelete: Cookie = Cookie(cookieName, null)
                         cookieToDelete.setMaxAge(0)
                         response.addCookie(cookieToDelete)
