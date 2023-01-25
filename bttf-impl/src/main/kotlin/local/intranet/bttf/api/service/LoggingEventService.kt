@@ -4,6 +4,13 @@ import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.model.entity.LoggingEvent
 import local.intranet.bttf.api.model.repository.LoggingEventRepository
+
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+
+import javax.validation.constraints.NotNull
+
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -11,15 +18,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Order
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.jpa.domain.JpaSort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import javax.validation.constraints.NotNull
 import org.springframework.data.domain.PageImpl
 
 
@@ -160,7 +162,7 @@ public class LoggingEventService {
             ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault())
         )
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
