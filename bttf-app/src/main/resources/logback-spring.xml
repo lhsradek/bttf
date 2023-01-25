@@ -187,6 +187,49 @@
 		<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="WARN" />
 	</springProfile>
 
+	<springProfile name="docker">
+		<springProperty
+			name="spring.datasource.driver-class-name"
+			source="spring.datasource.driver-class-name" />
+		<springProperty name="spring.datasource.url"
+			source="spring.datasource.url" />
+		<springProperty name="spring.datasource.username"
+			source="spring.datasource.username" />
+		<springProperty name="spring.datasource.password"
+			source="spring.datasource.password" />
+
+		<appender name="DB"
+			class="local.intranet.bttf.api.exception.BttfDbAppender">
+			<connectionSource
+				class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+				<driverClass>${spring.datasource.driver-class-name}</driverClass>
+				<url>${spring.datasource.url}</url>
+				<user>${spring.datasource.username}</user>
+				<password>${spring.datasource.password}</password>
+			</connectionSource>
+		</appender>
+
+		<appender name="DB_ASYNC"
+			class="ch.qos.logback.classic.AsyncAppender">
+			<appender-ref ref="DB" />
+			<includeCallerData>true</includeCallerData>
+		</appender>
+
+		<logger name="local.intranet" level="DEBUG">
+			<appender-ref ref="DB_ASYNC" />
+		</logger>
+		<logger name="org.springframework.web" level="WARN">
+			<appender-ref ref="DB_ASYNC" />
+		</logger>
+		
+		<logger name="org.springframework.web" level="WARN" />
+		<logger name="org.springframework.security.web" level="WARN" />
+        <logger name="org.springframework.session" level="WARN" />
+		<logger name="org.quartz" level="WARN" />
+		<logger name="org.hibernate.SQL" level="WARN" />
+		<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="WARN" />
+	</springProfile>
+
 	<springProfile name="production-mariadb">
         <springProperty
             name="spring.secondaryDatasource.driver-class-name"

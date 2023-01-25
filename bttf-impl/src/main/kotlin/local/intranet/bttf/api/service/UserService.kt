@@ -44,14 +44,10 @@ class UserService : UserDetailsService {
 
     private val log = LoggerFactory.getLogger(UserService::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var httpSession: HttpSession
+    @Autowired private lateinit var userRepository: UserRepository
+    @Autowired private lateinit var httpSession: HttpSession
 
     private val USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL: Int = 3600
 

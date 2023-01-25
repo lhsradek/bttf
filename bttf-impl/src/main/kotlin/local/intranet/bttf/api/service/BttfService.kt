@@ -28,17 +28,11 @@ public class BttfService {
 
     private val log = LoggerFactory.getLogger(BttfService::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.sec.key}") private lateinit var key: String
 
-    @Value("\${bttf.sec.key}")
-    private lateinit var key: String
-
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var statusController: StatusController
+    @Autowired private lateinit var userService: UserService
+    @Autowired private lateinit var statusController: StatusController
 
     companion object {
 

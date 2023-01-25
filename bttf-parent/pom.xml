@@ -346,6 +346,7 @@
             </plugin>
         </plugins>
     </build>
+    
     <profiles>
         <profile>
             <id>default</id>
@@ -367,6 +368,7 @@
                 <spring.profiles.active>default</spring.profiles.active>
             </properties>
         </profile>
+        
         <profile>
             <id>dev-postgres</id>
             <properties>
@@ -384,6 +386,7 @@
                 </dependency>
             </dependencies>
         </profile>
+        
         <profile>
             <id>dev-mariadb</id>
             <properties>
@@ -408,6 +411,7 @@
                 </dependency>
             </dependencies>
         </profile>
+        
         <profile>
             <id>test-postgres</id>
             <properties>
@@ -417,10 +421,6 @@
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
                 </dependency>
             </dependencies>
         </profile>
@@ -434,12 +434,9 @@
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                 </dependency>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
             </dependencies>
         </profile>
+        
         <profile>
             <id>production-mariadb</id>
             <properties>

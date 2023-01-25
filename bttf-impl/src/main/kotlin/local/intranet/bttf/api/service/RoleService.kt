@@ -24,11 +24,9 @@ class RoleService {
 
     private val log = LoggerFactory.getLogger(RoleService::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
-    @Autowired
-    private lateinit var roleRepository: RoleRepository
+    @Autowired private lateinit var roleRepository: RoleRepository
 
     @Transactional(readOnly = true)
     fun getRoleInfo(): RoleInfo {

@@ -50,5 +50,5 @@
                 </resources>
             </build>
         </profile>
-    </profiles>
+     </profiles>
 </project>
