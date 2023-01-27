@@ -30,10 +30,9 @@ public class BttfDbAppender : DBAppender() {
         fixFormattedMessage(eventObject)
         while (eventObject.throwableProxy != null) {
             val throwableProxy: IThrowableProxy? = eventObject.throwableProxy
-            throwableProxy?.let {
-                fixMessage(throwableProxy)
-                throwableProxy.cause
-            } ?: break
+            if (throwableProxy == null) break
+            fixMessage(throwableProxy)
+            throwableProxy.cause
         }
         super.doAppend(eventObject)
     }

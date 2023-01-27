@@ -18,23 +18,21 @@
           <small th:utext="${serverSoftware} + ' - \'' + ${activeProfiles} + '\''"/>
         </span></h2>
         <h5><span>
-          <a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/>
-          <th:block th:utext="${bttfApi} + ' ' + ${implementationVersion}"/>
-          <small th:text="' (Spring Boot ' + ${springBootVersion} + ', Spring ' + ${springVersion} + ') with '"/>
-          <small><a th:href="@{/license}" th:text="'The MIT License'"/></small><!--/*
+          <a th:if="${!isAuthenticated}" th:href="@{/login}" th:text="'Log in'"/><a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/>
+          <small th:utext="${bttfApi} + ' ' + ${implementationVersion}"/><!--/*<small th:text="' (Spring Boot ' + ${springBootVersion} + ', Spring ' + ${springVersion} + ') with '"/>*/-->
+          <small th:text="' with '"/>
+          <small><a th:href="@{/license}" th:text="'The MIT License'"/></small>
           <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
-          <small th:if="${userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small> */-->
-          <small><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
-          <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
+          <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <div th:align="'center'">
           <p>
           <img th:src="@{/res/Back-to-the-future-logo.svg}" th:width="'500px'" th:height="'222px'" th:class="'borderoff'"/>
           </p>
-          <h4><span>
+          <h5><span>
           <q><th:block th:utext="'Programming described the three programmer\'s virtues: hubris, laziness, and impatience.'"/></q>
           <small><i th:text="'Larry Wall'"/></small>
-          </span></h4>
+          </span></h5>
         </div>
       </div>
     </div>

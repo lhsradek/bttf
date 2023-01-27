@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import org.springframework.web.WebApplicationInitializer
 
 /**
@@ -38,14 +38,12 @@ import org.springframework.web.WebApplicationInitializer
  *
  */
 @SpringBootApplication
-@EnableJpaRepositories
 @EnableAutoConfiguration
-@EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *")
+@EnableJpaRepositories
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *", redisNamespace = "spring:session:bttf")
 class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {
 
     private val log = LoggerFactory.getLogger(BttfApplication::class.java)
-
-    private val ENTERING_APPLICATION = "Entering application."
 
     /**
      *
@@ -64,13 +62,12 @@ class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer(
      * @return the application builder
      */
     override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
-        log.info(ENTERING_APPLICATION)
-        val ret = builder.sources(BttfApplication::class.java)
+        log.info("Entering application.")
         builder.bannerMode(Banner.Mode.OFF)
-        return ret
+        return builder.sources(BttfApplication::class.java)
     }
 
 }
 
-// import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
-// @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *", redisNamespace = "spring:session:bttf")
+// @EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *")
+// import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession

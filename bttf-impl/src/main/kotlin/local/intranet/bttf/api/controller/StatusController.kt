@@ -11,13 +11,13 @@ import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.domain.BttfConst
 
 import org.slf4j.LoggerFactory
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.ApplicationContext
 import org.springframework.core.env.Environment
 import org.springframework.http.MediaType
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -60,16 +60,13 @@ class StatusController {
     @Operation(
         operationId = "getPlainStatus",
         summary = "Get Plain Status",
-        description = "Get OK if BTTF API is running\n\n" +
-                "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getPlainStatus()\" " +
-                "target=\"_blank\">StatusController.getPlainStatus</a>",
+        description = "Get OK if BTTF API is running\n\n",
+                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getPlainStatus()\" "
+                // + "target=\"_blank\">StatusController.getPlainStatus</a>",
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
-    @PreAuthorize("permitAll()")
     fun getPlainStatus(): String {
-        val ret: String = BttfConst.STATUS_OK
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return "OK"
     }
 
     /**
@@ -82,10 +79,9 @@ class StatusController {
         // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
         // val keyFirstElement: String = list.keys.first()
         // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
-        // val ret: String = Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse(BttfConst.STATUS_UNKNOWN)
-        val ret: String = Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion)
-            .orElse(BttfConst.STATUS_UNKNOWN)
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // val ret: String = Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse("unknown")
+        val ret = Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse("unknown")
+        // log.debug(ret)
         return ret
     }
 
@@ -96,9 +92,7 @@ class StatusController {
      * @return ${bttf.app.stage}
      */
     fun getStage(): String {
-        val ret: String = stage
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return stage
     }
 
     /**
@@ -108,9 +102,7 @@ class StatusController {
      * @return environment.getActiveProfiles()
      */
     fun getActiveProfiles(): String {
-        val ret: String = environment.getActiveProfiles().joinToString(separator = " ")
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return environment.getActiveProfiles().joinToString(separator = " ")
     }
 
     /**
@@ -120,9 +112,7 @@ class StatusController {
      * @return serverName (The second word) from {@link #getVirtualServerName()}
      */
     fun getServerName(): String {
-        val ret: String = getVirtualServerName().split("/").last()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return getVirtualServerName().split("/").last()
     }
 
     /**
@@ -133,9 +123,7 @@ class StatusController {
      *         {@link #getServerInfo()}
      */
     fun getServerSoftware(): String {
-        val ret = getServerInfo().split("/").first()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return getServerInfo().split("/").first()
     }
 
     /**
@@ -145,9 +133,7 @@ class StatusController {
      * @return getVirtualServerName()
      */
     protected fun getVirtualServerName(): String {
-        val ret: String = servletContext.getVirtualServerName()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return servletContext.getVirtualServerName()
     }
 
     /**
@@ -157,9 +143,7 @@ class StatusController {
      * @return servletContext.getServerInfo()
      */
     protected fun getServerInfo(): String {
-        val ret: String = servletContext.getServerInfo()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return servletContext.getServerInfo()
     }
 
 }

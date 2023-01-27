@@ -16,14 +16,14 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths;
  *
  * Constructor with parameters
  *
- * @param id       {@link Long?}
+ * @param id       {@link Long}
  * @param roleName {@link String}
  * @param enabled  {@link Boolean}
  * @param users    {@link List}&lt;{@link String}&gt;
  *
  */
 @JsonPropertyOrder("id", "roleName", "enabled", "users")
-data class RolePlain(
+data class RolePlain constructor(
     val id: Long?,
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     val roleName: String,

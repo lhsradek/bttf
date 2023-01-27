@@ -43,23 +43,18 @@ import org.springframework.web.filter.CorsFilter
  */
 @Configuration
 @EnableAutoConfiguration
-// @EnableWebSecurity
-// @EnableGlobalMethodSecurity(
-//    // securedEnabled = true,
-//    // jsr250Enabled = true,
-//    prePostEnabled = true
-// )
-// class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
-class SecurityConfig : WebSecurityConfigurerAdapter() {
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(
+    securedEnabled = true,
+    // jsr250Enabled = true,
+    prePostEnabled = true
+)
+class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 
-    @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
-    private lateinit var authenticated: List<String>
+    @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}") private lateinit var authenticated: List<String>
+    @Value("#{'\${bttf.app.permitAll}'.split('\\s{1,}')}") private lateinit var permitAll: List<String>
 
-    @Value("#{'\${bttf.app.permitAll}'.split('\\s{1,}')}")
-    private lateinit var permitAll: List<String>
-
-    @Autowired
-    private lateinit var userService: UserService
+    @Autowired private lateinit var userService: UserService
 
     /**
      *
@@ -76,8 +71,8 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
         config.addAllowedHeader("*")
         config.addAllowedMethod("*")
         source.registerCorsConfiguration("/**", config)
-        val ret: CorsFilter = CorsFilter(source)
-        return ret;
+        val ret = CorsFilter(source)
+        return ret
     }
 
     /**
@@ -90,15 +85,15 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
      * @throws {@link BttfException}
      */
     @Bean
-    @Throws(BttfException::class, AccountExpiredException::class)
+    @Throws(BttfException::class)
     override fun authenticationManagerBean(): AuthenticationManager {
         try {
             val ret: AuthenticationManager = super.authenticationManagerBean()
             return ret
         } catch (e: Exception) {
-            e.message?.let {
-                throw BttfException(e.message!!)
-            } ?: throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
+            if (e.message == null) throw AccountExpiredException(
+                e::class.java.simpleName + " " + BttfConst.ERROR_ACCOUNT_EXPIRED)
+            else throw BttfException(e.message!!)
         }
     }
 
@@ -139,12 +134,12 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
-            // .authorizeRequests { authorizeRequests ->
-            //    permitAll.filter { it -> it.length > 0 }
-            //        .forEach { key -> authorizeRequests.antMatchers(key).permitAll() }
-            //    authenticated.filter { it -> it.length > 0 }
-            //        .forEach { key -> authorizeRequests.antMatchers(key).authenticated() }
-            // }
+            .authorizeRequests { authorizeRequests ->
+                permitAll.filter { it.length > 0 }
+                    .forEach { authorizeRequests.antMatchers(it).permitAll() }
+                authenticated.filter { it.length > 0 }
+                    .forEach { authorizeRequests.antMatchers(it).authenticated() }
+            }
             .headers()
             .xssProtection()
             .and()
@@ -155,15 +150,15 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .and()
             .frameOptions().disable().frameOptions().sameOrigin()
             .and().httpBasic()
-            // .and().formLogin()
-            // .loginPage("/login").permitAll().failureUrl("/login?error=true")
-            // .and().exceptionHandling().accessDeniedPage("/login?error=403")
+            .and().formLogin()
+            .loginPage("/login").permitAll().failureUrl("/login?error=true")
+            .and().exceptionHandling().accessDeniedPage("/login?error=403")
             .and()
             .logout().logoutSuccessHandler(userService.logoutSuccess())
             .logoutRequestMatcher(AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
             .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
-            .maximumSessions(1);
+            .maximumSessions(1)
     }
 
 }

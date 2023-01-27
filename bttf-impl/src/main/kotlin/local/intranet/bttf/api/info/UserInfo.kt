@@ -25,7 +25,7 @@ import javax.validation.constraints.Size
  * @param isCredentialsNonExpired {@link Boolean}
  * @param isAccountNonExpired     {@link Boolean}
  * @param isAccountNonLocked      {@link Boolean}
- * @param authorities             {@link List&lt;{@link GrantedAuthority}&gt;}
+ * @param authorities             {@link MutableSet&lt;{@link GrantedAuthority}&gt;}
  */
 @JsonPropertyOrder(
     "username",
@@ -35,14 +35,14 @@ import javax.validation.constraints.Size
     "isAccountNonExpired",
     "isAccountNonLocked"
 )
-data class UserInfo(
+data class UserInfo constructor(
     private val username: String,
     private val password: String,
     private val isEnabled: Boolean,
     private val isCredentialsNonExpired: Boolean,
     private val isAccountNonExpired: Boolean,
     private val isAccountNonLocked: Boolean,
-    private val authorities: List<GrantedAuthority>) : UserDetails {
+    private val authorities: MutableList<GrantedAuthority>) : UserDetails {
 
     /**
      *
@@ -112,7 +112,7 @@ data class UserInfo(
      */
     @JsonIgnore
     @Size(min = 0)
-    override fun getAuthorities(): List<GrantedAuthority> = authorities
+    override fun getAuthorities(): MutableList<GrantedAuthority> = authorities
 
     /**
      *

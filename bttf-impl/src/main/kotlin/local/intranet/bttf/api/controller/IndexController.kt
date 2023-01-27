@@ -1,14 +1,23 @@
 package local.intranet.bttf.api.controller
 
-import java.util.concurrent.atomic.AtomicInteger
-
+import java.util.concurrent.atomic.AtomicInteger // for thymeleaf  .incrementAndGet()
+import javax.crypto.BadPaddingException
+import javax.crypto.IllegalBlockSizeException
+import javax.crypto.NoSuchPaddingException
+import javax.crypto.SecretKey
+import javax.crypto.spec.IvParameterSpec
 import javax.servlet.RequestDispatcher
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+import javax.validation.constraints.NotNull
 
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
+import local.intranet.bttf.api.info.UserInfo
+import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
 
@@ -28,15 +37,21 @@ import org.springframework.http.MediaType
 import org.springframework.lang.Nullable
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AccountExpiredException
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.web.savedrequest.DefaultSavedRequest
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.client.HttpServerErrorException.InternalServerError
 
 @Controller
@@ -45,40 +60,14 @@ public class IndexController {
     private val log = LoggerFactory.getLogger(IndexController::class.java)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
-    @Value("\${bttf.app.headerSoftware:false}") private lateinit var headerSoftware: String
+    @Value("\${bttf.app.headerSoftware:false}") private lateinit var headerSoftware: String // toBoolean
     @Value("\${bttf.app.logCnt:25}") private lateinit var logCnt: String // toInt
 
     @Autowired private lateinit var statusController: StatusController
     @Autowired private lateinit var userService: UserService
     @Autowired private lateinit var loggingEventService: LoggingEventService
-
-    private val INDEX: String = "index"
-    private val INDEX_API: String = "bttfApi"
-    private val INDEX_LICENSE: String = "license"
-    private val INDEX_LOG: String = "bttfLog"
-    private val INDEX_LOGS_PAGE: String = "logsPage"
-    private val INDEX_LOGS_TOTAL: String = "logsTotal"
-    private val INDEX_LOGS_COUNTER: String = "logsTotalCounter"
-    private val INDEX_LOGS_SORT: String = "logsSort"
-    private val INDEX_LOGS_FILTER: String = "logsFilter"
-    private val INDEX_LOGS_COUNT: String = "logsCnt"
-    private val INDEX_LOGS_MAX: String = "logsMax"
-    private val INDEX_BTTF_LOGS: String = "bttfLogs"
-    private val INDEX_LOGIN: String = "login"
-    private val INDEX_STATUS: String = "status"
-    private val INDEX_ERROR: String = "error"
-    private val INDEX_STATUS_SPRING_BOOT_VERSION: String = "springBootVersion"
-    private val INDEX_STATUS_SPRING_VERSION: String = "springVersion"
-    private val INDEX_HEADER_SOFTWARE: String = "headerSoftware"
-    private val INDEX_STAGE: String = "stage"
-    private val INDEX_SERVER_NAME: String = "serverName"
-    private val INDEX_SERVER_SOFTWARE: String = "serverSoftware"
-    private val INDEX_NEXT: String = "next"
-    private val INDEX_PREV: String = "prev"
-    private val INDEX_ACTIVE_PROFILES: String = "activeProfiles"
-    private val INDEX_USERNAME: String = "username"
-    private val INDEX_ROLE: String = "role"
-    private val INDEX_USER_ROLES: String = "userRoles"
+    @Autowired private lateinit var authenticationManager: AuthenticationManager
+    @Autowired private lateinit var provider: Provider
 
     /**
      *
@@ -95,8 +84,10 @@ public class IndexController {
     fun getLicense(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        log.info("GetLicense '{}' session:{}", model.asMap().get(INDEX_USERNAME), request.requestedSessionId)
-        return INDEX_LICENSE
+        request.requestedSessionId?.let {
+        	log.info("GetLicense username:'{}' session:{}", model.asMap().get("username"), request.requestedSessionId)
+        }?: log.info("GetLicense username:'{}'", model.asMap().get("username"))
+        return "license"
     }
 
     /**
@@ -117,19 +108,17 @@ public class IndexController {
         request: HttpServletRequest, model: Model
     ): String {
         addModel(request, model)
-        val page: AtomicInteger = getPage(pg, 0)
-        model.addAttribute(INDEX_STATUS_SPRING_BOOT_VERSION, SpringBootVersion.getVersion())
-        model.addAttribute(INDEX_STATUS_SPRING_VERSION, SpringVersion.getVersion())
-        model.addAttribute(INDEX_API, BttfApplication::class.java.name.split(".").last())
-        model.addAttribute(BttfConst.IMPLEMENTATION_VERSION, statusController.getImplementationVersion())
+        val page = getPage(pg, 0)
+        model.addAttribute("springBootVersion", SpringBootVersion.getVersion())
+        model.addAttribute("springVersion", SpringVersion.getVersion())
+        model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+        model.addAttribute("implementationVersion", statusController.getImplementationVersion())
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        log.info(
-            "GetIndex '{}' page:{} session:{}",
-            model.asMap().get(INDEX_USERNAME),
-            page.get(),
-            request.requestedSessionId
-        )
-        return INDEX
+        request.requestedSessionId?.let {
+        	log.info("GetIndex username:'{}' page:{} session:{}",
+                model.asMap().get("username"), page.get(), request.requestedSessionId)
+        }?: log.info("GetIndex username:'{}' page:{}", model.asMap().get("username"), page.get())
+        return "index"
     }
 
     /**
@@ -159,8 +148,7 @@ public class IndexController {
         ),
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
-    @PreAuthorize("permitAll()")
-    // @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     fun getBttfLog(
         @PathVariable(value = "page", required = false) pg: Int?,
         @PathVariable(value = "sort", required = false) srt: String?,
@@ -168,15 +156,13 @@ public class IndexController {
         request: HttpServletRequest,
         model: Model
     ): String {
-        var ctle: List<LevelCount> = loggingEventService.countTotalLoggingEvents()
+        val ctle: List<LevelCount> = loggingEventService.countTotalLoggingEvents()
         val levelString = mutableListOf<String>()
-        var fil: String
+        val fil: String
         if (filter == null || filter.length == 0) {
             fil = "0"
-            for (l: LevelCount in ctle)
-                levelString.add(l.level)
+            ctle.forEach { levelString.add(it.level) }
         } else {
-            fil = filter
             for (s: String in filter.split("\\+")) {
                 if (arrayOf("DEBUG", "ERROR", "INFO", "WARN").contains(s))
                     levelString.add(s)
@@ -187,44 +173,42 @@ public class IndexController {
             }
             if (levelString.size == 0) {
                 fil = "0"
-                for (l: LevelCount in ctle)
-                    levelString.add(l.level)
-            }
+                ctle.forEach { levelString.add(it.level) }
+            } else
+                fil = filter
         }
         // Up, Down
         val sort: String
         if (srt == null || srt.length == 0 || !arrayOf(
                 "idU", "idD", "mU", "mD", "a0U", "a0D", "a1U", "a1D", "a2U", "a2D", "a3U", "a3D", "cU", "cD", "lU", "lD"
-            ).contains(srt)
-        )
+            ).contains(srt))
             sort = "idD"
         else
             sort = srt
         val page: AtomicInteger = getPage(pg, Integer.MAX_VALUE)
         addModel(request, model)
-        val order: List<Order> = logSortByParam(sort)
-        val pageable: Pageable = PageRequest.of(page.get(), logCnt.toInt(), Sort.by(order))
+        val order = logSortByParam(sort)
+        val pageable = PageRequest.of(page.get(), logCnt.toInt(), Sort.by(order))
         var lg: Page<LoggingEventInfo> = loggingEventService.findPageByLevelString(pageable, levelString)
-        val cnt: Long = lg.getTotalElements()
-        val max: Int = if (lg.getTotalPages() > 0) (lg.getTotalPages() - 1) else 0
-        val newPage: Int = getPage(page.get(), max).get()
+        val cnt: Long = lg.totalElements
+        val max: Int = if (lg.totalPages > 0) (lg.totalPages - 1) else 0
+        val newPage = getPage(page.get(), max).get()
         if (newPage != page.get()) {
             page.set(newPage)
             lg = loggingEventService.findPageByLevelString(pageable, levelString)
         }
-        model.addAttribute(INDEX_ACTIVE_PROFILES, statusController.getActiveProfiles())
-        model.addAttribute(INDEX_LOGS_TOTAL, ctle)
-        model.addAttribute(INDEX_LOGS_COUNTER, AtomicInteger())
-        model.addAttribute(INDEX_BTTF_LOGS, lg.getContent())
-        model.addAttribute(INDEX_LOGS_COUNT, cnt)
-        model.addAttribute(INDEX_LOGS_MAX, max)
-        model.addAttribute(INDEX_LOGS_PAGE, page)
-        model.addAttribute(INDEX_LOGS_SORT, sort)
-        model.addAttribute(INDEX_LOGS_FILTER, fil)
+        model.addAttribute("logsTotal", ctle)
+        model.addAttribute("logsTotalCounter", AtomicInteger())
+        model.addAttribute("bttfLogs", lg.content)
+        model.addAttribute("logsCnt", cnt)
+        model.addAttribute("logsMax", max)
+        model.addAttribute("logsPage", page)
+        model.addAttribute("logsSort", sort)
+        model.addAttribute("logsFilter", fil)
         setPage(page, max, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         // if (dbg.toBoolean()) log.debug( "GetBttfLog '{}' page:{} session:{}", model.asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId )
-        return INDEX_LOG
+        return "bttfLog"
     }
 
     /**
@@ -296,11 +280,12 @@ public class IndexController {
      */
     protected fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
-        pg?.let {
+        if (pg == null) {
+            page.set(0)
+        } else {
             page.set(pg)
-            if (page.get() < 0 || page.get() > max)
-                page.set(0)
-        } ?: page.set(0)
+            if (page.get() < 0 || page.get() > max) page.set(0)
+        }
         return page
     }
 
@@ -314,13 +299,95 @@ public class IndexController {
      */
     protected fun setPage(page: AtomicInteger, max: Int, model: Model) {
         if (page.get() > 0)
-            model.addAttribute(INDEX_PREV, page.get() - 1)
+            model.addAttribute("prev", page.get() - 1)
         else
-            model.addAttribute(INDEX_PREV, page.get())
+            model.addAttribute("prev", page.get())
         if (page.get() < max)
-            model.addAttribute(INDEX_NEXT, page.get() + 1)
+            model.addAttribute("next", page.get() + 1)
         else
-            model.addAttribute(INDEX_NEXT, page.get())
+            model.addAttribute("next", page.get())
+    }
+
+    /**
+     *
+     * Log in
+     * <p>
+     * The method getLogin for /login
+     * 
+     * @param request {@link HttpServletRequest}
+     * @param model   {@link Model}
+     * @return "login" for thymeleaf login.html {@link String}
+     */
+    @GetMapping(value = arrayOf("/login"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
+    fun getLogin(request: HttpServletRequest, model: Model): String {
+        val err = getErrorMessage(request, "BTTF_APPLICATION_LAST_EXCEPTION", model)
+        if (request.session != null && err.equals("OK")) {
+            request.session.removeAttribute("BTTF_APPLICATION_LAST_EXCEPTION")
+        } else if (request.session != null) {
+            request.session.setAttribute("BTTF_APPLICATION_LAST_EXCEPTION", BttfException(err))
+        }
+        addModel(request, model)
+        val isAuthenticated = model.getAttribute("isAuthenticated") as Boolean
+        
+        if (request.getQueryString() != null && request.queryString.startsWith("error") && !isAuthenticated) {
+            log.warn("queryString:{} path:'{}'", request.getQueryString(), "")
+        }
+        model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+        model.addAttribute("invalidRole", "Invalid role for this page!")
+        // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+        return "login"
+    }
+
+    /**
+     * 
+     * Sign in from log in form
+     * <p>
+     * The method signin for /login/signin
+     * <p>
+     * For {@link #getLogin} after submit &lt;Log in&gt; or press
+     * &lt;&crarr;Enter&gt;
+     * 
+     * @param username {@link String} Username
+     * @param password {@link String} Password
+     * @param request  {@link HttpServletRequest}
+     * @return redirect url {@link String}
+     */
+    @PostMapping(path = arrayOf("/login/signin"), consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    fun signin(
+        @RequestParam @NotNull username: String,
+        @RequestParam @NotNull password: String,
+        request: HttpServletRequest
+    ): String {
+        var redirect = "/bttf/login"
+        if (request.session != null) {
+            // val savedRequest = request.session.getAttribute("SPRING_SECURITY_SAVED_REQUEST") as DefaultSavedRequest
+            // redirect = savedRequest.getRedirectUrl()
+            try {
+                val user: UserInfo = userService.loadUserByUsername(username)
+                val token = UsernamePasswordAuthenticationToken(user, password, user.authorities)
+                SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
+                log.info("Login username:'{}' redirect:'{}' sessionId:'{}'",
+                    username, redirect, request.requestedSessionId);
+            } catch (e: Exception) {
+                when (e) {
+                    is UsernameNotFoundException,
+                    is LockedException,
+                    is AccountExpiredException,
+                    is BadCredentialsException -> {
+                        val ret = "/bttf/login" + provider.queryProvider(listOf(
+                            Pair("error", "true"), Pair("exception", e::class.java.simpleName)))
+                        // attempt = loginAttemptService.findById(statusController.getClientIP())
+                        // log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
+                        log.warn("Signin username:'{}' redirect:'{}'", username, ret)
+                        log.error(e::class.java.simpleName, e)
+                        request.session.setAttribute("BTTF_APPLICATION_LAST_EXCEPTION", e)
+                        redirect = ret
+                    }
+                    else -> throw e
+                }
+            }
+        }
+        return "redirect: " + redirect
     }
 
     /**
@@ -343,12 +410,14 @@ public class IndexController {
     @PreAuthorize("permitAll()")
     fun getError(request: HttpServletRequest, model: Model): String {
         try {
-            var statusCode: Int = 200
-            val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
-            status?.let { statusCode = Integer.valueOf(status.toString()) }
+            var statusCode = 200
+            val status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
+            if (status != null) {
+                statusCode = Integer.valueOf(status.toString())
+            }
             val statusText = HttpStatus.valueOf(statusCode).reasonPhrase
-            model.addAttribute(INDEX_STATUS, statusCode)
-            model.addAttribute(INDEX_ERROR, statusText)
+            model.addAttribute("status", statusCode)
+            model.addAttribute("error", statusText)
             addModel(request, model)
             //  model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         } catch (e: Exception) {
@@ -361,13 +430,51 @@ public class IndexController {
                     if (e is InternalServerError) {
                         log.error(e.message + " " + e.stackTrace, e)
                         throw e
-                    } else
-                        log.error(e.message, e)
+                    } else log.error(e.message, e)
                 }
                 else -> throw e
             }
         }
-        return INDEX_ERROR
+        return "error"
+    }
+
+    /**
+     * 
+     * Get error message from session
+     * <p>
+     * Used {@link BadCredentialsException} and {@link LockedException}
+     * 
+     * @param request {@link HttpServletRequest}
+     * @param key     {@link String}
+     * @param model   {@link Model}
+     * @return error message {@link String}
+     */
+    protected fun getErrorMessage(request: HttpServletRequest, key: String, model: Model): String {
+        var ret = "OK"
+        if (request.session != null) {
+            val ex = request.session.getAttribute(key)
+            when (ex) {
+                is UsernameNotFoundException -> 
+                    ret = BttfConst.ERROR_USERNAME_NOT_FOUND
+                is BadCredentialsException -> 
+                    ret = BttfConst.ERROR_INVALID_USERNAME_AND_PASSWORD
+                is LockedException ->
+                    ret = BttfConst.ERROR_USERNAME_IS_LOCKED
+                is AccountExpiredException ->
+                	ret = BttfConst.ERROR_ACCOUNT_EXPIRED
+                is BttfException, ->
+                    ret = ex.message?.let { ex.message!! }?: ex::class.java.simpleName
+                is InternalServerError -> {
+                    ret = ex.message + " " + ex.stackTrace
+                    log.warn(ret, ex)
+                }
+                is Exception ->
+                    ret = ex.message?.let { ex.message!! }?: ex::class.java.simpleName
+                else -> {}
+            }
+        }
+        if (!ret.equals("OK")) model.addAttribute("getError", ret)
+        return ret
     }
 
     /**
@@ -378,16 +485,31 @@ public class IndexController {
      * @param model   {@link Model}
      */
     protected fun addModel(request: HttpServletRequest, model: Model) {
-        model.addAttribute(INDEX_HEADER_SOFTWARE, headerSoftware)
-        model.addAttribute(INDEX_ACTIVE_PROFILES, statusController.getActiveProfiles())
-        model.addAttribute(INDEX_STAGE, statusController.getStage())
-        model.addAttribute(INDEX_SERVER_NAME, statusController.getServerName())
-        model.addAttribute(INDEX_SERVER_SOFTWARE, statusController.getServerSoftware())
-        model.addAttribute(INDEX_USERNAME, userService.getUsername())
-        model.addAttribute(INDEX_USER_ROLES, userService.getUserRoles())
-        model.addAttribute(INDEX_ROLE, userService.getAuthoritiesRoles().joinToString(separator = " "))
+        model.addAttribute("headerSoftware", headerSoftware)
+        model.addAttribute("activeProfiles", statusController.getActiveProfiles())
+        model.addAttribute("stage", statusController.getStage())
+        model.addAttribute("serverName", statusController.getServerName())
+        model.addAttribute("serverSoftware", statusController.getServerSoftware())
+        model.addAttribute("isAuthenticated", userService.isAuthenticated())
+        val username = userService.getUsername()
+        if (username.length > 0) {
+            model.addAttribute("username", username)
+        } else {
+            model.addAttribute("username", "")
+        }
+        model.addAttribute("userRoles", userService.getUserRoles())
+        model.addAttribute("role", userService.getAuthoritiesRoles().joinToString(separator = " "))
+        val methodName = Thread.currentThread().stackTrace[2].methodName
+        if (methodName.equals("getError")) {
+            val err = getErrorMessage(request, "BTTF_APPLICATION_LAST_EXCEPTION", model)
+            if (!err.equals("OK")) {
+                log.warn("AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,
+                        model.getAttribute("status"),
+                        request.getAttribute("javax.servlet.forward.request_uri"))
+            }
+        }
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        if (dbg.toBoolean()) log.debug("AddModel model:'{}'", request.toString())
+        // if (dbg.toBoolean()) log.debug("AddModel model:'{}'", request.toString())
     }
 
 }

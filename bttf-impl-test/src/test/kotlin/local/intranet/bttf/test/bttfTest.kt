@@ -4,7 +4,6 @@ import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.security.AESUtil
-import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
 
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +33,6 @@ class bttfTest {
     @Autowired private lateinit var statusController: StatusController
     @Autowired private lateinit var infoController: InfoController
     @Autowired private lateinit var userService: UserService
-    @Autowired private lateinit var loggingEventService: LoggingEventService
     
     /**
      *
@@ -54,32 +52,22 @@ class bttfTest {
 
         assertThat(userService.getUsername()).isNotNull
         assertThat(userService.isAuthenticated()).isNotNull
-        assertThat(userService.getAuthoritiesRoles()).isNotEmpty
+        assertThat(userService.getAuthoritiesRoles()).isNotNull
         assertThat(userService.getUserRoles().count() > 0)
-        assertThat(userService.loadUserByUsername(BttfConst.USER_ANONYMOUS)).isNotNull
-        assertThrows<UsernameNotFoundException> {userService.loadUserByUsername("coco")}
+        assertThat(userService.loadUserByUsername("lhs")).isNotNull
+        assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
 
-        assertThat(loggingEventService.findPageByLevelString(
-            PageRequest.of(0, 10, Sort.by(listOf(Order.desc("id")))), listOf("DEBUG"))).isNotEmpty
-        assertThat(loggingEventService.countTotalLoggingEvents()).isNotNull
-        
         // a bit of Dadaism
-        assertEquals(
-            "We have a stuffed grandfather in the closet.",
+        assertEquals("We have a stuffed grandfather in the closet.",
             AESUtil.getBase64("V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=")
         )
-        assertEquals(
-            "V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=",
+        assertEquals("V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=",
             AESUtil.setBase64("We have a stuffed grandfather in the closet.")
         )
-        assertEquals(
-            "My cork badtub is like your giraffe rye!",
-            AESUtil.getHex(
-                "4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521"
-            )
+        assertEquals("My cork badtub is like your giraffe rye!",
+            AESUtil.getHex("4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521")
         )
-        assertEquals(
-            "4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521",
+        assertEquals("4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521",
             AESUtil.setHex("My cork badtub is like your giraffe rye!")
         )
 

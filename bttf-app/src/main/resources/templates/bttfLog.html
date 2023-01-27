@@ -17,14 +17,12 @@
           <small th:utext="'\'' + ${stage} + '\' on '"/>
           <small th:utext="${serverSoftware} + ' - \'' + ${activeProfiles} + '\''"/>
         </span></h2>
-        <h5><span><!--/*
+        <h5><span>
           <a th:if="${userRoles.get('userRole') or userRoles.get('managerRole') or userRoles.get('adminRole')}" th:href="@{/logout}" th:text="'Log out'"/> <small><th:block th:text="' - You are logged as '"/>
           <a th:if="${userRoles.get('userRole') or userRoles.get('managerRole') or userRoles.get('adminRole')}" th:href="@{/login?logout}" th:utext="'\'' + ${username} + '\''"/>
-          <th:block th:utext="' with \'' + ${role} + '\''"/></small>*/-->
-          <small><th:block th:utext="'You are logged as \'' + ${username} + '\' with \'' + ${role} + '\''"/></small>
-          <small><a th:href="@{/page/0}" th:text="'Bttf'"/></small><!-- /*
-          <small th:if="${userRoles.get('userRole') or userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small> */-->
-          <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
+          <th:block th:utext="' with \'' + ${role} + '\''"/></small>
+          <small><a th:href="@{/page/0}" th:text="'Bttf'"/></small>
+          <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <code th:if="${logsTotal.size() > 0}"><span>
         <table th:class="'data-table'">

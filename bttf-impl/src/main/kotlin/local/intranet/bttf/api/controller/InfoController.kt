@@ -41,8 +41,6 @@ public class InfoController {
 
     private val log = LoggerFactory.getLogger(InfoController::class.java)
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
-
     @Autowired private lateinit var userService: UserService
     @Autowired private lateinit var roleService: RoleService
 
@@ -72,21 +70,17 @@ public class InfoController {
         operationId = "getUserInfo",
         summary = "Get User Info",
         description = "Get User Info\n\n"
-                + "This method is calling UserService.getUserInfo\n\n"
-                + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
+                + "This method is calling UserService.getUserInfo\n\n",
+                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+                // + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
-    @PreAuthorize("permitAll()")
-    // @PreAuthorize("hasRole('ROLE_userRole')")
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class)
     fun getUserInfo(): UserInfo {
         try {
-            val ret: UserInfo = userService.getUserInfo()
-            if (dbg.toBoolean()) log.debug("{}", ret)
-            return ret
+            return userService.getUserInfo()
         } catch (e: Exception) {
-            if (dbg.toBoolean()) log.error(e.message, e)
             when (e) {
                 is UsernameNotFoundException,
                 is LockedException,
@@ -120,21 +114,14 @@ public class InfoController {
         operationId = "getRoleInfo",
         summary = "Get Role Info",
         description = "Get Role Info\n\n"
-                + "This method is calling RoleService.getRoleInfo\n\n"
-                + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
+                + "This method is calling RoleService.getRoleInfo\n\n",
+                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+                // + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
-    @PreAuthorize("hasRole('ROLE_userRole')")
-    @Throws(Exception::class)
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     fun getRoleInfo(): RoleInfo {
-        try {
-            val ret: RoleInfo = roleService.getRoleInfo()
-            if (dbg.toBoolean()) log.debug("{}", ret)
-            return ret
-        } catch (e: Exception) {
-            throw e
-        }
+        return roleService.getRoleInfo()
     }
 
 }

@@ -6,7 +6,6 @@ import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.security.spec.InvalidKeySpecException
-import java.security.spec.KeySpec
 import java.util.Base64
 
 import javax.crypto.BadPaddingException
@@ -46,10 +45,6 @@ class AESUtil {
 
     companion object {
 
-        private val AESUTIL_AES: String = "AES"
-        private val AESUTIL_AES_PADDING: String = "AES/CBC/PKCS5Padding"
-        private val AESUTIL_PBKDF2_WITH_HMAC_SHA256: String = "PBKDF2WithHmacSHA256"
-
         /**
          *
          * Encrypt
@@ -77,11 +72,9 @@ class AESUtil {
             InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
         )
         fun encrypt(input: String, key: SecretKey, iv: IvParameterSpec): String {
-            val cipher: Cipher = Cipher.getInstance(AESUTIL_AES::class.simpleName)
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding"::class.simpleName)
             cipher.init(Cipher.ENCRYPT_MODE, key, iv)
-            val cipherText: ByteArray = cipher.doFinal(input.toByteArray())
-            val ret: String = Base64.getEncoder().encodeToString(cipherText)
-            return ret;
+            return Base64.getEncoder().encodeToString(cipher.doFinal(input.toByteArray()))
         }
 
         /**
@@ -106,10 +99,9 @@ class AESUtil {
             InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
         )
         fun decrypt(cipherText: String, key: SecretKey, iv: IvParameterSpec): String {
-            val cipher: Cipher = Cipher.getInstance(AESUTIL_AES.toUpperCase()::class.simpleName)
+            val cipher: Cipher = Cipher.getInstance("AES".toUpperCase()::class.simpleName)
             cipher.init(Cipher.DECRYPT_MODE, key, iv)
-            val ret: ByteArray = cipher.doFinal(Base64.getDecoder().decode(cipherText))
-            return String(ret)
+            return String(cipher.doFinal(Base64.getDecoder().decode(cipherText)))
         }
 
         /**
@@ -124,10 +116,9 @@ class AESUtil {
         @Throws(NoSuchPaddingException::class)
         fun generateKey(n: Int): SecretKey {
             try {
-                val keyGenerator: KeyGenerator = KeyGenerator.getInstance(AESUTIL_AES)
+                val keyGenerator = KeyGenerator.getInstance("AES")
                 keyGenerator.init(n)
-                val ret: SecretKey = keyGenerator.generateKey()
-                return ret
+                return keyGenerator.generateKey()
             } catch (e: NoSuchAlgorithmException) {
                 throw e
             }
@@ -141,8 +132,8 @@ class AESUtil {
          */
         @JvmStatic
         fun generateSalt(): String {
-            val random: SecureRandom = SecureRandom()
-            val ret: ByteArray = ByteArray(20)
+            val random = SecureRandom()
+            val ret = ByteArray(20)
             random.nextBytes(ret)
             return String(ret)
         }
@@ -160,11 +151,10 @@ class AESUtil {
         @JvmStatic
         @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
         fun getKeyFromPassword(password: String, salt: String): SecretKey {
-            val factory: SecretKeyFactory = SecretKeyFactory
-                .getInstance(AESUTIL_PBKDF2_WITH_HMAC_SHA256)
-            val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt.toByteArray(), 65536, 256)
-            val ret: SecretKey = SecretKeySpec(factory.generateSecret(spec).encoded, AESUTIL_AES)
-            return ret;
+            return SecretKeySpec(SecretKeyFactory
+                .getInstance("PBKDF2WithHmacSHA256")
+                .generateSecret(PBEKeySpec(password.toCharArray(),
+                    salt.toByteArray(), 65536, 256)).encoded, "AES")
         }
 
         /**
@@ -177,8 +167,7 @@ class AESUtil {
         fun generateIv(): IvParameterSpec {
             val iv = ByteArray(16)
             SecureRandom().nextBytes(iv)
-            val ret: IvParameterSpec = IvParameterSpec(iv)
-            return ret
+            return IvParameterSpec(iv)
         }
 
         /**
@@ -190,8 +179,7 @@ class AESUtil {
          */
         @JvmStatic
         fun getBase64(data: String): String {
-            val ret: String = String(Base64.getDecoder().decode(data))
-            return ret
+            return String(Base64.getDecoder().decode(data))
         }
 
         /**
@@ -203,8 +191,7 @@ class AESUtil {
          */
         @JvmStatic
         fun setBase64(data: String): String {
-            val ret: String = String(Base64.getEncoder().encode(data.toByteArray(Charset.forName("UTF-8"))))
-            return ret
+            return String(Base64.getEncoder().encode(data.toByteArray(Charset.forName("UTF-8"))))
         }
 
         /**
@@ -216,8 +203,7 @@ class AESUtil {
          */
         @JvmStatic
         fun getHex(data: String): String {
-            val ret: String = String(Hex.decode(data))
-            return ret
+            return String(Hex.decode(data))
         }
 
         /**
@@ -229,8 +215,7 @@ class AESUtil {
          */
         @JvmStatic
         fun setHex(data: String): String {
-            val ret: String = String(Hex.encode(data.toByteArray(Charset.forName("UTF-8"))))
-            return ret
+            return String(Hex.encode(data.toByteArray(Charset.forName("UTF-8"))))
         }
 
     }

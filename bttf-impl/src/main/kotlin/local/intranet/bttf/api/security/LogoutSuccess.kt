@@ -2,7 +2,6 @@ package local.intranet.bttf.api.security
 
 import java.io.IOException;
 
-import javax.servlet.ServletException
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -37,27 +36,19 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
      */
     override fun onLogoutSuccess(
         request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
-        // auditService.track("Logout from: " + refererUrl)
         try {
-            val id: String = request.getSession().getId()
-            val refererUrl: String = request.getHeader("Referer")
             if (request.cookies != null) {
                 for (cookie in request.cookies) {
-                    cookie?.let {
-                        val cookieName: String = cookie.name
-                        val cookieToDelete: Cookie = Cookie(cookieName, null)
+                    if (cookie != null) {
+                        val cookieToDelete = Cookie(cookie.name, null)
                         cookieToDelete.setMaxAge(0)
                         response.addCookie(cookieToDelete)
                     }
                 }
             }
-            authentication.principal?.let {
-                // logger.info("Logout authentication:'{}' principal:'{}' sessionId:{}"
-                // authentication, authentication.getPrincipal(), id);
-                authentication.name?.let {
-                    val username: String = authentication.name
-                    log.info("Logout username:'{}' refererUrl:'{}' sessionId:{}", username, refererUrl, id)
-                }
+            if (authentication.principal != null && authentication.name != null) {
+                log.info("Logout username:'{}' refererUrl:'{}' sessionId:{}",
+                    authentication.name, request.getHeader("Referer"), request.getSession().getId())
             }
             super.onLogoutSuccess(request, response, authentication);
             request.session.invalidate()
@@ -79,16 +70,14 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
         if (isAlwaysUseDefaultTargetUrl())
             return getDefaultTargetUrl()
         var targetUrl: String = ""
-        targetUrlParameter?.let {
+        if (targetUrlParameter != null) {
             targetUrl = request.getParameter(targetUrlParameter)
             if (StringUtils.hasText(targetUrl)) {
-                // logger.debug("Found targetUrlParameter in request: " + targetUrl)
                 return targetUrl
             }
         }
         if (!StringUtils.hasText(targetUrl)) {
             targetUrl = defaultTargetUrl
-            // logger.debug("Using default Url: " + targetUrl)
         }
         return targetUrl
     }

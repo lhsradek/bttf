@@ -15,22 +15,22 @@ INSERT INTO bttf_role (id, role_name, enabled) VALUES (4, 'anonymousRole', true)
 INSERT INTO bttf_user
   (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
     VALUES (1, 'admin',
-    '243261243034246a77614b5352774e75766e4433596734426849714b2e5856724b5a594c37494543316a5765374e74757867454369554a35726c4e65',
+    '$2a$04$jwaKSRwNuvnD3Yg4BhIqK.XVrKZYL7IEC1jWe7NtuxgECiUJ5rlNe',
     true, true, true, true);
 INSERT INTO bttf_user
   (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
     VALUES (2, 'lhs', 
-    '24326124303424655569755352476f2e30737873636f4a3832515878756875656d573634436a7054674f784d5656654b3379586c4f584f6c32684447',
+    '$2a$04$eUiuSRGo.0sxscoJ82QXxuhuemW64CjpTgOxMVVeK3yXlOXOl2hDG',
     true, true, true, true);
 INSERT INTO bttf_user
   (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
     VALUES (3, 'user',
-    '243261243034244358565237544c4f3853754a6f695552384d386f572e5259693672486c6b6b4b36724163542e624c4b44716878365a735a306a6d75',
+    '$2a$04$CXVR7TLO8SuJoiUR8M8oW.RYi6rHlkkK6rAcT.bLKDqhx6ZsZ0jmu',
     true, true, true, true);
-INSERT INTO bttf_user
-  (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
-    VALUES (4, 'anonymous', '2432612431322447716c563344787354376f75464934724c6478586f75314b34553076664d72612e526466764f476557324c69554e5936566d504b65',
-    true, true, true, true);
+-- INSERT INTO bttf_user
+--  (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
+--    VALUES (4, 'anonymous', '$2a$12$GqlV3DxsT7ouFI4rLdxXou1K4U0vfMra.RdfvOGeW2LiUNY6VmPKe',
+--    true, true, true, true);
 
     
 ----- TABLE bttf_user_role -----
@@ -46,7 +46,6 @@ INSERT INTO bttf_user
 -- INSERT INTO bttf_user_role (user_id, role_id) VALUES (2, 2);
 -- INSERT INTO bttf_user_role (user_id, role_id) VALUES (2, 3);
 -- INSERT INTO bttf_user_role (user_id, role_id) VALUES (3, 3);
--- INSERT INTO bttf_user_role (user_id, role_id) VALUES (4, 4);
 
     
 -- For H2, Postgresql, MariaDB (MySQL)
@@ -77,8 +76,8 @@ INSERT INTO bttf_user_role (user_id, role_id) (
     SELECT id user_id, (SELECT id FROM bttf_role
     WHERE role_name='userRole') role_id
     FROM bttf_user WHERE user_name='user');
-INSERT INTO bttf_user_role (user_id, role_id) (
-    SELECT id user_id, (SELECT id FROM bttf_role
-    WHERE role_name='anonymousRole') role_id
-    FROM bttf_user WHERE user_name='anonymous');
+-- INSERT INTO bttf_user_role (user_id, role_id) (
+--    SELECT id user_id, (SELECT id FROM bttf_role
+--    WHERE role_name='anonymousRole') role_id
+--    FROM bttf_user WHERE user_name='anonymous');
    

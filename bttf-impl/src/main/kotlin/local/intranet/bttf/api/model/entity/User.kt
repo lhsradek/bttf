@@ -15,6 +15,7 @@ import javax.validation.constraints.Size
 
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.DefaultFieldLengths
+import local.intranet.bttf.api.security.AESUtil
 
 /**
  *
@@ -81,14 +82,5 @@ class User {
     @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(name = "bttf_user_role")
     var role = mutableListOf<Role>()
-
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "User [id=" + id + ", userName=" + userName + ", password=" + BttfConst.STATUS_PROTECTED +
-                ", credentialsNonExpired=" + credentialsNonExpired + ", enabled=" + enabled + ", role=" + role + "]"
-    }
-
+      
 }

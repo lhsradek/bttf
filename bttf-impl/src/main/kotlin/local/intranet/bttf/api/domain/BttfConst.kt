@@ -14,37 +14,37 @@ object BttfConst {
      *
      * STATUS_TAG = "status-controller"
      */
-    const val STATUS_TAG: String = "status-controller"
+    const val STATUS_TAG = "status-controller"
 
     /**
      *
      * INFO_TAG = "status-controller"
      */
-    const val INFO_TAG: String = "info-controller"
+    const val INFO_TAG = "info-controller"
 
     /**
      *
      * API = "/api"
      */
-    const val API: String = "/api"
+    const val API = "/api"
 
     /**
      *
      * INFO_VERSION_PATH = "/v1"
      */
-    const val INFO_VERSION_PATH: String = "/v1"
+    const val INFO_VERSION_PATH = "/v1"
 
     /**
      *
      * INFO_BASE_INFO = "/info"
      */
-    const val INFO_BASE_INFO: String = "/info"
+    const val INFO_BASE_INFO = "/info"
 
     /**
      *
      * STATUS_BASE_INFO = "/status"
      */
-    const val STATUS_BASE_INFO: String = "/status"
+    const val STATUS_BASE_INFO = "/status"
 
     /**
      *
@@ -54,33 +54,9 @@ object BttfConst {
 
     /**
      *
-     * STATUS_OK = "OK"
-     */
-    const val STATUS_OK: String = "OK"
-
-    /**
-     *
-     * STATUS_UNKNOWN = "unknown"
-     */
-    const val STATUS_UNKNOWN: String = "unknown"
-
-    /**
-     *
      * ROLE_PREFIX = "ROLE_"
      */
     const val ROLE_PREFIX: String = "ROLE_"
-
-    /**
-     *
-     * USER_ANONYMOUS = "anonymous"
-     */
-    const val USER_ANONYMOUS: String = "anonymous"
-
-    /**
-     *
-     * IMPLEMENTATION_VERSION = "implementationVersion"
-     */
-    const val IMPLEMENTATION_VERSION: String = "implementationVersion"
 
     /**
      *
@@ -117,5 +93,29 @@ object BttfConst {
      * ERROR_ACCOUNT_EXPIRED = "Account expired!"
      */
     const val ERROR_ACCOUNT_EXPIRED: String = "Account expired!"
+
+    /**
+     *
+     * IMPLEMENTATION_VERSION = "implementationVersion"
+    const val IMPLEMENTATION_VERSION: String = "implementationVersion"
+     */
+
+    /**
+     *
+     * STATUS_UNKNOWN = "unknown"
+    const val STATUS_UNKNOWN: String = "unknown"
+     */
+
+    /**
+     *
+     * STATUS_OK = "OK"
+    const val STATUS_OK: String = "OK"
+     */
+
+    /**
+     *
+     * USER_ANONYMOUS = "anonymous"
+    const val USER_ANONYMOUS: String = "anonymous"
+     */
 
 }

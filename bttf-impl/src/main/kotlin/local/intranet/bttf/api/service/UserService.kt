@@ -49,8 +49,6 @@ class UserService : UserDetailsService {
     @Autowired private lateinit var userRepository: UserRepository
     @Autowired private lateinit var httpSession: HttpSession
 
-    private val USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL: Int = 3600
-
     /**
      *
      * Bean for logout
@@ -63,8 +61,7 @@ class UserService : UserDetailsService {
      */
     @Bean
     fun logoutSuccess(): LogoutSuccessHandler {
-        val ret: LogoutSuccessHandler = LogoutSuccess()
-        return ret
+        return LogoutSuccess()
     }
 
     /**
@@ -84,9 +81,10 @@ class UserService : UserDetailsService {
         AccountExpiredException::class
     )
     fun getUserInfo(): UserInfo {
-        val ret = loadUserByUsername(getUsername())
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        // val ret = loadUserByUsername(getUsername())
+        // if (dbg.toBoolean()) log.debug("{}", ret)
+        // return ret
+        return loadUserByUsername(getUsername())
     }
 
     /**
@@ -107,25 +105,24 @@ class UserService : UserDetailsService {
         AccountExpiredException::class
     )
     override fun loadUserByUsername(username: String): UserInfo {
-        val ret: UserInfo
         // val ip: String = statusController.getClientIP()
         // if (loginAttemptService.isBlocked(ip)) {
         //     throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
         // }
         val user: User? = userRepository.findByName(username)
 
-        // if (dbg.toBoolean()) logger.debug("{}", user)
-
-        user?.let {
+        if (user == null) {
+            throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
+        } else {
             if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired && user.enabled) {
                 val authorities = mutableListOf<GrantedAuthority>()
                 user.role.forEach {
                     authorities.add(SimpleGrantedAuthority(BttfConst.ROLE_PREFIX + it.roleName))
                 }
-                ret = UserInfo(user.userName, user.password, true, true, true, true, authorities)
-
-                if (dbg.toBoolean()) log.debug("{}", ret)
-                return ret
+                // val ret = UserInfo(user.userName, user.password, true, true, true, true, authorities)
+                // if (dbg.toBoolean()) log.debug("'{}'", ret)
+                // return ret
+                return UserInfo(user.userName, user.password, true, true, true, true, authorities)
 
             } else {
                 if (!user.credentialsNonExpired)
@@ -134,9 +131,6 @@ class UserService : UserDetailsService {
                     throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
                 throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
-        }?: run {
-            if (dbg.toBoolean()) log.debug("username:'{}' {}", username, BttfConst.ERROR_USERNAME_NOT_FOUND)
-            throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
         }
     }
 
@@ -147,13 +141,11 @@ class UserService : UserDetailsService {
      * @return {@link String}
      */
     fun getUsername(): String {
-        var ret = BttfConst.USER_ANONYMOUS
-        val obj = httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)
-        obj?.let {
-            val auth: Authentication = SecurityContextHolder.getContext().authentication
-            if (httpSession.getMaxInactiveInterval() < USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL)
-                httpSession.setMaxInactiveInterval(USER_LOGIN_SESSION_MAX_INACTIVE_INTERVAL)
-            ret = auth.getName()
+        var ret = ""
+        if (httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) != null) { 
+            if (httpSession.maxInactiveInterval < 3600)
+                httpSession.setMaxInactiveInterval(3600)
+            ret = SecurityContextHolder.getContext().authentication.name
         }
         // if (dbg.toBoolean()) log.debug("'{}'", ret)
         return ret
@@ -167,7 +159,7 @@ class UserService : UserDetailsService {
      */
     fun isAuthenticated(): Boolean {
         val list = getAuthoritiesRoles()
-        val ret: Boolean = if (list.size > 0 && !list.first().equals(BttfConst.USER_ANONYMOUS)) true else false
+        val ret = if (list.size > 0 && !list.get(0).equals(RoleType.ANONYMOUS_ROLE.role)) true else false
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
@@ -181,15 +173,12 @@ class UserService : UserDetailsService {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun getAuthoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
-        val obj = httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)
-        obj?.let {
-            val auth: Authentication = SecurityContextHolder.getContext().authentication
-            for (g: GrantedAuthority in auth.authorities)
+        if (httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) != null) { 
+            for (g: GrantedAuthority in SecurityContextHolder.getContext().authentication.authorities)
                 ret.add(g.authority.replace(BttfConst.ROLE_PREFIX, ""))
             ret.sort()
         }
-        if (ret.size == 0)
-            ret.add(RoleType.ANONYMOUS_ROLE.role)
+        if (ret.size == 0) ret.add(RoleType.ANONYMOUS_ROLE.role)
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
@@ -211,7 +200,7 @@ class UserService : UserDetailsService {
     fun getUserRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
-        for (r: RoleType in RoleType.values())
+        for (r in RoleType.values())
             if (!r.equals(RoleType.ANONYMOUS_ROLE))
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))
         // if (dbg.toBoolean()) log.debug("{}", ret)

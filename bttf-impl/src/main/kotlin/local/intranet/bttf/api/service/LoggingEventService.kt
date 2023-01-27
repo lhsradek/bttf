@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 
 import javax.validation.constraints.NotNull
 
-import org.slf4j.LoggerFactory
+// import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
@@ -39,7 +39,7 @@ import org.springframework.data.domain.PageImpl
 @Service
 public class LoggingEventService {
 
-    private val log = LoggerFactory.getLogger(LoggingEventService::class.java)
+    // private val log = LoggerFactory.getLogger(LoggingEventService::class.java)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
@@ -56,9 +56,7 @@ public class LoggingEventService {
      */
     @Transactional(readOnly = true)
     fun countTotalLoggingEvents(): List<LevelCount> {
-        val ret = loggingEventRepository.countTotalLoggingEvents()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        return loggingEventRepository.countTotalLoggingEvents()
     }
 
     /**
@@ -79,15 +77,11 @@ public class LoggingEventService {
         try {
             val pa: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, levelString)
             val list = mutableListOf<LoggingEventInfo>()
-            for (l: LoggingEvent in pa)
-                list.add(makeLoggingEventInfo(l))
-            val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
-
-            if (dbg.toBoolean()) log.debug("{}", ret)
-            return ret
+            pa.forEach { list.add(makeLoggingEventInfo(it)) }
+            return PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
 
         } catch (e: Exception) {
-            log.error(e.message, e)
+            // log.error(e.message, e)
             throw e
         }
     }
@@ -113,22 +107,21 @@ public class LoggingEventService {
     ): Page<LoggingEventInfo> {
         try {
             var s: String = sort.toString()
-            var direction: Direction = Direction.ASC
+            val direction: Direction
             if (s.contains(Direction.DESC.toString()))
                 direction = Direction.DESC
+            else
+                direction = Direction.ASC
             s = s.replace(Direction.ASC.toString(), "").replace(Direction.DESC.toString(), "").replace(":", "").trim()
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
             val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
             val list = mutableListOf<LoggingEventInfo>()
-            for (l: LoggingEvent in pa)
-                list.add(makeLoggingEventInfo(l))
+            pa.forEach { list.add(makeLoggingEventInfo(it)) }
 
-            val ret = PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
-            if (dbg.toBoolean()) log.debug("{}", ret)
-            return ret
+            return PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
 
         } catch (e: Exception) {
-            log.error(e.message, e)
+            // log.error(e.message, e)
             throw e
         }
     }
@@ -142,22 +135,20 @@ public class LoggingEventService {
      */
     protected fun makeLoggingEventInfo(loggingEvent: LoggingEvent): LoggingEventInfo {
         val s: List<String> = loggingEvent.callerClass.split("\\.")
-        val arg0: String = loggingEvent.arg0?.let { loggingEvent.arg0 } ?: "[NULL]"
-        val arg1: String = loggingEvent.arg1?.let { loggingEvent.arg1 } ?: "[NULL]"
-        val arg2: String = loggingEvent.arg2?.let { loggingEvent.arg2 } ?: "[NULL]"
-        val arg3: String = loggingEvent.arg3?.let { loggingEvent.arg3 } ?: "[NULL]"
         // if (dbg.toBoolean()) logger.debug("arg0:{} arg1:{} arg2:{} arg3:{}", arg0, arg1, arg2, arg3)
-        val ret: LoggingEventInfo = LoggingEventInfo(
+        return LoggingEventInfo(
             loggingEvent.id?.let { loggingEvent.id } ?: 0L,
             loggingEvent.formattedMessage,
             loggingEvent.levelString,
             if (s.size > 0) s.last() else "",
             loggingEvent.callerMethod,
-            arg0, arg1, arg2, arg3,
-            ZonedDateTime.ofInstant(Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault())
-        )
+            loggingEvent.arg0?.let { loggingEvent.arg0 } ?: "[NULL]",
+            loggingEvent.arg1?.let { loggingEvent.arg1 } ?: "[NULL]",
+            loggingEvent.arg2?.let { loggingEvent.arg2 } ?: "[NULL]",
+            loggingEvent.arg3?.let { loggingEvent.arg3 } ?: "[NULL]",
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault()))
         // if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        // return ret
     }
 
 }

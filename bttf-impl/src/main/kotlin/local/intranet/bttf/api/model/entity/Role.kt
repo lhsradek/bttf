@@ -43,12 +43,4 @@ class Role {
     @JoinTable(name = "bttf_user_role")
     val user = mutableListOf<User>()
 
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "Role [id=" + id + ", roleName=" + roleName + ", enabled=" + enabled + ", user=" + user + "]"
-    }
-
 }

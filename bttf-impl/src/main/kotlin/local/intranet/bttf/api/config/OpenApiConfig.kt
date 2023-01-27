@@ -33,11 +33,9 @@ class OpenApiConfig {
 
     private val API = "BTTF API"
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
-    @Autowired
-    private lateinit var statusController: StatusController
+    @Autowired private lateinit var statusController: StatusController
 
     /**
      *
@@ -50,9 +48,9 @@ class OpenApiConfig {
         val ret = GroupedOpenApi.builder()
             .pathsToMatch("/api/v1/**")
             .group("bttf")
-            .displayName(API)
+            .displayName("BTTF API")
             .build()
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -87,7 +85,7 @@ class OpenApiConfig {
                     .description("Java Documentation")
                     .url("/bttf-javadoc/")
             ) */
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 

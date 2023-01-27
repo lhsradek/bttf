@@ -15,6 +15,24 @@
     <build>
         <finalName>bttf-impl</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <Specification-Title>${project.description}</Specification-Title>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <profiles>
         <profile>
@@ -26,6 +44,26 @@
                 <spring.profiles.active>default</spring.profiles.active>
             </properties>
             <build>
+                <!-- 
+                <plugins>
+                    <plugin>
+                        <groupId>org.jetbrains.dokka</groupId>
+                        <artifactId>dokka-maven-plugin</artifactId>
+                        <version>1.7.20</version>
+                        <configuration>
+                            <outputDir>${project.basedir}/target/documentation/dokka</outputDir>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>pre-site</phase>
+                                <goals>
+                                    <goal>dokka</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+                -->
                 <resources>
                     <resource>
                         <filtering>false</filtering>
@@ -34,7 +72,6 @@
                 </resources>
             </build>
         </profile>
-        
         <profile>
             <id>dev-postgres</id>
             <properties>
@@ -49,7 +86,6 @@
                 </resources>
             </build>
         </profile>
-        
         <profile>
             <id>dev-mariadb</id>
             <properties>

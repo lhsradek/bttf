@@ -11,10 +11,8 @@
 	<include
 		resource="org/springframework/boot/logging/logback/base.xml" />
 
-    <!--
     <springProperty name="spring.profiles.active"
          source="spring.profiles.active" />
-    -->
 
 	<springProfile name="default">
 	    <springProperty

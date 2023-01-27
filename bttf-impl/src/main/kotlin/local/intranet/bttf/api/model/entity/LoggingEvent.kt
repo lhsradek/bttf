@@ -6,6 +6,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 /**
@@ -62,16 +63,7 @@ class LoggingEvent {
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
     val arg3: String? = null
 
+    @NotNull
     val timestmp: Long = 0L
-
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "LoggingEvent [id=" + id + ", formattedMessage=" + formattedMessage + ", levelString=" + levelString +
-                ", callerClass=" + callerClass + ", callerMethod=" + callerMethod + ", arg0=" + arg0 +
-                ", arg1=" + arg1 + ", arg2=" + arg2 + ", arg3=" + arg3 + ", timestmp=" + timestmp + "]"
-    }
-
+ 
 }

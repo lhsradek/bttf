@@ -42,11 +42,9 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
 
     private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String  // toBoolean
+    // @Value("\${bttf.app.debug:false}") private lateinit var dbg: String  // toBoolean
 
-    @Autowired
-    private lateinit var servletContext: ServletContext
+    @Autowired private lateinit var servletContext: ServletContext
 
     /**
      *
@@ -57,9 +55,10 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     @ConfigurationProperties(prefix = "spring.datasource")
     @ConditionalOnExpression("\${#strings.length(spring.datasource.url) > 0}")
     fun dataSource(): DataSource {
-        val ret: DataSource = DataSourceBuilder.create().build()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        // val ret: DataSource = DataSourceBuilder.create().build()
+        // if (dbg.toBoolean()) log.debug("{}", ret)
+        // return ret
+        return DataSourceBuilder.create().build()
     }
 
     /**
@@ -73,9 +72,10 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     @ConfigurationProperties(prefix = "spring.secondaryDatasource")
     @ConditionalOnExpression("\${#strings.length(spring.secondaryDatasource.url) > 0}")
     fun secondaryDataSource(): DataSource {
-        val ret: DataSource = DataSourceBuilder.create().build()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        // val ret: DataSource = DataSourceBuilder.create().build()
+        // if (dbg.toBoolean()) log.debug("{}", ret)
+        // return ret
+        return DataSourceBuilder.create().build()
     }
 
     /**
@@ -87,9 +87,10 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     @Bean
     @ConditionalOnExpression("\${bttf.envers.enabled}")
     fun auditorProvider(): AuditorAware<String> {
-        val ret = AuditorAwareImpl()
-        if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
+        // val ret = AuditorAwareImpl()
+        // if (dbg.toBoolean()) log.debug("{}", ret)
+        // return ret
+        return AuditorAwareImpl()
     }
 
     /**
@@ -104,7 +105,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     fun sessionEventPublisher(): HttpSessionEventPublisher {
         val ret = HttpSessionEventPublisher()
         servletContext.setSessionTrackingModes(mutableSetOf(SessionTrackingMode.COOKIE))
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -125,7 +126,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
         val ret = SimpleUrlHandlerMapping()
         ret.setOrder(Int.MIN_VALUE)
         ret.setUrlMap(mapOf("/favicon.*" to faviconRequestHandler()))
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -141,7 +142,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     protected fun faviconRequestHandler(): ResourceHttpRequestHandler {
         val ret = ResourceHttpRequestHandler()
         ret.setLocationValues(arrayOf("res/").asList())
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
 
@@ -153,9 +154,10 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @Autowired
     fun configureJackson(objectMapper: ObjectMapper) {
-        val tzd = TimeZone.getDefault()
-        objectMapper.setTimeZone(tzd)
-        if (dbg.toBoolean()) log.debug("{}", tzd)
+        // val tzd = TimeZone.getDefault()
+        // objectMapper.setTimeZone(tzd)
+        // if (dbg.toBoolean()) log.debug("{}", tzd)
+        objectMapper.setTimeZone(TimeZone.getDefault())
     }
 
 }
