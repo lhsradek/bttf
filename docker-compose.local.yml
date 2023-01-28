@@ -1,0 +1,449 @@
+version: '3.9'
+
+networks:
+  default:
+    external: true
+    name: ${DOCKER_NETWORK}
+  elastic:
+    external: true
+    name: ${ELASTIC_NETWORK}
+  # local network:
+  intnet:
+    external: false
+    name: ${INT_NETWORK}
+
+services:
+
+#         
+# === Back to the Future ===
+#         
+  # Alpine Linux - nginx
+  webbttf:
+    depends_on:
+      webbttf-tomcat:
+        condition: service_healthy
+    image: nginx:alpine
+    # image: lhsradek/lhsdock:v3
+    container_name: "${APP_NICK}-${APP_ID}-nginx"
+    hostname: "${APP_HOST}"
+    restart: ${DOCKER_RESTART_POLICY}
+    # ports:
+    # - 80:80
+    # - 443:443
+    volumes:
+      # The first mount add bash and ping to nginx:alpine - lhsradek/lhsdock this dont'n need, see:
+      # https://github.com/lhsradek/platypus-lhsdock/blob/main/context/Dockerfile of lhsradek/lhsdock:v3
+      - ./extras/nginx/add.sh:/docker-entrypoint.d/05-add-packages.sh:ro
+      - ./certs/${CERTNAME}.crt:/etc/ssl/private/cacert.pem:ro
+      - ./certs/${CERTNAME}.key:/etc/ssl/private/cacert-key.pem:ro
+      - ./application/html:/var/www/html:ro
+      - ./extras/nginx/default-https.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./logs/bttf-nginx:/var/log/nginx
+      - adminer:/var/www/html/ad
+    networks:
+      # for traefik:
+      - default
+      # local network:
+      - intnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${DOCKER_NETWORK}"
+      - "traefik.http.routers.webbttf-public.rule=Host(`ad.${APP_HOST}`, `${APP_HOST}`)"
+      - "traefik.http.routers.webbttf-public.entrypoints=https"
+      - "traefik.http.routers.webbttf-public.tls=true"
+      # for https:
+      - "traefik.http.services.webbttf.loadbalancer.server.scheme=https"
+      - "traefik.http.services.webbttf.loadbalancer.server.port=443"
+    healthcheck:
+      test: "curl -s -I http://localhost/nginx_status | grep -q 'HTTP/1.1 200 OK'"
+      interval: 10s
+      timeout: 10s
+      retries: 500
+
+#         
+# === Tomcat ===
+#         
+  webbttf-tomcat:
+    # Ubuntu 22.04.1 LTS
+    image: tomcat:9
+    container_name: "${APP_NICK}-${APP_ID}-tomcat"
+    hostname: "bttf.${APP_HOST}"
+    restart: ${DOCKER_RESTART_POLICY}
+    networks:
+      # for traefik:
+      - default
+      # for APM:
+      - elastic
+      # local network:
+      - intnet
+    environment:
+      - ELASTIC_APM_ENVIRONMENT=${STAGE}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL}
+      - ELASTIC_APM_SERVICE_NAME=${APP_NICK}-${APP_ID}
+      - ELASTIC_APM_SERVICE_NODE_NAME=bttf.${APP_HOST}
+      - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
+    volumes:
+      - ./certs/${TOMBOLA_CERTNAME}.crt:/usr/local/tomcat/conf/localhost.pem:ro
+      - ./certs/${TOMBOLA_CERTNAME}.key:/usr/local/tomcat/conf/localhost-key.pem:ro
+      - ./extras/usr/local/tomcat/webapps:/usr/local/tomcat/webapps
+      - ./extras/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml:ro
+      - ./extras/usr/local/tomcat/conf/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml:ro
+      - ./extras/usr/local/tomcat/conf/web.xml:/usr/local/tomcat/conf/web.xml:ro
+      - ./extras/usr/local/tomcat/bin/catalina.sh:/usr/local/tomcat/bin/catalina.sh:ro
+      - ./extras/elastic-agent/elastic-apm-agent-1.35.0.jar:/usr/local/tomcat/lib/elastic-apm-agent-1.35.0.jar
+      - ./logs/bttf-tomcat:/usr/local/tomcat/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${DOCKER_NETWORK}"
+      - "traefik.http.routers.webbttf-tomcat-public.rule=Host(`${APP_ID}.${APP_HOST}`)"
+      - "traefik.http.routers.webbttf-tomcat-public.entrypoints=https"
+      - "traefik.http.routers.webbttf-tomcat-public.tls=true"
+      - "traefik.http.services.webbttf-tomcat.loadbalancer.server.scheme=https"
+      - "traefik.http.services.webbttf-tomcat.loadbalancer.server.port=8443"
+    healthcheck:
+     test: "curl -s -I http://${APP_ID}.${APP_HOST}:8080/${APP_ID}/actuator/health | grep -q 'HTTP/1.1 200'"
+     interval: 10s
+     timeout: 2s
+     retries: 50
+
+#         
+# === Adminer ===
+#         
+  webbttf-ad:
+    # Alpine
+    image: adminer:fastcgi
+    container_name: "${APP_NICK}-${APP_ID}-ad"
+    hostname: "ad-php.${APP_HOST}"
+    restart: ${DOCKER_RESTART_POLICY}
+    networks:
+      # local network:
+      - intnet
+    volumes:
+      - ./logs/bttf-nginx:/var/log/nginx
+      - adminer:/var/www/html:rw
+        
+#         
+# === Filebeat ===
+#         
+  webbttf-filebeat:
+    # Ubuntu - filebeat
+    image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}
+    restart: ${DOCKER_RESTART_POLICY}
+    container_name: "${APP_NICK}-${APP_ID}-filebeat"
+    hostname: "filebeat.${APP_HOST}"
+    networks:
+      # for traefik or logstash
+      - default
+      # for kibana, elastic and APM
+      - elastic
+      - intnet
+    # ports:
+    #   - ${MONITOR_PORT}:5066
+    user: root
+    volumes:
+      - ./certs:/usr/share/filebeat/certs:ro
+      - ./extras/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./extras/filebeat/filebeat:/root/bin:ro
+      - ./logs/filebeat:/usr/share/filebeat/logs
+      - ./logs/bttf-nginx/:/usr/share/filebeat/elogs/nginx:ro
+      - ./logs/bttf-tomcat/:/usr/share/filebeat/elogs/tomcat:ro
+      # - /var/log:/hostfs/var/log:ro
+      - filebeat:/usr/share/filebeat
+    environment:
+      - APP_ID=${APP_ID}
+      - APP_HOST=${APP_HOST}
+      - APP_NICK=${APP_NICK}
+      - APP_NET=${APP_NET}
+      - HOST_NICK=${HOST_NICK}
+      - CLUSTER_UUID=${CLUSTER_UUID}
+      - MONITOR_PORT=${MONITOR_PORT}
+      - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/filebeat/certs/ca.crt
+      - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
+      - ELASTIC_APM_ENVIRONMENT=${STAGE}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL}
+      - ELASTIC_APM_SERVICE_NAME=${APP_NICK}-${APP_ID}
+      - ELASTIC_APM_SERVICE_NODE_NAME=filebeat.${APP_HOST}
+      - ELASTIC_HOST=${ELASTIC_HOST}
+      - KIBANA_HOST=${KIBANA_HOST}
+      - LOGSTASH_SERVER_CERT=/usr/share/filebeat/certs/${LOGSTASH_CERTNAME}.crt
+      - LOGSTASH_SERVER_CERT_KEY=/usr/share/filebeat/certs/${LOGSTASH_CERTNAME}.key
+      - LOGSTASH_HOST=${LOGSTASH_HOST}
+      - STAGE=${STAGE}
+      - VERIFICATION_MODE=${VERIFICATION_MODE}
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.docker.network=${DOCKER_NETWORK}"
+    #   - "traefik.http.routers.webbttf-filebeat.rule=Host(`filebeat.${APP_HOST}`)"
+    #   - "traefik.http.routers.webbttf-filebeat.entrypoints=http-${MONITOR_PORT}"
+    #   - "traefik.http.routers.webbttf-filebeat.tls=false"
+    #   - "traefik.http.routers.webbttf-filebeat.service=webbttf-filebeat-${APP_ID}"
+    #   - "traefik.http.services.webbttf-filebeat-${APP_ID}.loadbalancer.server.port=${MONITOR_PORT}"
+    #   - "traefik.http.services.webbttf-filebeat-${APP_ID}.loadbalancer.server.scheme=http"
+
+#
+# === Metricbeat ===
+#
+  webbttf-metricbeat:
+    # Ubuntu - metricbeat
+    image: docker.elastic.co/beats/metricbeat:${STACK_VERSION}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}
+    restart: ${DOCKER_RESTART_POLICY}
+    container_name: "${APP_NICK}-${APP_ID}-metricbeat"
+    hostname: "metricbeat.${APP_HOST}"
+    networks:
+      - default
+      # for kibana, elastic and APM
+      - elastic
+      - intnet
+    # ports:
+    #   - ${MONITOR_PORT}:5066
+    user: root
+    volumes:
+      # - /var/run/docker.sock:/var/run/docker.sock
+      # - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      # - /proc:/hostfs/proc:ro
+      # - /:/hostfs:ro
+      - ./certs:/usr/share/metricbeat/certs:ro
+      - ./extras/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+      - ./extras/metricbeat/metricbeat:/root/bin:ro
+      - ./logs/metricbeat:/usr/share/metricbeat/logs
+      - metricbeat:/usr/share/metricbeat
+    environment: 
+      - APP_ID=${APP_ID} 
+      - APP_HOST=${APP_HOST} 
+      - APP_NICK=${APP_NICK} 
+      - APP_NET=${APP_NET} 
+      - HOST_NICK=${HOST_NICK} 
+      - CLUSTER_UUID=${CLUSTER_UUID} 
+      - MONITOR_PORT=${MONITOR_PORT} 
+      - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME} 
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD} 
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/metricbeat/certs/ca.crt 
+      - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
+      - ELASTIC_APM_ENVIRONMENT=${STAGE}
+      - ELASTIC_APM_SERVER_URL=${ELASTIC_APM_SERVER_URL}
+      - ELASTIC_APM_SERVICE_NAME=${APP_NICK}-${APP_ID}
+      - ELASTIC_APM_SERVICE_NODE_NAME=metricbeat.${APP_HOST}
+      - ELASTIC_HOST=${ELASTIC_HOST}
+      - KIBANA_HOST=${KIBANA_HOST} 
+      - POSTGRES_USERNAME=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - STAGE=${STAGE} 
+      - VERIFICATION_MODE=${VERIFICATION_MODE} 
+    # labels: 
+    #   - "traefik.enable=true" 
+    #   - "traefik.docker.network=${DOCKER_NETWORK}" 
+    #   - "traefik.http.routers.webbttf-metricbeat.rule=Host(`metricbeat.${APP_HOST}`)" 
+    #   - "traefik.http.routers.webbttf-metricbeat.entrypoints=http-${MONITOR_PORT}" 
+    #   - "traefik.http.routers.webbttf-metricbeat.tls=false" 
+    #   - "traefik.http.routers.webbttf-metricbeat.service=webbttf-metricbeat-${APP_ID}" 
+    #   - "traefik.http.services.webbttf-metricbeat-${APP_ID}.loadbalancer.server.port=${MONITOR_PORT}" 
+    #   - "traefik.http.services.webbttf-metricbeat-${APP_ID}.loadbalancer.server.scheme=http" 
+ 
+#
+# === Elastic Agent as fleet server ===
+#
+#   fleet:
+#     depends_on:
+#       webbttf:
+#         condition: service_healthy
+#     depends_on:
+#       webbttf-tomcat:
+#         condition: service_healthy
+#     # Ubuntu - fleet
+#     image: docker.elastic.co/beats/elastic-agent:${STACK_VERSION}
+#     restart: ${DOCKER_RESTART_POLICY}
+#     container_name: "${APP_NICK}-${APP_ID}-fleet"
+#     hostname: "fleet.${APP_HOST}"
+#     user: root # note, synthetic browser monitors require this set to `elastic-agent`
+#     networks:
+#       # for traefik
+#       - default
+#       # for kibana setup
+#       - elastic
+#       # local network:
+#       - intnet
+#     # ports:
+#     #   - ${APM_PORT}:${APM_PORT}
+#     #   - ${FLEET_SERVER_PORT}:${FLEET_SERVER_PORT}
+#     # https://www.elastic.co/guide/en/fleet/current/agent-environment-variables.html
+#     environment:
+#       - APP_ID=${APP_ID}
+#       - APP_HOST=${APP_HOST}
+#       - APP_NICK=${APP_NICK}
+#       - HOST_NICK=${HOST_NICK}
+#       - APP_NET=${APP_NET}
+#       - LOC_NET=${INT_NETWORK}
+#       - CLUSTER_NAME=${CLUSTER_NAME}
+#       - CLUSTER_UUID=${CLUSTER_UUID}
+#       - ELASTIC_AGENT_TAGS=${ELASTIC_AGENT_TAGS}
+#       - ELASTICSEARCH_HOSTS=https://es01.${HOST_NICK}.${APP_NET}:9200
+#       - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
+#       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+#       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/elastic-agent/certs/ca.crt
+#       - FLEET_ENROLL=${FLEET_ENROLL}
+#       - FLEET_ENROLLMENT_TOKEN=${FLEET_ENROLLMENT_TOKEN}
+#       - FLEET_SERVER_ENABLE=${FLEET_SERVER_ENABLE}
+#       - FLEET_SERVER_ELASTICSEARCH_HOST=https://es01.${HOST_NICK}.${APP_NET}:9200
+#       - FLEET_SERVER_ELASTICSEARCH_USERNAME=elastic
+#       - FLEET_SERVER_ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+#       - FLEET_SERVER_ELASTICSEARCH_CA=/usr/share/elastic-agent/certs/ca.crt
+#       - FLEET_SERVER_ELASTICSEARCH_REQUESTTIMEOUT=180000
+#       - FLEET_SERVER_HOST=fleet.${APP_HOST}
+#       - FLEET_SERVER_PORT=${FLEET_SERVER_PORT}
+#       - FLEET_SERVER_POLICY_ID=${FLEET_SERVER_POLICY_ID}
+#       - FLEET_SERVER_SERVICE_TOKEN=${FLEET_SERVER_SERVICE_TOKEN}
+#       - FLEET_SERVER_CERT=/usr/share/elastic-agent/certs/${FLEET_CERTNAME}.crt
+#       - FLEET_SERVER_CERT_KEY=/usr/share/elastic-agent/certs/${FLEET_CERTNAME}.key
+#       - FLEET_CA=/usr/share/elastic-agent/certs/ca.crt
+#       - FLEET_URL=https://fleet.${APP_HOST}:${FLEET_SERVER_PORT}
+#       - KIBANA_FLEET_HOST=${KIBANA_HOST}
+#       - KIBANA_FLEET_CA=/usr/share/elastic-agent/certs/ca.crt
+#       - KIBANA_FLEET_SETUP=1
+#       - KIBANA_FLEET_REQUESTTIMEOUT=1200000
+#       - LOGSTASH_SERVER_CERT=/usr/share/elastic-agent/certs/${LOGSTASH_CERTNAME}.crt
+#       - LOGSTASH_SERVER_CERT_KEY=/usr/share/elastic-agent/certs/${LOGSTASH_CERTNAME}.key
+#       - STAGE=${STAGE}
+#       - STACK_VERSION=${STACK_VERSION}
+#       - STV=${STV}
+#       - VERIFICATION_MODE=${VERIFICATION_MODE}
+#     volumes:
+#       # - /var/run/docker.sock:/var/run/docker.sock
+#       # - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+#       # - /proc:/hostfs/proc:ro
+#       # - /:/hostfs:ro
+#       - ./certs:/usr/share/elastic-agent/certs:ro
+#       - ./extras/elastic-agent/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml:ro
+#       - ./extras/elastic-agent/apm-server.yml:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/apm-server-${STACK_VERSION}-linux-x86_64/apm-server.yml:ro
+#       - ./extras/elastic-agent/filebeat.yml:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/filebeat-${STACK_VERSION}-linux-x86_64/filebeat.yml:ro
+#       - ./extras/elastic-agent/metricbeat.yml:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/metricbeat-${STACK_VERSION}-linux-x86_64/metricbeat.yml:ro
+#       - ./logs/fleet/elastic-agent:/usr/share/elastic-agent/state/data/logs
+#       - ./logs/fleet/apm-server:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/apm-server-${STACK_VERSION}-linux-x86_64/logs:ro
+#       - ./logs/fleet/filebeat:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/filebeat-${STACK_VERSION}-linux-x86_64/logs:ro
+#       - ./logs/fleet/metricbeat:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/metricbeat-${STACK_VERSION}-linux-x86_64/logs:ro
+#       - ./logs/bttf-nginx/:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/filebeat-${STACK_VERSION}-linux-x86_64/elogs/nginx/bttf:ro
+#       - ./logs/bttf-tomcat/:/usr/share/elastic-agent/data/elastic-agent-${STV}/install/filebeat-${STACK_VERSION}-linux-x86_64/elogs/tomcat/bttf:ro
+#       - /var/log:/usr/share/filebeat/elogs/system:ro
+#       - fleet:/usr/share/elastic-agent
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.docker.network=${DOCKER_NETWORK}"
+#       - "traefik.http.routers.webbttf-apm-server-public.rule=Host(`fleet.${APP_HOST}`)"
+#       - "traefik.http.routers.webbttf-apm-server-public.entrypoints=http-${APM_PORT}"
+#       - "traefik.http.routers.webbttf-apm-server-public.tls=false"
+#       - "traefik.http.routers.webbttf-apm-server-public.service=webbttf-apm-server"
+#       - "traefik.http.services.webbttf-apm-server.loadbalancer.server.port=${APM_PORT}"
+#       - "traefik.http.services.webbttf-apm-server.loadbalancer.server.scheme=http"
+#       - "traefik.http.routers.webbttf-fleet-public.rule=Host(`fleet.${APP_HOST}`)"
+#       - "traefik.http.routers.webbttf-fleet-public.entrypoints=https-${FLEET_SERVER_PORT}"
+#       - "traefik.http.routers.webbttf-fleet-public.tls=true"
+#       - "traefik.http.routers.webbttf-fleet-public.service=webbttf-fleet"
+#       - "traefik.http.services.webbttf-fleet.loadbalancer.server.port=${FLEET_SERVER_PORT}"
+#       - "traefik.http.services.webbttf-fleet.loadbalancer.server.scheme=https"
+#     healthcheck:
+#       test: ["CMD-SHELL", "elastic-agent status | grep 'Status: HEALTHY'"]
+#       interval: 30s
+#       timeout: 60s
+#       retries: 60
+
+#
+# === PostgreSQL ===
+#        
+  postgres:
+    image: postgres:14-alpine
+    container_name: "${APP_NICK}-${APP_ID}-db"
+    hostname: "db.${APP_HOST}"
+    # hostname: "db.${INT_NETWORK}"
+    restart: ${DOCKER_RESTART_POLICY}
+    environment:
+      - POSTGRES_USERNAME=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    networks:
+      # local network:
+      - intnet
+    volumes:
+      - ./extras/docker-entrypoint-initdb.d/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh:ro
+      - postgres:/var/lib/postgresql/data
+      # after init db
+      # - ./logs/bttf-postgres:/var/lib/postgresql/data/log
+      # only copy file after init db is better
+      # - ./extras/var/lib/postgresql/data/postgresql.conf:/var/lib/postgresql/data/postgresql.conf:ro
+      ## - ./extras/var/lib/postgresql/data/pg_hba.conf:/var/lib/postgresql/data/pg_hba.new.conf:ro
+
+#
+# === Redis ===
+#        
+  redis:
+    image: redis:7-alpine
+    # Alpine Linux
+    container_name: "${APP_NICK}-${APP_ID}-redis"
+    hostname: "redis"
+    # hostname: "redis.${INT_NETWORK}"
+    restart: ${DOCKER_RESTART_POLICY}
+    networks:
+      # local network:
+      - intnet
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    # ports:
+    #  - 6379:6379
+    volumes:
+      - redis:/data
+
+#
+# === Redis Commander - Web Console for Redis ===
+#        
+#   webbttf-rc:
+#     image: rediscommander/redis-commander:latest
+#     container_name: "${APP_NICK}-${APP_ID}-webrc"
+#     hostname: "webrc.${INT_NETWORK}"
+#     # build: .
+#     restart: ${DOCKER_RESTART_POLICY}
+#     networks:
+#       # for traefik:
+#       - default
+#       # local network:
+#       - intnet
+#     environment:
+#       - REDIS_HOSTS=redis
+#     #ports:
+#     # - "8081:8081"
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.docker.network=${DOCKER_NETWORK}"
+#       - "traefik.http.routers.webbttf-rc-public.rule=Host(`rc.${APP_HOST}`)"
+#       - "traefik.http.routers.webbttf-rc-public.entrypoints=https"
+#       - "traefik.http.routers.webbttf-rc-public.tls=true"
+#       - "traefik.http.services.webbttf-rc-platypus-${APP_ID}.loadbalancer.server.port=8081"
+#       - "traefik.http.services.webbttf-rc-platypus-${APP_ID}.loadbalancer.server.scheme=http"
+
+volumes:
+  postgres:
+    external: false
+    name: "${APP_ID}-db"
+  adminer:
+    external: false
+    name: "${APP_ID}-adminer"
+  redis:
+    external: false
+    name: "${APP_ID}-redis"
+  filebeat:
+    external: false
+    name: "${APP_ID}-filebeat"
+  metricbeat:
+    external: false
+    name: "${APP_ID}-metricbeat"
+#   fleet:
+#     external: false
+#     name: "${APP_ID}-fleet"
