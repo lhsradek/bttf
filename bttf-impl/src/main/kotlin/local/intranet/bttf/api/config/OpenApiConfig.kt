@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration
 @ConditionalOnExpression("\${bttf.springdoc.enabled}")
 class OpenApiConfig {
 
-    private val log = LoggerFactory.getLogger(OpenApiConfig::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val API = "BTTF API"
 

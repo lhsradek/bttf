@@ -26,7 +26,7 @@ import javax.crypto.spec.IvParameterSpec
 @Service
 public class BttfService {
 
-    private val log = LoggerFactory.getLogger(BttfService::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
     @Value("\${bttf.sec.key}") private lateinit var key: String

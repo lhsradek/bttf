@@ -6,12 +6,14 @@
     <name>bttf-impl</name>
     <packaging>jar</packaging>
     <description>Back to the Future - impl</description>
+    
     <parent>
         <groupId>local.intranet</groupId>
         <artifactId>bttf-parent</artifactId>
         <version>3.14.15-SNAPSHOT</version>
         <relativePath>../bttf-parent</relativePath>
     </parent>
+    
     <build>
         <finalName>bttf-impl</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
@@ -32,8 +34,50 @@
                     </archive>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <args>
+                        <arg>-Xjsr305=strict</arg>
+                    </args>
+                    <compilerPlugins>
+                        <plugin>spring</plugin>
+                        <plugin>jpa</plugin>
+                    </compilerPlugins>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-allopen</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-noarg</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
+    
     <profiles>
         <profile>
             <id>default</id>
@@ -72,6 +116,7 @@
                 </resources>
             </build>
         </profile>
+        
         <profile>
             <id>dev-postgres</id>
             <properties>
@@ -86,6 +131,7 @@
                 </resources>
             </build>
         </profile>
+        
         <profile>
             <id>dev-mariadb</id>
             <properties>

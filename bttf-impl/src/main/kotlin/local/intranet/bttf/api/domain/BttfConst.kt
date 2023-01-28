@@ -58,6 +58,25 @@ object BttfConst {
      */
     const val ROLE_PREFIX: String = "ROLE_"
 
+    
+    /**
+     *
+     * SAVED_REQUEST = "SPRING_SECURITY_SAVED_REQUEST"
+     */
+    const val SAVED_REQUEST: String = "SPRING_SECURITY_SAVED_REQUEST"
+    
+    /**
+     *
+     * LAST_EXCEPTION = "BTTF_APPLICATION_LAST_EXCEPTION"
+     */
+    const val LAST_EXCEPTION: String = "BTTF_APPLICATION_LAST_EXCEPTION"
+    
+    /**
+     *
+     * FORWARD_URI = "javax.servlet.forward.request_uri"
+     */
+    const val FORWARD_URI: String = "javax.servlet.forward.request_uri"
+
     /**
      *
      * ERROR_INVALID_USERNAME_AND_PASSWORD = "Invalid username and password!"
@@ -84,6 +103,12 @@ object BttfConst {
 
     /**
      *
+     * ERROR_AUTHENTICATION_CREDETIALS_NOT_FOUND = "Username not found!"
+     */
+    const val ERROR_AUTHENTICATION_CREDETIALS_NOT_FOUND = "Authentication credentials not Found!"
+    
+    /**
+     *
      * ERROR_BAD_CREDENTIALS= "Bad credetials!"
      */
     const val ERROR_BAD_CREDENTIALS: String = "Bad credetials!"
@@ -93,29 +118,6 @@ object BttfConst {
      * ERROR_ACCOUNT_EXPIRED = "Account expired!"
      */
     const val ERROR_ACCOUNT_EXPIRED: String = "Account expired!"
-
-    /**
-     *
-     * IMPLEMENTATION_VERSION = "implementationVersion"
-    const val IMPLEMENTATION_VERSION: String = "implementationVersion"
-     */
-
-    /**
-     *
-     * STATUS_UNKNOWN = "unknown"
-    const val STATUS_UNKNOWN: String = "unknown"
-     */
-
-    /**
-     *
-     * STATUS_OK = "OK"
-    const val STATUS_OK: String = "OK"
-     */
-
-    /**
-     *
-     * USER_ANONYMOUS = "anonymous"
-    const val USER_ANONYMOUS: String = "anonymous"
-     */
-
+    
+    
 }

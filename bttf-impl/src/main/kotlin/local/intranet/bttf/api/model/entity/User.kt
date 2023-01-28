@@ -27,21 +27,21 @@ import local.intranet.bttf.api.security.AESUtil
  */
 @Entity
 @Table(name = "bttf_user")
-class User {
-
+data class User constructor(
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    val id: Long? = null,
 
     @NotNull
     @Column(name = "user_name", nullable = false)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val userName: String = ""
+    val userName: String,
 
     @NotNull
     @Column(name = "password", nullable = false)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val password: String = ""
+    val password: String,
 
     /**
      *
@@ -51,8 +51,8 @@ class User {
      *  -> AccountExpiredException
      *
      */
-    @Column(name = "account_non_expired")
-    val accountNonExpired: Boolean = true
+    @Column(name = "account_non_expired", nullable = false)
+    val accountNonExpired: Boolean = true,
 
     /**
      *
@@ -62,8 +62,8 @@ class User {
      *  -> LockedException
      *
      */
-    @Column(name = "account_non_locked")
-    val accountNonLocked: Boolean = true
+    @Column(name = "account_non_locked", nullable = false)
+    val accountNonLocked: Boolean = true,
 
     /**
      *
@@ -74,13 +74,14 @@ class User {
      *
      */
     @Column(name = "credentials_non_expired")
-    val credentialsNonExpired: Boolean = true
+    val credentialsNonExpired: Boolean = true,
 
-    val enabled: Boolean = true
+    @Column(nullable = false)
+    val enabled: Boolean = true) {
 
     @Column(nullable = true)
     @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(name = "bttf_user_role")
-    var role = mutableListOf<Role>()
-      
+    val role = mutableListOf<Role>()
+    
 }

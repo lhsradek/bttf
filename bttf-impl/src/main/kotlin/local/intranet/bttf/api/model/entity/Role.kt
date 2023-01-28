@@ -25,18 +25,19 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
  */
 @Entity
 @Table(name = "bttf_role")
-class Role {
+data class Role constructor(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    val id: Long? = null,
 
     @NotNull
     @Column(name = "role_name", nullable = false)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val roleName: String = ""
+    val roleName: String,
 
-    val enabled: Boolean = true
+    @Column(nullable = false)
+    val enabled: Boolean = true) {
 
     @Column(nullable = true)
     @ManyToMany(cascade = [CascadeType.ALL])

@@ -1,7 +1,6 @@
 package local.intranet.bttf.api.exception
 
 import java.net.ConnectException
-
 import org.slf4j.LoggerFactory
 
 /**
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory
  */
 class BttfException : ConnectException {
 
-    private val log = LoggerFactory.getLogger(BttfException::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
     
     /**
      *

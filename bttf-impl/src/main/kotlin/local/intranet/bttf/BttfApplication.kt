@@ -43,7 +43,10 @@ import org.springframework.web.WebApplicationInitializer
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *", redisNamespace = "spring:session:bttf")
 class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {
 
-    private val log = LoggerFactory.getLogger(BttfApplication::class.java)
+    /**
+     * https://www.baeldung.com/kotlin/logging
+     */
+    private val log = LoggerFactory.getLogger(javaClass)
 
     /**
      *

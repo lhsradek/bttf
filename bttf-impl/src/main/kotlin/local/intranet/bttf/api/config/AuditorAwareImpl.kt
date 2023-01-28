@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 @ConditionalOnExpression("\${bttf.envers.enabled}")
 class AuditorAwareImpl : AuditorAware<String> {
 
-    private val log = LoggerFactory.getLogger(AuditorAwareImpl::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean

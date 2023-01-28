@@ -4,6 +4,7 @@ import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.security.AESUtil
+import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.UserService
 
 import org.assertj.core.api.Assertions.assertThat
@@ -32,6 +33,7 @@ class bttfTest {
 
     @Autowired private lateinit var statusController: StatusController
     @Autowired private lateinit var infoController: InfoController
+    @Autowired private lateinit var loginAttemptService: LoginAttemptService
     @Autowired private lateinit var userService: UserService
     
     /**
@@ -49,7 +51,11 @@ class bttfTest {
         assertThat(statusController.getServerSoftware()).isNotBlank
 
         assertThat(infoController).isNotNull
-
+        
+        assertThat(loginAttemptService).isNotNull
+        assertThat(loginAttemptService.getLoginAttempts(true)).isNotNull
+        
+        assertThat(userService).isNotNull
         assertThat(userService.getUsername()).isNotNull
         assertThat(userService.isAuthenticated()).isNotNull
         assertThat(userService.getAuthoritiesRoles()).isNotNull

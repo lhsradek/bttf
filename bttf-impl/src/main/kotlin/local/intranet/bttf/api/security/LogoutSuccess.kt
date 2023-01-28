@@ -1,11 +1,9 @@
 package local.intranet.bttf.api.security
 
 import java.io.IOException;
-
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
 import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
@@ -24,7 +22,7 @@ import org.springframework.util.StringUtils
  */
 class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
 
-    private val log = LoggerFactory.getLogger(LogoutSuccess::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     /**
      *

@@ -1,7 +1,6 @@
 package local.intranet.bttf.api.exception
 
 import java.text.MessageFormat
-
 import ch.qos.logback.classic.db.DBAppender
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.IThrowableProxy

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service
 @Service
 class RedisMessageSubscriber : MessageListener {
 
-    private val log = LoggerFactory.getLogger(RedisMessageSubscriber::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     /**
      *

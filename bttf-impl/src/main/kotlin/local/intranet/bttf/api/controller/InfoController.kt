@@ -2,16 +2,16 @@ package local.intranet.bttf.api.controller
 
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
-
+import io.swagger.v3.oas.annotations.Parameter
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
+import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
-
+import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -39,10 +39,11 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = BttfConst.INFO_TAG)
 public class InfoController {
 
-    private val log = LoggerFactory.getLogger(InfoController::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired private lateinit var userService: UserService
     @Autowired private lateinit var roleService: RoleService
+    @Autowired private lateinit var loginAttemptService: LoginAttemptService
 
 
     /**
@@ -122,6 +123,29 @@ public class InfoController {
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     fun getRoleInfo(): RoleInfo {
         return roleService.getRoleInfo()
+    }
+
+    /**
+     *
+     * Get attempts
+     *
+     * @param printBlocked {@link Boolean}
+     * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
+     */
+    @GetMapping(value = arrayOf("/loginAttempts"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @Operation(
+        operationId = "getLoginAttempts",
+        summary = "Get Login Attempts",
+        description = "Get Login Attempts\n\n"
+                + "This method get loggin attempts\n\n",
+                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+                // + "getLoginAttempts()\" target=\"_blank\">LoginAttemptService.getLoginAttempts</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    fun getLoginAttempts(@Parameter(allowEmptyValue = false) @NotNull printBlocked: Boolean): List<Triple<String, Int, Long>> {
+        val ret = loginAttemptService.getLoginAttempts(printBlocked)
+        return ret
     }
 
 }

@@ -2,16 +2,11 @@ package local.intranet.bttf.api.controller
 
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
-
 import java.util.Optional
-
 import javax.servlet.ServletContext
-
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.domain.BttfConst
-
 import org.slf4j.LoggerFactory
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -35,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = BttfConst.STATUS_TAG)
 class StatusController {
 
-    private val log = LoggerFactory.getLogger(StatusController::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
     @Value("\${bttf.app.stage}") private lateinit var stage: String

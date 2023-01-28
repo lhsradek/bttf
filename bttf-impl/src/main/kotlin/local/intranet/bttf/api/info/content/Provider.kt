@@ -1,11 +1,9 @@
 package local.intranet.bttf.api.info.content
 
 import java.util.concurrent.atomic.AtomicBoolean
-
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceContext
-
 import org.hibernate.envers.AuditReader
 import org.hibernate.envers.AuditReaderFactory
 import org.hibernate.envers.internal.reader.AuditReaderImpl
@@ -26,7 +24,7 @@ import org.springframework.stereotype.Component
 @Component
 public class Provider {
 
-	private val log = LoggerFactory.getLogger(Provider::class.java)
+	private val log = LoggerFactory.getLogger(javaClass)
 
 	@Autowired private lateinit var entityManagerFactory: EntityManagerFactory
 
@@ -43,18 +41,23 @@ public class Provider {
 	 */
 	fun queryProvider(params: List<Pair<String, String>>): String {
 		val query = StringBuilder()
-		var first = true
-		params.forEach { 
+        var first = true
+		params.forEach {
+            val (a, b) = it
 			if (first) {
 				query.append("?")
-				query.append(it)
+				query.append(a)
+				query.append("=")
+                query.append(b)
 				first = false
 			} else {
 				query.append("&")
-				query.append(it)
+                query.append(a)
+                query.append("=")
+                query.append(b)
 			}
 		}
-		return query.toString();
+		return query.toString()
 	}
 
 	/**

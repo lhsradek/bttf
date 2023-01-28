@@ -40,7 +40,7 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionApplicationInitializer() {
 
-    private val log = LoggerFactory.getLogger(ApplicationConfig::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     // @Value("\${bttf.app.debug:false}") private lateinit var dbg: String  // toBoolean
 

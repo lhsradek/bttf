@@ -44,10 +44,10 @@ class RedisConfig {
     @Bean
     fun jedisConnectionFactory(): JedisConnectionFactory {
         val ret = JedisConnectionFactory()
-        ret.standaloneConfiguration?.setPassword(password)
-        ret.standaloneConfiguration?.setDatabase(database.toInt())
-        ret.standaloneConfiguration?.setHostName(host)
-        ret.standaloneConfiguration?.setPort(port.toInt())
+        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setPassword(password) }
+        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setDatabase(database.toInt()) }
+        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setHostName(host) }
+        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setPort(port.toInt()) }
         @Suppress("DEPRECATION")
         ret.clientConfiguration.getPoolConfig().get().setMaxWaitMillis(timeout.toLong())
         return ret
@@ -63,8 +63,8 @@ class RedisConfig {
     fun redisTemplate(): RedisTemplate<String, Any> {
         val ret: RedisTemplate<String, Any> = RedisTemplate()
         ret.setConnectionFactory(jedisConnectionFactory())
-        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-        ret.setValueSerializer(GenericToStringSerializer<Object>(Object::class.java))
+        // @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+        ret.setValueSerializer(GenericToStringSerializer<Any>(Any::class.java))
         return ret
     }
 

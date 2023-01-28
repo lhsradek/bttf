@@ -1,11 +1,9 @@
 package local.intranet.bttf.api.info
 
 import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import local.intranet.bttf.api.domain.DefaultFieldLengths;
 
 /**
@@ -23,7 +21,7 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths;
  *
  */
 @JsonPropertyOrder("id", "roleName", "enabled", "users")
-data class RolePlain constructor(
+data class RolePlain constructor( 
     val id: Long?,
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     val roleName: String,

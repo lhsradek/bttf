@@ -32,7 +32,7 @@ data class LoggingEventInfo constructor(
     val arg1: String,
     val arg2: String,
     val arg3: String,
-    val date: ZonedDateTime) {
+    val date: ZonedDateTime ) {
 
     /**
      *

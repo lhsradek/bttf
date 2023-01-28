@@ -3,9 +3,7 @@ package local.intranet.bttf.api.service
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.RolePlain
 import local.intranet.bttf.api.model.repository.RoleRepository
-
 import org.slf4j.LoggerFactory
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -22,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class RoleService {
 
-    private val log = LoggerFactory.getLogger(RoleService::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
@@ -35,7 +33,7 @@ class RoleService {
 
     /**
      *
-     * Get userRole
+     * Get userRole for {@link local.intranet.bttf.api.controller.InfoController#getUsersRoles}
      *
      * @return {@link List}&lt;{@link RolePlain}&gt;
      */

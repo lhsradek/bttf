@@ -4,14 +4,11 @@ import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.model.entity.LoggingEvent
 import local.intranet.bttf.api.model.repository.LoggingEventRepository
-
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-
 import javax.validation.constraints.NotNull
-
-// import org.slf4j.LoggerFactory
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
@@ -39,7 +36,7 @@ import org.springframework.data.domain.PageImpl
 @Service
 public class LoggingEventService {
 
-    // private val log = LoggerFactory.getLogger(LoggingEventService::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
@@ -108,10 +105,11 @@ public class LoggingEventService {
         try {
             var s: String = sort.toString()
             val direction: Direction
-            if (s.contains(Direction.DESC.toString()))
+            if (s.contains(Direction.DESC.toString())) {
                 direction = Direction.DESC
-            else
+            } else {
                 direction = Direction.ASC
+            }
             s = s.replace(Direction.ASC.toString(), "").replace(Direction.DESC.toString(), "").replace(":", "").trim()
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
             val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))

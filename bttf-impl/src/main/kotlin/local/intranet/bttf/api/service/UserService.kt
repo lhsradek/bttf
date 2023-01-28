@@ -2,22 +2,19 @@ package local.intranet.bttf.api.service
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
-
 import javax.servlet.http.HttpSession
-
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.type.RoleType
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
 import local.intranet.bttf.api.security.LogoutSuccess
-
 import org.slf4j.LoggerFactory
-
 import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AccountExpiredException
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.Authentication
@@ -42,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService : UserDetailsService {
 
-    private val log = LoggerFactory.getLogger(UserService::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
 
@@ -111,9 +108,7 @@ class UserService : UserDetailsService {
         // }
         val user: User? = userRepository.findByName(username)
 
-        if (user == null) {
-            throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
-        } else {
+        user?.let {
             if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired && user.enabled) {
                 val authorities = mutableListOf<GrantedAuthority>()
                 user.role.forEach {
@@ -125,13 +120,14 @@ class UserService : UserDetailsService {
                 return UserInfo(user.userName, user.password, true, true, true, true, authorities)
 
             } else {
-                if (!user.credentialsNonExpired)
+                if (!user.credentialsNonExpired) {
                     throw BadCredentialsException(BttfConst.ERROR_BAD_CREDENTIALS)
-                else if (!user.accountNonExpired)
+                } else if (!user.accountNonExpired) {
                     throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
+                }
                 throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
-        }
+        }?: throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
     }
 
     /**
@@ -142,9 +138,10 @@ class UserService : UserDetailsService {
      */
     fun getUsername(): String {
         var ret = ""
-        if (httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) != null) { 
-            if (httpSession.maxInactiveInterval < 3600)
+        httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let { 
+            if (httpSession.maxInactiveInterval < 3600) {
                 httpSession.setMaxInactiveInterval(3600)
+            }
             ret = SecurityContextHolder.getContext().authentication.name
         }
         // if (dbg.toBoolean()) log.debug("'{}'", ret)
@@ -173,12 +170,15 @@ class UserService : UserDetailsService {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun getAuthoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
-        if (httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) != null) { 
-            for (g: GrantedAuthority in SecurityContextHolder.getContext().authentication.authorities)
+        httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let { 
+            for (g: GrantedAuthority in SecurityContextHolder.getContext().authentication.authorities) {
                 ret.add(g.authority.replace(BttfConst.ROLE_PREFIX, ""))
+            }
             ret.sort()
         }
-        if (ret.size == 0) ret.add(RoleType.ANONYMOUS_ROLE.role)
+        if (ret.size == 0) {
+            ret.add(RoleType.ANONYMOUS_ROLE.role)
+        }
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
@@ -201,8 +201,9 @@ class UserService : UserDetailsService {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
         for (r in RoleType.values())
-            if (!r.equals(RoleType.ANONYMOUS_ROLE))
+            if (!r.equals(RoleType.ANONYMOUS_ROLE)) {
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))
+            }
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }
