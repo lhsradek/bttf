@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 /**
  *
  * {@link InfoController} for {@link local.intranet.bttf.BttfApplication}
- * It's for charge of working with buffers and for REST methods
+ * It's for REST methods
  * <p>
  * info from services in {@link local.intranet.bttf.api.service}
  *
