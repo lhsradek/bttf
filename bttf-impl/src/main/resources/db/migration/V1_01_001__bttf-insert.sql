@@ -50,8 +50,6 @@ INSERT INTO bttf_user
     
 -- For H2, Postgresql, MariaDB (MySQL)
 
--- new, but we are role and user in redis 
-
 INSERT INTO bttf_user_role (user_id, role_id) (
     SELECT id user_id, (SELECT id FROM bttf_role
     WHERE role_name='adminRole') role_id
