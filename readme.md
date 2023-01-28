@@ -11,3 +11,11 @@ My <img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp
 </p>
 
 Soon we will start traveling through time!
+
+
+The technology used:
+
+* Kotlin
+* Spring Boot (controllers, services, listeners, Quartz Scheduler, Thymeleaf, JPA) 
+* H2, PostgreSQL, MariaDB, JPA, JSP, Redis, Tomcat, Nginx, Traefik
+* Docker, OpenAPI
