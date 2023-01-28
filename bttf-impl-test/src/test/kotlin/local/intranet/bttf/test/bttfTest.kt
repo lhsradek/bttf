@@ -31,11 +31,15 @@ import org.springframework.test.context.junit4.SpringRunner
 @SpringBootTest
 class bttfTest {
 
-    @Autowired private lateinit var statusController: StatusController
-    @Autowired private lateinit var infoController: InfoController
-    @Autowired private lateinit var loginAttemptService: LoginAttemptService
-    @Autowired private lateinit var userService: UserService
-    
+    @Autowired
+    private lateinit var statusController: StatusController
+    @Autowired
+    private lateinit var infoController: InfoController
+    @Autowired
+    private lateinit var loginAttemptService: LoginAttemptService
+    @Autowired
+    private lateinit var userService: UserService
+
     /**
      *
      * givenTest
@@ -51,10 +55,10 @@ class bttfTest {
         assertThat(statusController.getServerSoftware()).isNotBlank
 
         assertThat(infoController).isNotNull
-        
+
         assertThat(loginAttemptService).isNotNull
         assertThat(loginAttemptService.getLoginAttempts(true)).isNotNull
-        
+
         assertThat(userService).isNotNull
         assertThat(userService.getUsername()).isNotNull
         assertThat(userService.isAuthenticated()).isNotNull
@@ -64,16 +68,20 @@ class bttfTest {
         assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
 
         // a bit of Dadaism
-        assertEquals("We have a stuffed grandfather in the closet.",
+        assertEquals(
+            "We have a stuffed grandfather in the closet.",
             AESUtil.getBase64("V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=")
         )
-        assertEquals("V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=",
+        assertEquals(
+            "V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=",
             AESUtil.setBase64("We have a stuffed grandfather in the closet.")
         )
-        assertEquals("My cork badtub is like your giraffe rye!",
+        assertEquals(
+            "My cork badtub is like your giraffe rye!",
             AESUtil.getHex("4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521")
         )
-        assertEquals("4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521",
+        assertEquals(
+            "4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521",
             AESUtil.setHex("My cork badtub is like your giraffe rye!")
         )
 
