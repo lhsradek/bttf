@@ -19,7 +19,6 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.scheduling.quartz.SpringBeanJobFactory
 
 import local.intranet.bttf.api.config.ApplicationConfig
-import local.intranet.bttf.api.controller.StatusController
 
 /**
  *
@@ -40,7 +39,6 @@ public class SchedulerConfig {
     @Value("\${bttf.app.cron.frequency.trigger}") private lateinit var frequency: String
 
     @Autowired private lateinit var applicationContext: ApplicationContext
-    @Autowired private lateinit var statusController: StatusController
 
     /**
      *
