@@ -1,9 +1,10 @@
 package local.intranet.bttf.api.info.content
 
 import local.intranet.bttf.api.domain.DefaultFieldLengths
-import com.fasterxml.jackson.annotation.JsonInclude
-import javax.validation.constraints.Size
 import local.intranet.bttf.api.info.TimedEntry
+import com.fasterxml.jackson.annotation.JsonInclude
+import java.time.ZonedDateTime
+import javax.validation.constraints.Size
 import org.jetbrains.annotations.NotNull
 
 /**
@@ -52,17 +53,17 @@ interface LoginCache {
      */ 
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun isBlocked(@NotNull key: String): Boolean? 
+    fun isBlocked(@NotNull key: String): Boolean
     
     /** 
      * key, number of attempts, creation timestamp of all
      * 
      * @param printBlocked {@link Boolean}
      *
-     * @return {@link List}&lt; {@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
+     * @return {@link List}&lt; {@link Triple}&lt;{@link String},{@link Int},{@link ZonedDateTime}&gt;&gt;
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, Long>>
+    fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>>
     
 }

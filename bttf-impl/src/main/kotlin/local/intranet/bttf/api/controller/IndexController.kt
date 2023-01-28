@@ -16,6 +16,7 @@ import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.info.content.Provider
+import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
 import org.jetbrains.annotations.NotNull
@@ -64,6 +65,7 @@ public class IndexController {
     @Autowired private lateinit var statusController: StatusController
     @Autowired private lateinit var userService: UserService
     @Autowired private lateinit var loggingEventService: LoggingEventService
+    @Autowired private lateinit var loginAttemptService: LoginAttemptService
     @Autowired private lateinit var authenticationManager: AuthenticationManager
     @Autowired private lateinit var provider: Provider
 
@@ -83,8 +85,9 @@ public class IndexController {
         addModel(request, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
-        	log.info("GetLicense username:'{}' session:{}", model.asMap().get("username"), request.requestedSessionId)
-        }?: log.info("GetLicense username:'{}'", model.asMap().get("username"))
+        	log.info("GetLicense username:'{}' ip:'{}' session:{}", model.asMap().get("username"),
+                statusController.getClientIP(), request.requestedSessionId)
+        }?: log.info("GetLicense username:'{}' ip:'{}'", model.asMap().get("username"), statusController.getClientIP())
         return "license"
     }
 
@@ -113,9 +116,10 @@ public class IndexController {
         model.addAttribute("implementationVersion", statusController.getImplementationVersion())
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
-        	log.info("GetIndex username:'{}' page:{} session:{}",
-                model.asMap().get("username"), page.get(), request.requestedSessionId)
-        }?: log.info("GetIndex username:'{}' page:{}", model.asMap().get("username"), page.get())
+        	log.info("GetIndex username:'{}' ip:'{}' page:{} session:{}",
+                model.asMap().get("username"), statusController.getClientIP(), page.get(), request.requestedSessionId)
+        }?: log.info("GetIndex username:'{}'ip:'{}' page:{}",
+            model.asMap().get("username"), statusController.getClientIP(), page.get())
         return "index"
     }
 
@@ -382,9 +386,8 @@ public class IndexController {
                     is BadCredentialsException -> {
                         val ret = "/bttf/login" + provider.queryProvider(listOf(
                             Pair("error", "true"), Pair("exception", e::class.java.simpleName)))
-                        // attempt = loginAttemptService.findById(statusController.getClientIP())
-                        // log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
-                        log.warn("Signin username:'{}' redirect:'{}'", username, ret)
+                        val attempt = loginAttemptService.findById(statusController.getClientIP())
+                        log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
                         // log.error(e::class.java.simpleName, e)
                         log.error(e::class.java.simpleName)
                         request.session.setAttribute(BttfConst.LAST_EXCEPTION, e)

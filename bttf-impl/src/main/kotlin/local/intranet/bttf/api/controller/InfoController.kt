@@ -3,6 +3,7 @@ package local.intranet.bttf.api.controller
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.RoleInfo
@@ -143,7 +144,8 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    fun getLoginAttempts(@Parameter(allowEmptyValue = false) @NotNull printBlocked: Boolean): List<Triple<String, Int, Long>> {
+    fun getLoginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
+            List<Triple<String, Int, ZonedDateTime>> {
         val ret = loginAttemptService.getLoginAttempts(printBlocked)
         return ret
     }

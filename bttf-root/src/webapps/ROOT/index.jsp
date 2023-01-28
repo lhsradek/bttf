@@ -283,7 +283,6 @@ StringBuffer env = new StringBuffer();
           <ul><% if (isBttf) { %>
             <li><a href="https://<%=serverName%>:8443/bttf/" target="_blank"><%=serverName%> - Back to the Future</a></li>
             <li><a href="https://<%=serverName%>:8443/bttf/swagger-ui" target="_blank"><%=serverName%> - OpenAPI</a></li>
-            <li><a href="https://<%=serverName%>:8443/bttf/actuator" target="_blank"><%=serverName%> - Actuator</a></li><% }; if (isManager) { %>
             <li><a href="https://<%=serverName%>:8443/manager/" target="_blank"><%=serverName%> - Manager</a></li><% }; if (isJSPinfo) { %>
 	        <li><a href="https://<%=serverName%>:8443/info.jsp" target="_blank"><%=serverName%> - JspInfo</a></li><% }; %>
           </ul>

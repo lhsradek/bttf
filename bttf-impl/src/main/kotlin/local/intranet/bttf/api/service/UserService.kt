@@ -8,7 +8,9 @@ import local.intranet.bttf.api.domain.type.RoleType
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
+import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.security.LogoutSuccess
+import local.intranet.bttf.api.service.LoginAttemptService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,6 +47,9 @@ class UserService : UserDetailsService {
 
     @Autowired private lateinit var userRepository: UserRepository
     @Autowired private lateinit var httpSession: HttpSession
+    @Autowired private lateinit var statusController: StatusController
+    @Autowired private lateinit var loginAttemptService: LoginAttemptService
+
 
     /**
      *
@@ -102,10 +107,10 @@ class UserService : UserDetailsService {
         AccountExpiredException::class
     )
     override fun loadUserByUsername(username: String): UserInfo {
-        // val ip: String = statusController.getClientIP()
-        // if (loginAttemptService.isBlocked(ip)) {
-        //     throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
-        // }
+        val ip: String = statusController.getClientIP()
+        if (loginAttemptService.isBlocked(ip)) {
+        	throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
+        }
         val user: User? = userRepository.findByName(username)
 
         user?.let {

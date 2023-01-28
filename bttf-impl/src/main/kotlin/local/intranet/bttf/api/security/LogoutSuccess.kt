@@ -48,10 +48,10 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
                 log.info("Logout username:'{}' refererUrl:'{}' sessionId:{}",
                     authentication.name, request.getHeader("Referer"), request.getSession().getId())
             }
-            super.onLogoutSuccess(request, response, authentication);
+            super.onLogoutSuccess(request, response, authentication)
             request.session.invalidate()
         } catch (e: Exception) {
-            log.error(e.message, e);
+            log.error(e.message, e)
         }
     }
 
@@ -65,8 +65,9 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
      * @return {@link String}
      */
     override protected fun determineTargetUrl(request: HttpServletRequest, response: HttpServletResponse): String {
-        if (isAlwaysUseDefaultTargetUrl())
+        if (isAlwaysUseDefaultTargetUrl()) {
             return getDefaultTargetUrl()
+        }
         var targetUrl: String = ""
         if (targetUrlParameter != null) {
             targetUrl = request.getParameter(targetUrlParameter)

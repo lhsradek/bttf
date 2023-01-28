@@ -32,7 +32,7 @@
         <spring.profiles.active>default</spring.profiles.active>
         <openapi.version>1.6.14</openapi.version>
         <!-- <kotlin.version>1.6.21</kotlin.version> -->
-        <kotlin.version>1.8.0</kotlin.version>
+        <kotlin.version>1.7.22</kotlin.version>
         <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
         <spring-boot.version>2.4.13</spring-boot.version>
     </properties>
@@ -157,6 +157,10 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>

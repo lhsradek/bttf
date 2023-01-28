@@ -61,6 +61,7 @@
                             <include>application-${spring.profiles.active}.properties</include>
                             <include>templates/</include>
                             <include>logback-spring.xml</include>
+                            <include>quartz-default.properties</include>
                         </includes>
                     </resource>
                 </resources>
@@ -102,6 +103,7 @@
                             <include>application-${spring.profiles.active}.properties</include>
                             <include>templates/</include>
                             <include>logback-spring.xml</include>
+                            <include>quartz-default.properties</include>
                         </includes>
                     </resource>
                 </resources>
@@ -143,6 +145,7 @@
                             <include>application-${spring.profiles.active}.properties</include>
                             <include>templates/</include>
                             <include>logback-spring.xml</include>
+                            <include>quartz-default.properties</include>
                         </includes>
                     </resource>
                 </resources>
@@ -184,6 +187,7 @@
                             <include>application-${spring.profiles.active}.properties</include>
                             <include>templates/</include>
                             <include>logback-spring.xml</include>
+                            <include>quartz-default.properties</include>
                         </includes>
                     </resource>
                 </resources>
@@ -225,6 +229,7 @@
                             <include>application-${spring.profiles.active}.properties</include>
                             <include>templates/</include>
                             <include>logback-spring.xml</include>
+                            <include>quartz-default.properties</include>
                         </includes>
                     </resource>
                 </resources>
@@ -266,6 +271,7 @@
                             <include>application-${spring.profiles.active}.properties</include>
                             <include>templates/</include>
                             <include>logback-spring.xml</include>
+                            <include>quartz-default.properties</include>
                         </includes>
                     </resource>
                 </resources>

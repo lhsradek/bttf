@@ -3,6 +3,7 @@ package local.intranet.bttf.api.controller
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
 import java.util.Optional
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.ServletContext
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.domain.BttfConst
@@ -38,6 +39,7 @@ class StatusController {
     @Autowired private lateinit var servletContext: ServletContext
     @Autowired private lateinit var applicationContext: ApplicationContext
     @Autowired private lateinit var environment: Environment
+    @Autowired private lateinit var httpServletRequest: HttpServletRequest
 
     /**
      *
@@ -140,5 +142,21 @@ class StatusController {
     protected fun getServerInfo(): String {
         return servletContext.getServerInfo()
     }
+    
+    /**
+     * 
+     * Get client IP
+     * 
+     * @return {@link String} as ip
+     */
+    fun getClientIP(): String {
+        val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
+        val ret = xfHeader?.let {
+            xfHeader.split(",")[0]
+        }?: httpServletRequest.remoteAddr
+        return ret
+    }
+
+
 
 }

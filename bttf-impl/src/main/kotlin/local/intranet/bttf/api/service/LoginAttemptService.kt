@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.service
 
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.SECONDS
 import javax.annotation.PostConstruct
 import local.intranet.bttf.api.domain.BttfConst
@@ -23,6 +24,7 @@ public class LoginAttemptService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
     @Value("\${bttf.app.login.maxAttemt}") private lateinit var maxAttempt: String  // toInt()
     @Value("\${bttf.app.login.waitSec}") private lateinit var waitSec: String       // toLong()
     @Value("\${bttf.app.login.printBlocked:false}") private lateinit var printBlocked: String // toBoolean()
@@ -35,7 +37,7 @@ public class LoginAttemptService {
      */
     @PostConstruct
     fun init() {
-        loginAttempt = AttemptCache.init(waitSec.toLong(), SECONDS, printBlocked.toBoolean())
+        loginAttempt = AttemptCache.init(waitSec.toLong(), SECONDS, printBlocked.toBoolean(), maxAttempt.toInt())
     }
 
     /**
@@ -45,9 +47,11 @@ public class LoginAttemptService {
      * @param printBlocked {@link Boolean}
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
      */
-    fun getLoginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, Long>> {
-        val ret = loginAttempt.getCache(printBlocked)
-        return ret
+    fun getLoginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
+        // val ret = loginAttempt.getCache(printBlocked)
+        // if (dbg.toBoolean()) log.debug("{}", ret)
+        // return ret
+        return loginAttempt.getCache(printBlocked)
     }
 
     /**
@@ -92,10 +96,15 @@ public class LoginAttemptService {
      * @return {@link Boolean}
      */
     fun isBlocked(@NotNull key: String): Boolean {
-    	val ret = loginAttempt.isBlocked(key)?.let {
-            loginAttempt.isBlocked(key)
-        }?: false
-        return ret
+        return loginAttempt.isBlocked(key)
     }
+    
+    /**
+     *
+     * for scheduler {@link local.intranet.bttf.api.scheduler.BttfJob}
+     */
+    fun flushCache() {
+        loginAttempt.removeExpiredKeys()
+	}
 
 }

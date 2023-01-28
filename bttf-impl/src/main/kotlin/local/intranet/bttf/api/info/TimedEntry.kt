@@ -6,10 +6,10 @@ package local.intranet.bttf.api.info
  */ 
 data class TimedEntry(val key: String, var value: Int, val maxDurationInMillis: Long) {
     
+    var creationTime: Long = now()
+
     fun isExpired() = (now() - creationTime) > maxDurationInMillis
-    
-    val creationTime: Long = now()
-    
+        
     private fun now() = System.currentTimeMillis()
     
 }

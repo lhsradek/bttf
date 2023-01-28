@@ -20,6 +20,10 @@ import org.springframework.web.WebApplicationInitializer
  * {@link local.intranet.bttf.api.security.SecurityConfig} and
  * {@link local.intranet.bttf.api.config.ApplicationConfig}
  * <p>
+ * Scheduler is configured in
+ * {@link local.intranet.bttf.api.scheduler.SchedulerConfig}
+ * <p>
+ * <p>
  * Redis is configured in {@link local.intranet.bttf.api.redis.RedisConfig}
  * For RedisHttpSession:
  * <p>
