@@ -23,7 +23,7 @@ The technology used:
 * PostgreSQL, MariaDB, H2
 * Redis (sessions, message broker)
 * Tomcat (Web container and JSP provider)
-* Nginx (PhP fast cgi for Adminer)
+* Nginx (PhP FastCGI for Adminer)
 * Traefik (Docker load balancer)
 * OpenAPI - Swagger
 * Elasticsearch (Filebeat, Metricbeat, Logstash)
