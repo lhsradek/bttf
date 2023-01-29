@@ -15,15 +15,13 @@ Soon we will start traveling through time!
 The technology used:
 
 * Kotlin
-* Spring Boot 
-* Controllers, Services, Listeners
+* Spring Boot (Controllers, Services, Listeners, Thymeleaf)
+* OpenAPI - Swagger
 * JPA (PostgreSQL, MariaDB, H2)
 * Quartz Scheduler
-* Thymeleaf
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container)
 * Nginx (PhP FastCGI for Adminer)
-* Traefik (Docker load balancer)
-* OpenAPI - Swagger
+* Traefik (load balancer for Docker)
 * Elasticsearch (Filebeat, Metricbeat, Logstash)
 * Docker
