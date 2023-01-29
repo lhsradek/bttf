@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: Maven WAR Plugin 3.3.2
+Build-Jdk-Spec: 11
+Implementation-Title: bttf-app
+Implementation-Version: 3.14.15-SNAPSHOT
+Implementation-Vendor: LHS
+Implementation-Build: 
+Specification-Title: Back to the Future - app
+

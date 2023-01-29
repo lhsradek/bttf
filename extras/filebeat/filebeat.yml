@@ -1,0 +1,92 @@
+###################### Filebeat Configuration #######################
+
+http.enabled: true
+http.port: ${MONITOR_PORT}
+http.host: "0.0.0.0"
+
+monitoring:
+  enabled: false
+  cluster_uuid: "${CLUSTER_UUID}"
+    
+  # elasticsearch:
+  #   username: "${ELASTICSEARCH_USERNAME}"
+  #   password: "${ELASTICSEARCH_PASSWORD}"
+  #   hosts: ["${ELASTIC_HOST}"]
+  #   protocol: "https"
+  #   ssl.enabled: true
+  #   ssl.certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+  #   ssl.verification_mode: "${VERIFICATION_MODE}"
+
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+processors:
+  - add_tags:
+      tags: ["${STAGE}"]
+      target: "environment"
+  - add_tags:
+      tags: ["${APP_NICK}-${APP_ID}"]
+      target: "app.id"
+
+instrumentation:
+  enabled: true
+  environment: "${STAGE}"
+  hosts: ["${ELASTIC_APM_SERVER_URL}"]
+  api_key: "${ELASTIC_APM_API_KEY}"
+
+output:
+  # for provisioning:
+  logstash:
+    enabled: true
+    hosts: ["${LOGSTASH_HOST}"]
+    ssl:
+      enabled: false
+      # certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+      # certificate: "${LOGSTASH_SERVER_CERT}"
+      # key: "${LOGSTASH_SERVER_CERT_KEY}"
+      # verification_mode: "${VERIFICATION_MODE}"
+      # verification_mode: "none"
+    index: "logs"
+   
+  # for /filebeat -e setup --dashboards:
+  # elasticsearch:
+  #   hosts: ["${ELASTIC_HOST}"]
+  #   protocol: "https"
+  #   username: "${ELASTICSEARCH_USERNAME}"
+  #   password: "${ELASTICSEARCH_PASSWORD}"
+  #   # api_key: "${AGENT_API_KEY}"
+  #   ssl:
+  #     enabled: true
+  #     certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+  #     verification_mode: "certificate"
+  #   index: "logs"
+   
+setup:      
+  ilm.overwrite: true
+  template.settings:
+    index.number_of_shards: 2
+    index.number_of_replicas: 1
+    index.codec: "best_compression"
+    # _source.enabled: false
+
+  elasticsearch:
+    hosts: ["${ELASTIC_HOST}"]
+    protocol: "https"
+    username: "${ELASTICSEARCH_USERNAME}"
+    password: "${ELASTICSEARCH_PASSWORD}"
+    ssl:
+      enabled: true
+      certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+      verification_mode: "${VERIFICATION_MODE}"
+  
+  kibana:
+    host: "${KIBANA_HOST}"
+    username: '${ELASTICSEARCH_USERNAME}'
+    password: '${ELASTICSEARCH_PASSWORD}'
+    protocol: "https"
+    ssl:
+      enabled: true
+      certificate_authorities: ['${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}']
+      verification_mode: "${VERIFICATION_MODE}"

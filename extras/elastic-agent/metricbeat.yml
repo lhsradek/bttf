@@ -1,0 +1,88 @@
+###################### Metricbeat Configuration #######################
+
+# http.enabled: true
+# http.port: 5068
+# http.host: "0.0.0.0"
+
+monitoring:
+  enabled: false
+  cluster_uuid: "${CLUSTER_UUID}"
+
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_docker_metadata: ~
+  # - add_cloud_metadata: ~
+  # - add_kubernetes_metadata: ~
+  - add_tags:
+      tags: ["${STAGE}"]
+      target: "environment"
+  - add_tags:
+      tags: ["${APP_HOST}-${APP_ID}"]
+      target: "app.id"
+
+inputs:
+  - type: system/metrics
+    data_stream.namespace: default
+    use_output: default
+    streams:
+      - metricset: cpu
+        data_stream.dataset: system.cpu
+      - metricset: memory
+        data_stream.dataset: system.memory
+      - metricset: network
+        data_stream.dataset: system.network
+      # - metricset: filesystem
+      #   data_stream.dataset: system.filesystem
+
+output:
+  # for /metricbeat -e setup --dashboards:
+  elasticsearch:
+    hosts: ["https://es01.${HOST_NICK}.${APP_NET}:9200"]
+    protocol: "https"
+    username: "${ELASTICSEARCH_USERNAME}"
+    password: "${ELASTICSEARCH_PASSWORD}"
+    timeout: 20s
+    ssl:
+      enabled: true
+      certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+      verification_mode: "${VERIFICATION_MODE}"
+        
+    #indices:
+    #  - index: "warning-%{[agent.version]}-%{+yyyy.MM.dd}"
+    #    when.contains:
+    #      message: "WARN"
+    #  - index: "error-%{[agent.version]}-%{+yyyy.MM.dd}"
+    #    when.contains:
+    #      message: "ERR"
+
+setup:
+  template.settings:
+    index.number_of_shards: 4
+    index.codec: "best_compression"
+    # source.enabled: false
+
+  elasticsearch:
+    hosts: ["https://es01.${HOST_NICK}.${APP_NET}:9200"]
+    protocol: "https"
+    username: "${ELASTICSEARCH_USERNAME}"
+    password: "${ELASTICSEARCH_PASSWORD}"
+    timeout: 300s
+    ssl:
+      enabled: true
+      certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+      verification_mode: "${VERIFICATION_MODE}"
+
+  kibana:
+    host: "https://kibana.${HOST_NICK}.${APP_NET}:5601"
+    # api_key: ${AGENT_API_KEY}
+    username: "${ELASTICSEARCH_USERNAME}"
+    password: "${ELASTICSEARCH_PASSWORD}"
+    ssl:
+      enabled: true
+      certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+      verification_mode: "${VERIFICATION_MODE}"

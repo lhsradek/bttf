@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+scriptPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+rootPath="$(dirname "${scriptPath}")"
+
+echo "================= STOP ================="
+${scriptPath}/stop
+
+echo "================= START ================="
+${scriptPath}/start
+
+

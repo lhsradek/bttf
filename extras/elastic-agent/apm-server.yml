@@ -1,0 +1,84 @@
+######################### APM Server Configuration #########################
+
+################################ APM Server ################################
+
+apm-server:
+  #host: "0.0.0.0"
+
+  #---------------------------- APM Server - RUM Real User Monitoring ----------------------------
+
+  # Enable Real User Monitoring (RUM) Support. By default RUM is disabled.
+  # RUM does not support token based authorization. Enabled RUM endpoints will not require any authorization
+  # token configured for other endpoints.
+  rum:
+    enabled: true
+    output:
+      elasticsearch:
+        hosts: ["https://es01.${HOST_NICK}.${APP_NET}:9200"]
+        protocol: "https"
+        username: "${ELASTICSEARCH_USERNAME}"
+        password: "${ELASTICSEARCH_PASSWORD}"
+        ssl.certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+        ssl.verification_mode: "${VERIFICATION_MODE}"
+
+      # Index pattern in which to search for source maps, when fetching source maps from Elasticsearch.
+      # index_pattern: "apm-*-sourcemap*"
+
+  #---------------------------- APM Server - Agent Configuration ----------------------------
+  kibana:
+    enabled: true
+    host: "${KIBANA_FLEET_HOST}"
+    protocol: "https"
+    # api_key: "${AGENT_API_KEY}"
+    # username: "apm_system"
+    username: "${ELASTICSEARCH_USERNAME}"
+    password: "${ELASTICSEARCH_PASSWORD}"
+    ssl.enabled: true
+    ssl.certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+    ssl.verification_mode: "${VERIFICATION_MODE}"
+
+#============================= Instrumentation =============================
+# instrumentation:
+#   enabled: true
+#   environment: "${STAGE}"
+#   hosts:
+#     - http://apm.nginx.local:8200
+#   profiling:
+#     cpu:
+#       enabled: true
+#       interval: 60s
+#       duration: 10s
+#     heap:
+#       enabled: true
+#       interval: 60s
+
+#================================ Outputs =================================
+
+#output.console:
+      
+#-------------------------- Elasticsearch output --------------------------
+output.elasticsearch:
+  enabled: true
+  hosts: ["https://es01.${HOST_NICK}.${APP_NET}:9200"]
+  protocol: "https"
+  # api_key: "id:api_key"
+  # api_key: "${AGENT_API_KEY}"
+  username: "${ELASTICSEARCH_USERNAME}"
+  password: "${ELASTICSEARCH_PASSWORD}"
+  timeout: 300s
+  ssl.enabled: true
+  ssl.certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+  ssl.verification_mode: "${VERIFICATION_MODE}"
+
+#=============================== HTTP Endpoint ===============================
+
+# http.enabled: true
+# http.host: "0.0.0.0"
+# http.host: "apm.wordpress.local"
+# http.port: 5066
+
+#============================= X-pack Monitoring =============================
+
+monitoring:
+  enabled: false
+  cluster_uuid: "${CLUSTER_UUID}"

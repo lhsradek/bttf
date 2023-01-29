@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="head">
+</head>
+<body>
+  <h1><span>
+    <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/> <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/>
+    <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo Mark RGB.svg}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
+  <div th:class="'content'">
+    <div th:class="'content-middle'">
+      <div th:if="${param.error}" th:class="'top'">
+        <h2 th:text="'Error'"/>
+        <h5 th:if="${isAuthenticated}" th:text="${invalidRole}"/><h5 th:if="${!isAuthenticated}" th:text="'\'' + ${getError} + '\''"/>
+      </div>
+      <div th:class="'top'">
+        <h5 th:utext="${bttfApi}"/>
+        <div th:if="${isAuthenticated}">
+        <h2 th:text="'Login information'"/><h5><span>
+          <th:block th:utext="'You are logged as \'' + ${username} + '\''"/><br/><br/>
+          <table>
+          <tr th:align="left" data-th-each="k : ${userRoles}">
+          <td data-th-text="${k.key}"/><td th:if="${k.value}"><small th:if="${k.value}" th:utext="' &#x2714;'"/></td><td th:if="${!k.value}"><small th:utext="' &#x2718;'"/></td></tr>
+          </table></span></h5>
+        </div>
+        <div th:if="${!isAuthenticated}">
+          <h2 th:text="'Enter Username and Password'"/>
+          <form th:class="'login'" th:action="@{/login/signin}" method="post">
+            <label for="username">Username</label>:
+            <input class="form-control" type="text" spellcheck="false" id="username" name="username" th:value="''" autofocus="autofocus"/><br/><br/>
+            <label for="password">Password</label>:
+            <input type="password" id="password" name="password"/><br/><br/>
+            <input type="submit" th:value="'Log in'"/>
+          </form>
+        </div>
+        <div>
+          <ul>
+            <li><a th:href="@{license}" th:text="'License'"/></li><div th:if="${isAuthenticated}">
+            <li><a th:href="@{/}" th:text="'Go Home'"/></li>
+            <li th:if="${userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:target="_blank" th:text="'Swagger'"/></li>
+            <li><a th:href="@{/logout}" th:text="'Log out'"/></li></div>
+          </ul>
+        </div>
+        </span></h5>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+/* Tablet Landscape */
+@media screen and (max-width: 1060px) {
+    #primary { width:67%; }
+    #secondary { width:30%; margin-left:3%;}
+}
+
+/* Tabled Portrait */
+@media screen and (max-width: 768px) {
+    #primary { width:100%; }
+    #secondary { width:100%; margin:0; border:none; }
+}
+
+body {
+  background-color: #fff;
+  color: #000;
+  font-size: 0.9em;
+  font-family: sans-serif,helvetica;
+  margin: 0;
+  padding: 0;
+}
+:link {
+  color: #c00;
+}
+:visited {
+  color: #c00;
+}
+a:hover {
+  color: #0b2335;
+}
+h1 {
+  text-align: center;
+  margin: 0;
+  padding: 0.5em 1em 0.5em;
+  background-color: #0b2335;
+  color: #fff;
+  font-weight: normal;
+  font-size: 1.7em;
+}
+h1 strong {
+  font-weight: bold;
+}
+h2 {
+  padding: 0.2em 0.4em 0.2em;
+  background-color: #f4f4f4;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+hr {
+  display: none;
+}
+code {
+  font-size: 0.7em;
+}
+.content {
+  padding: 2em 3.5em;
+}
+.content-columns {
+  /* Setting relative positioning allows for absolute positioning for sub-classes */
+  position: relative;
+  padding-top: 1em;
+}
+.content-column-left {
+  /* Value for IE/Win; will be overwritten for other browsers */
+  width: 47%;
+  padding-right: 3%;
+  float: left;
+  padding-bottom: 2em;
+}
+.content-column-left hr {
+  display: none;
+}
+.content-column-right {
+  /* Values for IE/Win; will be overwritten for other browsers */
+  width: 47%;
+  padding-left: 3%;
+  float: left;
+  padding-bottom: 2em;
+}
+.content-columns>.content-column-left, .content-columns>.content-column-right {
+  /* Non-IE/Win */
+}
+img {
+  border: 2px solid #fff;
+  padding: 0px;
+  margin: 0px;
+}
+a:hover img {
+  border: 2px solid #0b2335;
+}
+.input {
+  color: #c00;
+  background-color: inherit;
+  border: none;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  height: auto;
+  width: auto;
+  font-size: 1em;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.input:hover {
+  color: #22437f;
+}
+.login {
+  font-family: Courier New; font-size: 0.8em;
+}
+.decorationoff {
+  text-decoration: none;
+}
+.wrapon {
+  word-break: break-all;
+}
+.disabled {
+  color: #999;
+}
+.data {
+  color: #22437f;
+}
+.data-table {
+  border: 2px solid #008dd0;
+  border-collapse: collapse;
+  word-break: break-all;
+}
+.data-table .win { 
+  background-color: #f0ffff;
+}                   
+.data-table .info { 
+  background-color: #fefffe;
+}                   
+.data-table .debug {
+  background-color: #ffd;
+}
+.data-table .warn { 
+  background-color: #fee;
+}
+.data-table .error {      
+  background-color: #fbb;
+}                     
+.data-table .borderoff {
+  border: none;
+}
+.data-table .decorationoff {
+  color: #fff;
+}
+.data-table .decorationoff:hover {
+  text-decoration: underline;
+}
+.data-table .decorationblack {
+  color: #000;
+  text-decoration: none;
+}
+.data-table .decorationblack:hover {
+  color: #22437f;
+  text-decoration: underline;
+}
+.data-table .left {
+  text-align: left;
+}
+.data-table .right {
+  text-align: right;
+}
+.data-table .center {
+  text-align: center;
+}
+.data-table .highlight {
+  border: 2px solid #008dd0;
+}
+.data-table .nowrap {
+  word-break: normal;
+}
+.data-table .input {
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #777;
+  border-radius: 3px;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+.data-table .input:hover {
+  background-color: #b4d5ff;
+  border: 1px solid #000;
+}
+.data-table th {
+  padding: 2px 2px;
+  color: #fff;
+  background-color: #000;
+  border: 1px solid #222;
+  word-break: normal;
+}
+.data-table td {
+  text-align: left;
+  padding: 2px 2px;
+  border: 1px solid #dadada;
+  word-break: break-all;
+}
+.data-table smaller {
+  font-size: 0.6em;
+}
+.submit {
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 1px;
+  border: 1px solid #000;
+  border-radius: 3px;
+}
+.submit:hover {
+  background-color: #b4d5ff;
+}
+.topBtn {
+  opacity: 0.8;
+  cursor: pointer;
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  outline: none;
+  background-color: #999;
+  color: #fff;
+  padding: 6px;
+  border: 4px solid #000;
+  border-radius: 15px;
+}
+.topBtn:hover {
+  background-color: #666;
+}

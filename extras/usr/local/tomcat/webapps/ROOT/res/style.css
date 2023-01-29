@@ -1,0 +1,78 @@
+body {
+  background-color: #fff;
+  color: #000;
+  font-size: 0.9em;
+  font-family: sans-serif,helvetica;
+  margin: 0;
+  padding: 0;
+}
+:link {
+  color: #c00;
+}
+:visited {
+  color: #c00;
+}
+a:hover {
+  color: #0b2335;
+}
+h1 {
+  text-align: center;
+  margin: 0;
+  padding: 0.5em 1em 0.5em;
+  background-color: #0b2335;
+  color: #fff;
+  font-weight: normal;
+  font-size: 1.7em;
+}
+h1 strong {
+  font-weight: bold;
+}
+h2 {
+  padding: 0.2em 0.4em 0.2em;
+  background-color: #f4f4f4;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+hr {
+  display: none;
+}
+code {
+  font-size: 0.95em;
+}
+.content {
+  padding: 2em 3.5em;
+}
+.content-columns {
+  /* Setting relative positioning allows for absolute positioning for sub-classes */
+  position: relative;
+  padding-top: 1em;
+}
+.content-column-left {
+  /* Value for IE/Win; will be overwritten for other browsers */
+  width: 47%;
+  padding-right: 3%;
+  float: left;
+  padding-bottom: 2em;
+}
+.content-column-left hr {
+  display: none;
+}
+.content-column-right {
+  /* Values for IE/Win; will be overwritten for other browsers */
+  width: 47%;
+  padding-left: 3%;
+  float: left;
+  padding-bottom: 2em;
+}
+.content-columns>.content-column-left, .content-columns>.content-column-right {
+  /* Non-IE/Win */
+}
+img {
+  border: 2px solid #fff;
+  padding: 0px;
+  margin: 0px;
+}
+a:hover img {
+  border: 2px solid #f50;
+}

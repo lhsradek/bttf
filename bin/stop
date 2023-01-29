@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+read_var() {
+    VAR=$(grep -m 1 "$1" "$2" | xargs)
+    IFS="=" read -ra VAR <<< "$VAR"
+    echo "${VAR[1]}"
+}
+
+DOCKER_NETWORK=$(read_var DOCKER_NETWORK .env)
+
+scriptPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+rootPath="$(dirname "${scriptPath}")"
+
+if [[ ! -f "$rootPath/.env" ]]
+then
+    echo "ERROR: File .env not found";
+    echo;
+    exit 1;
+fi
+
+RUNENV=$1
+
+if [[ -z "$RUNENV" ]]
+then
+    RUNENV="local"
+fi
+
+if [[ ! -f "$rootPath/docker-compose.$RUNENV.yml" ]]
+then
+    echo "ERROR: File docker-compose.$RUNENV.yml not found.";
+    echo;
+    exit 1;
+fi
+
+if !(docker network inspect "${DOCKER_NETWORK}" >/dev/null 2>&1)
+then
+    echo "ERROR: Docker network ${DOCKER_NETWORK} is not running. Start it first."
+    exit 1;
+fi
+
+ARGS="-f $rootPath/docker-compose.$RUNENV.yml"
+
+if [[ -f "$rootPath/docker-compose.extras.yml" ]]
+then
+    ARGS="$ARGS -f $rootPath/docker-compose.extras.yml"
+fi
+
+docker-compose ${ARGS} down --remove-orphans

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+read_var() {
+    VAR=$(grep -m 1 "$1" "$2" | xargs)
+    IFS="=" read -ra VAR <<< "$VAR"
+    echo "${VAR[1]}"
+}
+
+DOCKER_NETWORK=$(read_var DOCKER_NETWORK .env)
+
+scriptPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+rootPath="$(dirname "${scriptPath}")"
+
+if [[ ! -f "$rootPath/.env" ]]; then
+    echo "ERROR: File .env not found";
+    echo;
+    exit 1;
+fi
+
+RUNENV=$1
+
+if [[ -z "$RUNENV" ]]; then
+    RUNENV="local"
+fi
+
+if [[ ! -f "$rootPath/docker-compose.$RUNENV.yml" ]]; then
+    echo "ERROR: File docker-compose.$RUNENV.yml not found.";
+    echo;
+    exit 1;
+fi
+
+if !(docker network inspect "${DOCKER_NETWORK}" >/dev/null 2>&1); then
+    echo "ERROR: Docker network ${DOCKER_NETWORK} is not running. Start it first."
+    exit 1;
+fi
+
+ARGS="-f $rootPath/docker-compose.$RUNENV.yml"
+
+if [[ -f "$rootPath/docker-compose.extras.yml" ]]; then
+    ARGS="$ARGS -f $rootPath/docker-compose.extras.yml"
+fi
+
+IMG="lhsradek/tombola:v1"
+IMGFILE="tombola-v1.img"
+if !(docker-compose ${ARGS} pull); then
+  if !(docker image inspect "${IMG}" >/dev/null 2>&1); then
+    if [[ ! -f "$rootPath/${IMGFILE}" ]]; then
+      docker-compose ${ARGS} build --no-cache --force-rm
+      docker save -o ${IMGFILE} ${IMG}
+      docker image rm ${IMG}
+      docker container prune -f
+    fi
+    if (docker load -i ${IMGFILE}); then
+      echo "An image file:'${IMGFILE}' is loaded.."
+    fi
+    docker push ${IMG} # !
+  fi
+  docker-compose ${ARGS} pull # !
+fi
+docker-compose ${ARGS} up -d
