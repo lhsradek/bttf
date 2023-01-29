@@ -95,7 +95,7 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
             val ret: AuthenticationManager = super.authenticationManagerBean()
             return ret
         } catch (e: Exception) {
-            if (e.message == null) throw AccountExpiredException(
+            if (e.message == null) throw BttfException(
                 e::class.java.simpleName + " " + BttfConst.ERROR_ACCOUNT_EXPIRED)
             else throw BttfException(e.message!!)
         }

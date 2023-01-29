@@ -12,7 +12,6 @@ My <img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp
 
 Soon we will start traveling through time!
 
-
 The technology used:
 
 * Kotlin
@@ -21,9 +20,9 @@ The technology used:
 * JPA
 * Quartz Scheduler
 * Thymeleaf
-* Databases: H2, PostgreSQL, MariaDB
-* Redis: sessions, message broker
+* H2, PostgreSQL, MariaDB
+* Redis (sessions, message broker)
 * Tomcat, Nginx, Traefik
-* OpenAPI
+* OpenAPI Swagger
 * Elasticsearch
 * Docker

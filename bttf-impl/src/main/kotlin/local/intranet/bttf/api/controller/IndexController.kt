@@ -433,7 +433,6 @@ public class IndexController {
         method = arrayOf(RequestMethod.GET, RequestMethod.POST),
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
-    @PreAuthorize("permitAll()")
     fun getError(request: HttpServletRequest, model: Model): String {
         try {
             val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
@@ -452,15 +451,16 @@ public class IndexController {
                 is BadCredentialsException,
                 is AuthenticationCredentialsNotFoundException,
                 is LockedException,
+                is BttfException,
                 is InternalServerError -> {
                     if (e is InternalServerError) {
                         log.error(e.message + " " + e.stackTrace, e)
-                        throw e
+                        // throw e
                     } else {
                     	log.error(e.message, e)
                     }
                 }
-                else -> throw e
+                else -> {} // throw e
             }
         }
         return "error"
