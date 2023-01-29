@@ -10,41 +10,43 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.stereotype.Component
 
 /**
- * 
+ *
  * {@link AuthenticationFailureListener} for
  * {@link local.intranet.bttf.TombolaApplication}
  * <p>
  * https://www.baeldung.com/spring-security-block-brute-force-authentication-attempts
  *
  * @author Radek Kádner
- * 
+ *
  */
 @Component
 class AuthenticationFailureListener : ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
-	private val log = LoggerFactory.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired
     private lateinit var statusController: StatusController
-    
+
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
 
     /**
-	 * 
-	 * Application event listener
-	 */
-	override fun onApplicationEvent(e: AuthenticationFailureBadCredentialsEvent) {
-		val ip = statusController.getClientIP()
-		loginAttemptService.loginFailed(ip)
-		val arr = mutableListOf<String>()
-		e.authentication?.let {
+     *
+     * Application event listener
+     */
+    override fun onApplicationEvent(e: AuthenticationFailureBadCredentialsEvent) {
+        val ip = statusController.getClientIP()
+        loginAttemptService.loginFailed(ip)
+        val arr = mutableListOf<String>()
+        e.authentication?.let {
             e.authentication.authorities.forEach {
-            	arr.add(it.authority.replace(BttfConst.ROLE_PREFIX, ""))
+                arr.add(it.authority.replace(BttfConst.ROLE_PREFIX, ""))
             }
-		}
+        }
         arr.sort()
-		log.warn("Failed username:'{}' authorities:'{}' attempt:{}",
-            e.authentication.name, arr, ip, loginAttemptService.findById(ip))
-	}
+        log.warn(
+            "Failed username:'{}' authorities:'{}' attempt:{}",
+            e.authentication.name, arr, ip, loginAttemptService.findById(ip)
+        )
+    }
 }

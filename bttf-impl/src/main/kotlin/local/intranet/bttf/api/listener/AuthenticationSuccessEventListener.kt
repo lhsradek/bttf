@@ -11,14 +11,14 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component
 
 /**
- * 
+ *
  * {@link AuthenticationSuccessEventListener} for
  * {@link local.intranet.tombola.TombolaApplication}
  * <p>
  * https://www.baeldung.com/spring-security-block-brute-force-authentication-attempts
- * 
+ *
  * @author Radek Kádner
- * 
+ *
  */
 @Component
 public class AuthenticationSuccessEventListener : ApplicationListener<AuthenticationSuccessEvent> {
@@ -33,12 +33,12 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
     private lateinit var loginAttemptService: LoginAttemptService
 
     /**
-	 * 
-	 * Application event listener
-	 */
-	override fun onApplicationEvent(e: AuthenticationSuccessEvent) {
+     *
+     * Application event listener
+     */
+    override fun onApplicationEvent(e: AuthenticationSuccessEvent) {
         val ip = statusController.getClientIP()
-		loginAttemptService.loginSucceeded(ip)
+        loginAttemptService.loginSucceeded(ip)
         val arr = mutableListOf<String>()
         e.authentication?.let {
             e.authentication.authorities.forEach {
@@ -46,7 +46,9 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
             }
         }
         arr.sort()
-		log.info("Login username:'{}' authorities:'{}' '{}' attempt:{}",
-            e.getAuthentication().getName(), arr, ip, loginAttemptService.findById(ip))
-	}
+        log.info(
+            "Login username:'{}' authorities:'{}' '{}' attempt:{}",
+            e.getAuthentication().getName(), arr, ip, loginAttemptService.findById(ip)
+        )
+    }
 }

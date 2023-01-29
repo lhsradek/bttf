@@ -46,8 +46,10 @@ class BttfJob : Job {
         loginAttemptService.flushCache()
 
         // Redis as a message broker
-        redisMessagePublisher.publish(String.format(
-            "Fired:%s count:%d", context.getJobDetail().key.name, moreCount.incrementAndGet())
+        redisMessagePublisher.publish(
+            String.format(
+                "Fired:%s count:%d", context.getJobDetail().key.name, moreCount.incrementAndGet()
+            )
         )
     }
 
