@@ -72,7 +72,6 @@ class RedisConfig {
     fun redisTemplate(): RedisTemplate<String, Any> {
         val ret: RedisTemplate<String, Any> = RedisTemplate()
         ret.setConnectionFactory(jedisConnectionFactory())
-        // @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
         ret.setValueSerializer(GenericToStringSerializer<Any>(Any::class.java))
         return ret
     }

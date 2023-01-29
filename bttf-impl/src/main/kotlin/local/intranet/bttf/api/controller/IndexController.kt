@@ -528,8 +528,7 @@ public class IndexController {
         if (methodName.equals("getError")) {
             val err = getErrorMessage(request, BttfConst.LAST_EXCEPTION, model)
             if (!err.equals("OK")) {
-                log.warn(
-                    "AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,
+                log.warn("AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,
                     model.getAttribute("status"),
                     request.getAttribute(BttfConst.FORWARD_URI)
                 )

@@ -78,7 +78,9 @@ public class LoggingEventService {
         try {
             val pa: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, levelString)
             val list = mutableListOf<LoggingEventInfo>()
-            pa.forEach { list.add(makeLoggingEventInfo(it)) }
+            pa.forEach {
+                list.add(makeLoggingEventInfo(it))
+            }
             return PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
 
         } catch (e: Exception) {
@@ -118,7 +120,9 @@ public class LoggingEventService {
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
             val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
             val list = mutableListOf<LoggingEventInfo>()
-            pa.forEach { list.add(makeLoggingEventInfo(it)) }
+            pa.forEach {
+                list.add(makeLoggingEventInfo(it))
+            }
 
             return PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
 

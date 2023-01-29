@@ -22,8 +22,8 @@
           <small th:utext="${bttfApi} + ' ' + ${implementationVersion}"/><!--/*<small th:text="' (Spring Boot ' + ${springBootVersion} + ', Spring ' + ${springVersion} + ') with '"/>*/-->
           <small th:text="' with '"/>
           <small><a th:href="@{/license}" th:text="'The MIT License'"/></small>
-          <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
-          <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
+          <small><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
+          <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <div th:align="'center'">
           <p>

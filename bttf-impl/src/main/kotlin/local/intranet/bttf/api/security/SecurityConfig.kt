@@ -57,7 +57,8 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
     @Value("#{'\${bttf.app.permitAll}'.split('\\s{1,}')}")
     private lateinit var permitAll: List<String>
 
-    @Autowired private lateinit var userService: UserService
+    @Autowired
+    private lateinit var userService: UserService
 
     /**
      *
