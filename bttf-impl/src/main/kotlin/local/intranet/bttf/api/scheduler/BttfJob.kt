@@ -21,12 +21,12 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnExpression("\${scheduler.enabled}")
 class BttfJob : Job {
-
+    
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private val moreCount = AtomicLong(0)
-
     @Autowired private lateinit var loginAttemptService: LoginAttemptService
+
+    private companion object { val moreCount = AtomicLong() } // private static atomical variable
 
     /**
      *
