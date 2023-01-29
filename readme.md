@@ -23,5 +23,5 @@ The technology used:
 * Tomcat (Webs servlet/JSP container)
 * Nginx (PhP FastCGI for Adminer)
 * Traefik (load balancer for Docker)
-* Elasticsearch (Filebeat, Metricbeat, Logstash)
+* Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker
