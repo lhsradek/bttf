@@ -22,7 +22,9 @@ The technology used:
 * Thymeleaf
 * PostgreSQL, MariaDB, H2
 * Redis (sessions, message broker)
-* Tomcat (Web container and JSP), Nginx (php-fpm for Adminer), Traefik (Docker load balancer)
+* Tomcat (Web container and JSP provider)
+* Nginx (PhP fast cgi for Adminer)
+* Traefik (Docker load balancer)
 * OpenAPI - Swagger
 * Elasticsearch (Filebeat, Metricbeat, Logstash)
 * Docker
