@@ -24,6 +24,6 @@ The technology used:
 * Nginx (PhP FastCGI for sql Adminer)
 * Traefik (load balancer for Docker)
 * Elasticsearch (Filebeat, Metricbeat, APM)
-* Docker, DockerHub, GitHub
+* Docker
 
-Thank you all for these technologies. Thank you Microsoft for finally being friends with linux.
+Thank you all for these technologies. Special thanks to Microsoft for finally making friends with Linux and for GitHub.
