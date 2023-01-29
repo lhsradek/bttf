@@ -69,10 +69,10 @@ public class LoginAttemptService {
      * @return {@link Int}
      */
     fun findById(@NotNull key: String): Int {
-    	val ret: Int = loginAttempt.getById(key)?.let {
+        val ret: Int = loginAttempt.getById(key)?.let {
             loginAttempt.getById(key)
-        }?: 0
-    	return ret
+        } ?: 0
+        return ret
     }
 
     /**
@@ -82,7 +82,7 @@ public class LoginAttemptService {
      * @param key {@link String}
      */
     fun loginSucceeded(@NotNull key: String) {
-    	loginAttempt.invalidateKey(key)
+        loginAttempt.invalidateKey(key)
     }
 
     /**
@@ -105,13 +105,13 @@ public class LoginAttemptService {
     fun isBlocked(@NotNull key: String): Boolean {
         return loginAttempt.isBlocked(key)
     }
-    
+
     /**
      *
      * for scheduler {@link local.intranet.bttf.api.scheduler.BttfJob}
      */
     fun flushCache() {
         loginAttempt.removeExpiredKeys()
-	}
+    }
 
 }
