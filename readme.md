@@ -25,7 +25,6 @@ The technology used:
 * Traefik (load balancer)
 * Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker and DockerHub
-* GitHub
 * Linux (Alpine, Debian, Ubuntu)
 
 Thank you all for these technologies. Special thanks to Microsoft for finally making friends with Linux and for GitHub.

@@ -32,7 +32,7 @@ class BttfJob : Job {
     private lateinit var redisMessagePublisher: RedisMessagePublisher
 
     private companion object {
-        val moreCount = AtomicInteger()  // static variable
+        val count = AtomicInteger()  // static variable
     }
 
     /**
@@ -48,7 +48,7 @@ class BttfJob : Job {
         // Redis as a message broker
         redisMessagePublisher.publish(
             String.format(
-                "Fired:%s count:%d", context.getJobDetail().key.name, moreCount.incrementAndGet()
+                "Fired:%s count:%d", context.getJobDetail().key.name, count.incrementAndGet()
             )
         )
     }
