@@ -14,8 +14,8 @@ Soon we will start traveling through time!
 
 The technology used:
 
-* Kotlin
-* Spring Boot (controllers, services, listeners, Thymeleaf)
+* Kotlin therefore Java
+* Spring Boot (controllers, services, listeners, thymeleaf)
 * OpenAPI - Swagger
 * JPA (PostgreSQL, MariaDB, H2)
 * Quartz Scheduler
@@ -26,5 +26,6 @@ The technology used:
 * Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker and DockerHub
 * GitHub
+* Linux (Alpine, Debian, Ubuntu)
 
 Thank you all for these technologies. Special thanks to Microsoft for finally making friends with Linux and for GitHub.
