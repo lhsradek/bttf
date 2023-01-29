@@ -21,7 +21,7 @@ The technology used:
 * Quartz Scheduler
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container)
-* Nginx (PhP FastCGI for sql Adminer)
+* Nginx (PhP FastCGI for SQL Adminer)
 * Traefik (load balancer for Docker)
 * Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker and DockerHub
