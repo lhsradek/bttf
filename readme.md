@@ -17,11 +17,10 @@ The technology used:
 * Kotlin
 * Spring Boot 
 * Controllers, Services, Listeners
-* JPA
+* JPA (PostgreSQL, MariaDB, H2)
 * Quartz Scheduler
 * Thymeleaf
-* PostgreSQL, MariaDB, H2
-* Redis (sessions, message broker)
+* Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container)
 * Nginx (PhP FastCGI for Adminer)
 * Traefik (Docker load balancer)
