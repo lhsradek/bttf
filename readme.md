@@ -20,9 +20,9 @@ The technology used:
 * JPA
 * Quartz Scheduler
 * Thymeleaf
-* H2, PostgreSQL, MariaDB
+* PostgreSQL, MariaDB, H2
 * Redis (sessions, message broker)
-* Tomcat, Nginx, Traefik
-* OpenAPI Swagger
-* Elasticsearch
+* Tomcat (Web container and JSP), Nginx (php-fpm for Adminer), Traefik (Docker load balancer)
+* OpenAPI - Swagger
+* Elasticsearch (Filebeat, Metricbeat, Logstash)
 * Docker
