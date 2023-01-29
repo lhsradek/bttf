@@ -26,7 +26,7 @@ class BttfJob : Job {
 
     @Autowired private lateinit var loginAttemptService: LoginAttemptService
 
-    private companion object { val moreCount = AtomicLong() } // private static atomical variable
+    private companion object { val moreCount = AtomicLong() } // static variable
 
     /**
      *
