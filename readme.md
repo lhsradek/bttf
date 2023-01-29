@@ -14,7 +14,7 @@ Soon we will start traveling through time!
 
 The technology used:
 
-* Kotlin therefore Java
+* Kotlin therefore Java (OpenJDK)
 * Spring Boot (controllers, services, listeners, thymeleaf)
 * OpenAPI - Swagger
 * JPA (PostgreSQL, MariaDB, H2)
