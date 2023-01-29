@@ -67,7 +67,11 @@ public class BttfService {
                     is InvalidAlgorithmParameterException,
                     is BadPaddingException,
                     is IllegalBlockSizeException -> {
-                        if (e.message == null) throw e else  throw BttfException(e.message!!, e)
+                        e.message?.let {
+                            throw BttfException(e.message!!, e)
+                        } ?: run {
+                            throw BttfException(e::class.java.simpleName, e)
+                        }
                     }
                     else -> throw e
                 }
