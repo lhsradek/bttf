@@ -24,10 +24,17 @@ public class LoginAttemptService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
-    @Value("\${bttf.app.login.maxAttemt}") private lateinit var maxAttempt: String  // toInt()
-    @Value("\${bttf.app.login.waitSec}") private lateinit var waitSec: String       // toLong()
-    @Value("\${bttf.app.login.printBlocked:false}") private lateinit var printBlocked: String // toBoolean()
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+
+    @Value("\${bttf.app.login.maxAttemt}")
+    private lateinit var maxAttempt: String  // toInt()
+
+    @Value("\${bttf.app.login.waitSec}")
+    private lateinit var waitSec: String       // toLong()
+
+    @Value("\${bttf.app.login.printBlocked:false}")
+    private lateinit var printBlocked: String // toBoolean()
 
     private lateinit var loginAttempt: AttemptCache
 

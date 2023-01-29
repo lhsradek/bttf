@@ -35,10 +35,14 @@ public class SchedulerConfig {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${scheduler.properties.location}") private lateinit var location: String
-    @Value("\${bttf.app.cron.frequency.trigger}") private lateinit var frequency: String
+    @Value("\${scheduler.properties.location}")
+    private lateinit var location: String
 
-    @Autowired private lateinit var applicationContext: ApplicationContext
+    @Value("\${bttf.app.cron.frequency.trigger}")
+    private lateinit var frequency: String
+
+    @Autowired
+    private lateinit var applicationContext: ApplicationContext
 
     /**
      *

@@ -58,16 +58,32 @@ public class IndexController {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
-    @Value("\${bttf.app.headerSoftware:false}") private lateinit var headerSoftware: String // toBoolean
-    @Value("\${bttf.app.logCnt:25}") private lateinit var logCnt: String // toInt
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
+    
+    @Value("\${bttf.app.headerSoftware:false}")
+    private lateinit var headerSoftware: String // toBoolean
+    
+    @Value("\${bttf.app.logCnt:25}")
+    private lateinit var logCnt: String // toInt
 
-    @Autowired private lateinit var statusController: StatusController
-    @Autowired private lateinit var userService: UserService
-    @Autowired private lateinit var loggingEventService: LoggingEventService
-    @Autowired private lateinit var loginAttemptService: LoginAttemptService
-    @Autowired private lateinit var authenticationManager: AuthenticationManager
-    @Autowired private lateinit var provider: Provider
+    @Autowired
+    private lateinit var statusController: StatusController
+    
+    @Autowired
+    private lateinit var userService: UserService
+    
+    @Autowired
+    private lateinit var loggingEventService: LoggingEventService
+    
+    @Autowired
+    private lateinit var loginAttemptService: LoginAttemptService
+    
+    @Autowired
+    private lateinit var authenticationManager: AuthenticationManager
+    
+    @Autowired
+    private lateinit var provider: Provider
 
     /**
      *
@@ -118,7 +134,7 @@ public class IndexController {
         request.requestedSessionId?.let {
         	log.info("GetIndex username:'{}' ip:'{}' page:{} session:{}",
                 model.asMap().get("username"), statusController.getClientIP(), page.get(), request.requestedSessionId)
-        }?: log.info("GetIndex username:'{}'ip:'{}' page:{}",
+        }?: log.info("GetIndex username:'{}' ip:'{}' page:{}",
             model.asMap().get("username"), statusController.getClientIP(), page.get())
         return "index"
     }

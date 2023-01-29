@@ -29,11 +29,20 @@ import java.util.concurrent.atomic.AtomicLong
 @EnableAutoConfiguration
 class RedisConfig {
 
-    @Value("\${spring.redis.password}") private lateinit var password: String
-    @Value("\${spring.redis.database}") private lateinit var database: String // toInt
-    @Value("\${spring.redis.host}") private lateinit var host: String
-    @Value("\${spring.redis.port}") private lateinit var port: String // toInt
-    @Value("\${spring.redis.timeout}") private lateinit var timeout: String // toLong
+    @Value("\${spring.redis.password}")
+    private lateinit var password: String
+
+    @Value("\${spring.redis.database}")
+    private lateinit var database: String // toInt
+
+    @Value("\${spring.redis.host}")
+    private lateinit var host: String
+
+    @Value("\${spring.redis.port}")
+    private lateinit var port: String // toInt
+
+    @Value("\${spring.redis.timeout}")
+    private lateinit var timeout: String // toLong
 
     /**
      *

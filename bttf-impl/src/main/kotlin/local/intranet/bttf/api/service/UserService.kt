@@ -43,12 +43,20 @@ class UserService : UserDetailsService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
-    @Autowired private lateinit var userRepository: UserRepository
-    @Autowired private lateinit var httpSession: HttpSession
-    @Autowired private lateinit var statusController: StatusController
-    @Autowired private lateinit var loginAttemptService: LoginAttemptService
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var httpSession: HttpSession
+
+    @Autowired
+    private lateinit var statusController: StatusController
+
+    @Autowired
+    private lateinit var loginAttemptService: LoginAttemptService
 
 
     /**

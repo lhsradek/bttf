@@ -26,10 +26,13 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
     private val log = LoggerFactory.getLogger(javaClass)
 
 
-    @Autowired private lateinit var statusController: StatusController
-    @Autowired private lateinit var loginAttemptService: LoginAttemptService
+    @Autowired
+    private lateinit var statusController: StatusController
 
-	/**
+    @Autowired
+    private lateinit var loginAttemptService: LoginAttemptService
+
+    /**
 	 * 
 	 * Application event listener
 	 */

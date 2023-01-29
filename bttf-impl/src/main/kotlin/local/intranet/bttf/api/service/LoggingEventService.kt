@@ -38,9 +38,13 @@ public class LoggingEventService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}")
 
-    @Autowired private lateinit var loggingEventRepository: LoggingEventRepository
+    private lateinit var dbg: String // toBoolean
+
+    @Autowired
+
+    private lateinit var loggingEventRepository: LoggingEventRepository
 
     /**
      *

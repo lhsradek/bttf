@@ -33,13 +33,23 @@ class StatusController {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
-    @Value("\${bttf.app.stage}") private lateinit var stage: String
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
-    @Autowired private lateinit var servletContext: ServletContext
-    @Autowired private lateinit var applicationContext: ApplicationContext
-    @Autowired private lateinit var environment: Environment
-    @Autowired private lateinit var httpServletRequest: HttpServletRequest
+    @Value("\${bttf.app.stage}")
+    private lateinit var stage: String
+
+    @Autowired
+    private lateinit var servletContext: ServletContext
+
+    @Autowired
+    private lateinit var applicationContext: ApplicationContext
+
+    @Autowired
+    private lateinit var environment: Environment
+
+    @Autowired
+    private lateinit var httpServletRequest: HttpServletRequest
 
     /**
      *

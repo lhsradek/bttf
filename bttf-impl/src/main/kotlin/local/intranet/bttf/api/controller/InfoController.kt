@@ -42,9 +42,14 @@ public class InfoController {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Autowired private lateinit var userService: UserService
-    @Autowired private lateinit var roleService: RoleService
-    @Autowired private lateinit var loginAttemptService: LoginAttemptService
+    @Autowired
+    private lateinit var userService: UserService
+    
+    @Autowired
+    private lateinit var roleService: RoleService
+    
+    @Autowired
+    private lateinit var loginAttemptService: LoginAttemptService
 
 
     /**

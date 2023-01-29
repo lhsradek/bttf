@@ -51,8 +51,11 @@ import org.springframework.web.filter.CorsFilter
 )
 class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 
-    @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}") private lateinit var authenticated: List<String>
-    @Value("#{'\${bttf.app.permitAll}'.split('\\s{1,}')}") private lateinit var permitAll: List<String>
+    @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
+    private lateinit var authenticated: List<String>
+
+    @Value("#{'\${bttf.app.permitAll}'.split('\\s{1,}')}")
+    private lateinit var permitAll: List<String>
 
     @Autowired private lateinit var userService: UserService
 

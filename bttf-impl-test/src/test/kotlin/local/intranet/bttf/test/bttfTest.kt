@@ -31,10 +31,17 @@ import org.springframework.test.context.junit4.SpringRunner
 @SpringBootTest
 class bttfTest {
 
-    @Autowired private lateinit var statusController: StatusController
-    @Autowired private lateinit var infoController: InfoController
-    @Autowired private lateinit var loginAttemptService: LoginAttemptService
-    @Autowired private lateinit var userService: UserService
+    @Autowired
+    private lateinit var statusController: StatusController
+
+    @Autowired
+    private lateinit var infoController: InfoController
+
+    @Autowired
+    private lateinit var loginAttemptService: LoginAttemptService
+
+    @Autowired
+    private lateinit var userService: UserService
 
     /**
      *
