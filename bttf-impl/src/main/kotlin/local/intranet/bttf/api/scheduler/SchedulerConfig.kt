@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.scheduler
 
-import org.apache.commons.lang3.StringUtils
+import local.intranet.bttf.api.config.ApplicationConfig
+
 import org.quartz.CronTrigger
 import org.quartz.JobDetail
 import org.slf4j.LoggerFactory
@@ -17,8 +18,7 @@ import org.springframework.scheduling.quartz.CronTriggerFactoryBean
 import org.springframework.scheduling.quartz.JobDetailFactoryBean
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.scheduling.quartz.SpringBeanJobFactory
-
-import local.intranet.bttf.api.config.ApplicationConfig
+import org.thymeleaf.util.StringUtils
 
 /**
  *
@@ -69,7 +69,7 @@ public class SchedulerConfig {
     fun jobDetail(): JobDetailFactoryBean {
         val ret = JobDetailFactoryBean()
         ret.setJobClass(BttfJob::class.java)
-        val name = StringUtils.uncapitalize(BttfJob::class.java.simpleName)
+        val name = StringUtils.unCapitalize(BttfJob::class.java.simpleName)
         ret.setName(name)
         ret.setDescription("Invoke Job Service...")
         ret.setDurability(true)

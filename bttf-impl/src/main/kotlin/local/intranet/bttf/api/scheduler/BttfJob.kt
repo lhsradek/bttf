@@ -8,6 +8,7 @@ import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
 
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @ConditionalOnExpression("\${scheduler.enabled}")
+@AutoConfigureAfter(LoginAttemptService::class, RedisMessagePublisher::class)
 class BttfJob : Job {
 
     private val log = LoggerFactory.getLogger(javaClass)

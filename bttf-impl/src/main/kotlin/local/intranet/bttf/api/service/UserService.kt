@@ -151,11 +151,13 @@ class UserService : UserDetailsService {
      */
     fun getUsername(): String {
         var ret = ""
-        httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let { 
-            if (httpSession.maxInactiveInterval < 3600) {
-                httpSession.setMaxInactiveInterval(3600)
+        SecurityContextHolder.getContext().authentication?.let {
+        	httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let { 
+        		if (httpSession.maxInactiveInterval < 3600) {
+        			httpSession.setMaxInactiveInterval(3600)
+        		}
+        		ret = SecurityContextHolder.getContext().authentication.name
             }
-            ret = SecurityContextHolder.getContext().authentication.name
         }
         // if (dbg.toBoolean()) log.debug("'{}'", ret)
         return ret
@@ -183,9 +185,11 @@ class UserService : UserDetailsService {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun getAuthoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
-        httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let { 
-            for (g: GrantedAuthority in SecurityContextHolder.getContext().authentication.authorities) {
-                ret.add(g.authority.replace(BttfConst.ROLE_PREFIX, ""))
+        httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
+            SecurityContextHolder.getContext().authentication?.let {
+                for (g: GrantedAuthority in SecurityContextHolder.getContext().authentication.authorities) {
+                    ret.add(g.authority.replace(BttfConst.ROLE_PREFIX, ""))
+                }
             }
             ret.sort()
         }

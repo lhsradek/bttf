@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger // for thymeleaf  .incrementAnd
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
@@ -48,6 +49,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.savedrequest.DefaultSavedRequest
 import org.springframework.stereotype.Controller
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -127,14 +129,12 @@ public class IndexController {
      * @param model   {@link Model}
      * @return "index" for thymeleaf index.html {@link String}
      */
-    @GetMapping(value = arrayOf("/", "/page/{page}"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
+    @GetMapping(value = arrayOf("/"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
     fun getIndex(
-        @PathVariable(value = "page", required = false) pg: Int?,
         request: HttpServletRequest, model: Model
     ): String {
         addModel(request, model)
-        val page = getPage(pg, 0)
         model.addAttribute("springBootVersion", SpringBootVersion.getVersion())
         model.addAttribute("springVersion", SpringVersion.getVersion())
         model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
@@ -142,12 +142,11 @@ public class IndexController {
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
             log.info(
-                "GetIndex username:'{}' ip:'{}' page:{} session:{}",
-                model.asMap().get("username"), statusController.getClientIP(), page.get(), request.requestedSessionId
+                "GetIndex username:'{}' ip:'{}' session:{}",
+                model.asMap().get("username"), statusController.getClientIP(), request.requestedSessionId
             )
         } ?: log.info(
-            "GetIndex username:'{}' ip:'{}' page:{}",
-            model.asMap().get("username"), statusController.getClientIP(), page.get()
+            "GetIndex username:'{}' ip:'{}'", model.asMap().get("username"), statusController.getClientIP()
         )
         return "index"
     }
@@ -165,7 +164,13 @@ public class IndexController {
     @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
     fun getPlay(request: HttpServletRequest, model: Model): String {
-        val time = ZonedDateTime.now(ZoneId.systemDefault())
+        val time = request.session?.let {
+            request.session.getAttribute(BttfConst.APPLICATION_YEAR)?.let {
+            	val year = request.session.getAttribute(BttfConst.APPLICATION_YEAR) as Long
+            	val z = ZonedDateTime.now(ZoneId.systemDefault())
+            	z.plusYears(year - z.year)
+            } ?: ZonedDateTime.now(ZoneId.systemDefault())
+        } ?: ZonedDateTime.now(ZoneId.systemDefault())
         model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
         model.addAttribute("implementationVersion", statusController.getImplementationVersion())
         model.addAttribute("time", time)
@@ -173,58 +178,49 @@ public class IndexController {
         request.requestedSessionId?.let {
             log.info(
                 "GetPlay username:'{}' ip:'{}' time:{} session:{}",
-                model.asMap().get("username"), statusController.getClientIP(), time, request.requestedSessionId
+                model.asMap().get("username"), statusController.getClientIP(),
+                time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), request.requestedSessionId
             )
         } ?: log.info(
             "GetIndex username:'{}' ip:'{}' time:{}",
-            model.asMap().get("username"), statusController.getClientIP(), time
+            model.asMap().get("username"), statusController.getClientIP(),
+            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
         )
         return "play"
     }
 
     /**
      *
-     * TODO - Not tried, it's too late today. The last thing I see is them:
-     * WARN --- org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver.logException : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required request parameter 'time' for method parameter type ZonedDateTime is not present]
-     * I go to sleep
+     * HTML Play
      *
-     *
-     * HTML Trip
-     *
+     * @param year {@link Long?}
      * @param request {@link HttpServletRequest}
      * @return {@String}
      */
     @PostMapping(
-        value = arrayOf("/trip/past/{time}", "/trip/future/{time}"),
+        value = arrayOf("/play/year/{year}"),
         consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE),
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("permitAll()")
     @Throws(Exception::class)
     fun postPlay(
-        @RequestParam @NotNull time: ZonedDateTime, request: HttpServletRequest
+        @PathVariable(value = "year", required = false) year: Long?, request: HttpServletRequest
     ): String {
-        if (request.session != null) {
-            request.session.removeAttribute(BttfConst.LAST_EXCEPTION)
+        val time = year?.let {
+            val z = ZonedDateTime.now(ZoneId.systemDefault())
+            z.plusYears(year - z.year)
+        } ?: ZonedDateTime.now(ZoneId.systemDefault())
+        request.session?.let {
+            request.session.setAttribute(BttfConst.APPLICATION_YEAR, time.year.toLong())
         }
-        // if (past) {
-        //	val t = time.minusYears(1)
-        // } else if (future) {
-        //  val t = time.minusYears(1)
-        // } 
         val username = userService.getUsername()
 
-        request.requestedSessionId?.let {
-            log.info(
-                "PostPlay username:'{}' ip:'{}' time:{} session:{}",
-                username,
-                statusController.getClientIP(),
-                request.requestedSessionId,
-                time
-            )
-        } ?: log.info(
-            "PostIndex username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(), time
-        )
+        request.requestedSessionId?.let {log.info("PostPlay username:'{}' ip:'{}' time:{} session:{}",
+            username, statusController.getClientIP(), request.requestedSessionId,
+            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+        } ?: log.info("PostIndex username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(),
+            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
         return "redirect: /bttf/play"
     }
 
@@ -334,46 +330,60 @@ public class IndexController {
             "idU" -> ret.add(Order.asc("id"))
             "idD" -> ret.add(Order.desc("id"))
             "mU" -> {
-                ret.add(Order.asc("formattedMessage").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("formattedMessage").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "mD" -> {
-                ret.add(Order.desc("formattedMessage").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("formattedMessage").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             "a0U" -> {
-                ret.add(Order.asc("arg0").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg0").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "a0D" -> {
-                ret.add(Order.desc("arg0").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg0").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             "a1U" -> {
-                ret.add(Order.asc("arg1").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg1").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "a1D" -> {
-                ret.add(Order.desc("arg1").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg1").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             "a2U" -> {
-                ret.add(Order.asc("arg2").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg2").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "a2D" -> {
-                ret.add(Order.desc("arg2").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg2").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             "a3U" -> {
-                ret.add(Order.asc("arg3").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("arg3").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "a3D" -> {
-                ret.add(Order.desc("arg3").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("arg3").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             "cU" -> {
-                ret.add(Order.asc("callerMethod").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("callerMethod").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "cD" -> {
-                ret.add(Order.desc("callerMethod").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("callerMethod").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             "lU" -> {
-                ret.add(Order.asc("levelString").ignoreCase()); ret.add(Order.asc("id"))
+                ret.add(Order.asc("levelString").ignoreCase())
+                ret.add(Order.asc("id"))
             }
             "lD" -> {
-                ret.add(Order.desc("levelString").ignoreCase()); ret.add(Order.desc("id"))
+                ret.add(Order.desc("levelString").ignoreCase())
+                ret.add(Order.desc("id"))
             }
             else -> ret.add(Order.desc("id"))
         }
@@ -554,12 +564,16 @@ public class IndexController {
                 is InternalServerError -> {
                     if (e is InternalServerError) {
                         log.error(e.message + " " + e.stackTrace, e)
-                        // throw e
+                        if (dbg.toBoolean()) {
+                            throw e
+                        }
                     } else {
                         log.error(e.message, e)
                     }
                 }
-                else -> {} // throw e
+                else -> if (dbg.toBoolean()) {
+                    throw e
+                }
             }
         }
         return "error"

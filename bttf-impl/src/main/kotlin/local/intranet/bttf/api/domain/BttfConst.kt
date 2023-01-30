@@ -73,6 +73,12 @@ object BttfConst {
 
     /**
      *
+     * APPLICATION_YEAR = "BTTF_APPLICATION_YEAR"
+     */
+    const val APPLICATION_YEAR: String = "BTTF_APPLICATION_YEAR"
+    
+    /**
+     *
      * FORWARD_URI = "javax.servlet.forward.request_uri"
      */
     const val FORWARD_URI: String = "javax.servlet.forward.request_uri"
