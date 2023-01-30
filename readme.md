@@ -12,6 +12,9 @@
 
 You can travel through time!
 
+See:
+* https://github.com/lhsradek/bttf/blob/main/png/bttf06.png
+
 The technology used:
 
 * Kotlin therefore Java (OpenJDK)
