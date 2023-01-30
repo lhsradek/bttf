@@ -6,7 +6,7 @@
 <body>
   <h1><span>
     <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
-    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/><!--/* <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo on Black RGB.svg}" th:width="'173px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1> */-->
+    <strong th:text="${T(org.thymeleaf.util.StringUtils).capitalize(serverName)}"/><!--/* <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo on Black RGB.svg}" th:width="'173px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1> */-->
     <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo Mark RGB.svg}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
   <div th:class="'content'" th:with="dateFormat=${T(local.intranet.bttf.api.domain.Contented).CONTENT_DATE_FORMAT}">
     <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>

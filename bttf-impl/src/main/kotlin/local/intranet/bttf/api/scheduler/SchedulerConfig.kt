@@ -18,7 +18,7 @@ import org.springframework.scheduling.quartz.CronTriggerFactoryBean
 import org.springframework.scheduling.quartz.JobDetailFactoryBean
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.scheduling.quartz.SpringBeanJobFactory
-import org.thymeleaf.util.StringUtils
+import org.springframework.util.StringUtils
 
 /**
  *
@@ -69,7 +69,7 @@ public class SchedulerConfig {
     fun jobDetail(): JobDetailFactoryBean {
         val ret = JobDetailFactoryBean()
         ret.setJobClass(BttfJob::class.java)
-        val name = StringUtils.unCapitalize(BttfJob::class.java.simpleName)
+        val name = StringUtils.uncapitalize(BttfJob::class.java.simpleName)
         ret.setName(name)
         ret.setDescription("Invoke Job Service...")
         ret.setDurability(true)
