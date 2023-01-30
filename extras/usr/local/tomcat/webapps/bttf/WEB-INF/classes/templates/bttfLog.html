@@ -6,7 +6,7 @@
 <body>
   <h1><span>
     <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
-    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/>
+    <strong th:text="${T(org.thymeleaf.util.StringUtils).capitalize(serverName)}"/>
     <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo Mark RGB.svg}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
   <div th:class="'content'" th:with="dateFormat=${T(local.intranet.bttf.api.domain.Contented).CONTENT_DATE_FORMAT}">
     <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>
@@ -21,7 +21,8 @@
           <a th:if="${userRoles.get('userRole') or userRoles.get('managerRole') or userRoles.get('adminRole')}" th:href="@{/logout}" th:text="'Log out'"/> <small><th:block th:text="' - You are logged as '"/>
           <a th:if="${userRoles.get('userRole') or userRoles.get('managerRole') or userRoles.get('adminRole')}" th:href="@{/login?logout}" th:utext="'\'' + ${username} + '\''"/>
           <th:block th:utext="' with \'' + ${role} + '\''"/></small>
-          <small><a th:href="@{/page/0}" th:text="'Bttf'"/></small>
+          <small><a th:href="@{/}" th:text="'Introduction'"/></small>
+          <small><a th:href="@{/play}" th:text="'Play'"/></small>
           <small th:if="${userRoles.get('managerRole') or userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <code th:if="${logsTotal.size() > 0}"><span>

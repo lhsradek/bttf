@@ -6,7 +6,7 @@
 <body>
   <h1><span>
     <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
-    <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/>
+    <strong th:text="${T(org.thymeleaf.util.StringUtils).capitalize(serverName)}"/>
     <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo Mark RGB.svg}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
   <div th:class="'content'">
     <div th:class="'content-middle'">
@@ -18,7 +18,8 @@
         </span></h2>
         <h5><span>
           <a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/>
-          <small><a th:href="@{/}" th:text="'BTTF'"/></small>
+          <small><a th:href="@{/}" th:text="'Introduction'"/></small>
+          <small><a th:href="@{/play}" th:text="'Play'"/></small>
         </span></h5>
         <h5><span><th:block th:text="'The MIT License'"/>
           <small><a th:href="'https://opensource.org/licenses/MIT'" th:target="_blank" th:text="'(MIT)'"/></small>
