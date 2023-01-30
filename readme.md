@@ -29,4 +29,4 @@ The technology used:
 
 Thank you all for these technologies. Thanks to Microsoft for finally making friends with Linux and for GitHub. Thanks to Google for translater and advice leader on StackOverflow.
 
-Development Plan: This recession game is supposed to be multiplayer and the manager will see who is playing. Whoever plays long enough will get the manager's password and be able to view the log. Whoever lasts even longer gets and travels many years in time, gets an admin password and can try OpenAPI. You've probably already understood that I'm more focused on the backend, so wait for javascript or react until later.
+Development Plan: This recession game is supposed to be multiplayer and the manager will see who is playing. Whoever plays long enough will get the manager's password and be able to view the log. Whoever lasts even longer gets and travels many years in time, gets an admin password and can try OpenAPI. You've probably already understood that I'm more focused on the backend, so wait for javascript or react or something from https://kotlinlang.org/docs/js-overview.html until later.
