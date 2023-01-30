@@ -7,7 +7,7 @@
 </p>
 
 <p>
-My <img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project is at the beginning.
+<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project
 </p>
 
 You can travel through time!
