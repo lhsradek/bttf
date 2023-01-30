@@ -7,10 +7,8 @@
 </p>
 
 <p>
-<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project
+<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project. Fasten your seatbelts. Let's start traveling through time!
 </p>
-
-You can travel through time!
 
 See:
 * https://github.com/lhsradek/bttf/blob/main/png/bttf06.png

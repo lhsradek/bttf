@@ -9,3 +9,26 @@
 <p>
 <img src="src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="173px" height="31px"/> project. Fasten your seatbelts. Let's start traveling through time!
 <p/>
+
+See:
+* https://github.com/lhsradek/bttf/blob/main/png/bttf06.png
+
+The technology used:
+
+* Kotlin therefore Java (OpenJDK)
+* Spring Boot (controllers, services, listeners, thymeleaf)
+* OpenAPI - Swagger
+* JPA (PostgreSQL, MariaDB, H2)
+* Quartz Scheduler
+* Redis (Sessions, Message broker)
+* Tomcat (Webs servlet/JSP container)
+* Nginx (load balancer and PhP FastCGI for SQL Adminer)
+* Traefik (load balancer for docker)
+* Elasticsearch (Filebeat, Metricbeat, APM)
+* Docker and DockerHub
+* Linux (Alpine, Debian, Ubuntu)
+
+Thank you all for these technologies. Thanks to Microsoft for finally making friends with Linux and for GitHub. Thanks to Google for translater and advice leader on StackOverflow.
+
+Development Plan: This recession game is supposed to be multiplayer and the manager will see who is playing. Whoever plays long enough will get the manager's password and be able to view the log. Whoever lasts even longer gets and travels many years in time, gets an admin password and can try OpenAPI. You've probably already understood that I'm more focused on the backend, so wait for javascript or react or something from https://kotlinlang.org/docs/js-overview.html until later.
+
