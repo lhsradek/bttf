@@ -8,7 +8,7 @@
     <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
     <strong th:text="${T(org.apache.commons.lang3.StringUtils).capitalize(serverName)}"/><!--/* <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo on Black RGB.svg}" th:width="'173px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1> */-->
     <a th:href="'/'"><img th:src="@{/res/Kotlin Full Color Logo Mark RGB.svg}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
-  <div th:class="'content'" th:with="dateFormat=${T(local.intranet.bttf.api.domain.Contented).CONTENT_DATE_FORMAT}">
+  <div th:class="'content'">
     <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>
     <div th:class="'content-middle'">
       <div th:class="'top'">
@@ -19,29 +19,35 @@
         </span></h2>
         <h5><span>
           <a th:if="${!isAuthenticated}" th:href="@{/login}" th:text="'Log in'"/><a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/>
-          <small th:utext="${bttfApi} + ' ' + ${implementationVersion}"/><!--/*<small th:text="' (Spring Boot ' + ${springBootVersion} + ', Spring ' + ${springVersion} + ') with '"/>*/-->
+          <small th:utext="${bttfApi} + ' ' + ${implementationVersion}"/>
           <small th:text="' with '"/>
           <small><a th:href="@{/license}" th:text="'The MIT License'"/></small>
-          <small><a th:href="@{/play}" th:text="'Play'"/></small>
+          <small><a th:href="@{/page/0}" th:text="'Introduction'"/></small>
           <small><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
           <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <div th:align="'center'">
-          <p><a th:href="@{/play}">
-          <img th:src="@{/res/Back-to-the-future-logo.svg}" th:width="'500px'" th:height="'222px'" th:class="'borderoff'"/>
-          </a></p>
-          <h5><span>
-          <q><th:block th:utext="'Programming described the three programmer\'s virtues: hubris, laziness, and impatience.'"/></q>
-          <small><i th:text="'Larry Wall'"/></small>
-          </span></h5>
+          <h3 th:text="'You are in ' + ${#temporals.format(time, 'yyyy')}"/>
         </div>
       </div>
     </div>
     <div th:class="'content-columns'">
       <div th:class="'top'">
-        <div th:class="'content-column-left'">
+        <div th:class="'content-column-left'" th:align="'right'">
+        <h2><span>
+          <th:block th:text="'To the Past'"/>
+        </span></h2>
+<form th:action="@{|/trip/past/$time|}" method="post">
+<input th:class="'submit'" type="submit" th:value="'Past'"/>
+</form>        
         </div>
-        <div th:class="'content-column-right'">
+        <div th:class="'content-column-right'" th:align="'left'">
+        <h2><span>
+          <th:block th:text="'To the Future'"/>
+        </span></h2>
+<form th:action="@{|/trip/future/$time|}" method="post">
+<input th:class="'submit'" type="submit" th:value="'Future'"/>
+</form>        
         </div>
       </div>
     </div>

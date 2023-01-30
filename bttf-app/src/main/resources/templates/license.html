@@ -18,7 +18,8 @@
         </span></h2>
         <h5><span>
           <a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/>
-          <small><a th:href="@{/}" th:text="'BTTF'"/></small>
+          <small><a th:href="@{/page/0}" th:text="'Introduction'"/></small>
+          <small><a th:href="@{/play}" th:text="'Play'"/></small>
         </span></h5>
         <h5><span><th:block th:text="'The MIT License'"/>
           <small><a th:href="'https://opensource.org/licenses/MIT'" th:target="_blank" th:text="'(MIT)'"/></small>

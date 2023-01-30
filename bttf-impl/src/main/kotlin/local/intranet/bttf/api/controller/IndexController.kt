@@ -1,6 +1,9 @@
 package local.intranet.bttf.api.controller
 
 import java.util.concurrent.atomic.AtomicInteger // for thymeleaf  .incrementAndGet()
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
@@ -16,6 +19,7 @@ import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.info.content.Provider
+import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
@@ -60,28 +64,31 @@ public class IndexController {
 
     @Value("\${bttf.app.debug:false}")
     private lateinit var dbg: String // toBoolean
-    
+
     @Value("\${bttf.app.headerSoftware:false}")
     private lateinit var headerSoftware: String // toBoolean
-    
+
     @Value("\${bttf.app.logCnt:25}")
     private lateinit var logCnt: String // toInt
 
+    @Value("\${bttf.sec.key}")
+    private lateinit var key: String
+
     @Autowired
     private lateinit var statusController: StatusController
-    
+
     @Autowired
     private lateinit var userService: UserService
-    
+
     @Autowired
     private lateinit var loggingEventService: LoggingEventService
-    
+
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
-    
+
     @Autowired
     private lateinit var authenticationManager: AuthenticationManager
-    
+
     @Autowired
     private lateinit var provider: Provider
 
@@ -101,9 +108,11 @@ public class IndexController {
         addModel(request, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
-        	log.info("GetLicense username:'{}' ip:'{}' session:{}", model.asMap().get("username"),
-                statusController.getClientIP(), request.requestedSessionId)
-        }?: log.info("GetLicense username:'{}' ip:'{}'", model.asMap().get("username"), statusController.getClientIP())
+            log.info(
+                "GetLicense username:'{}' ip:'{}' session:{}", model.asMap().get("username"),
+                statusController.getClientIP(), request.requestedSessionId
+            )
+        } ?: log.info("GetLicense username:'{}' ip:'{}'", model.asMap().get("username"), statusController.getClientIP())
         return "license"
     }
 
@@ -132,11 +141,91 @@ public class IndexController {
         model.addAttribute("implementationVersion", statusController.getImplementationVersion())
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
-        	log.info("GetIndex username:'{}' ip:'{}' page:{} session:{}",
-                model.asMap().get("username"), statusController.getClientIP(), page.get(), request.requestedSessionId)
-        }?: log.info("GetIndex username:'{}' ip:'{}' page:{}",
-            model.asMap().get("username"), statusController.getClientIP(), page.get())
+            log.info(
+                "GetIndex username:'{}' ip:'{}' page:{} session:{}",
+                model.asMap().get("username"), statusController.getClientIP(), page.get(), request.requestedSessionId
+            )
+        } ?: log.info(
+            "GetIndex username:'{}' ip:'{}' page:{}",
+            model.asMap().get("username"), statusController.getClientIP(), page.get()
+        )
         return "index"
+    }
+
+    /**
+     *
+     * HTML Play
+     * <p>
+     * The method getIndex for play
+     *
+     * @param request {@link HttpServletRequest}
+     * @param model   {@link Model}
+     * @return "play" for thymeleaf play.html {@link String}
+     */
+    @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
+    @PreAuthorize("permitAll()")
+    fun getPlay(request: HttpServletRequest, model: Model): String {
+        val time = ZonedDateTime.now(ZoneId.systemDefault())
+        model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+        model.addAttribute("implementationVersion", statusController.getImplementationVersion())
+        model.addAttribute("time", time)
+        addModel(request, model)
+        request.requestedSessionId?.let {
+            log.info(
+                "GetPlay username:'{}' ip:'{}' time:{} session:{}",
+                model.asMap().get("username"), statusController.getClientIP(), time, request.requestedSessionId
+            )
+        } ?: log.info(
+            "GetIndex username:'{}' ip:'{}' time:{}",
+            model.asMap().get("username"), statusController.getClientIP(), time
+        )
+        return "play"
+    }
+
+    /**
+     *
+     * TODO - Not tried, it's too late today. The last thing I see is them:
+     * WARN --- org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver.logException : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required request parameter 'time' for method parameter type ZonedDateTime is not present]
+     * I go to sleep
+     *
+     *
+     * HTML Trip
+     *
+     * @param request {@link HttpServletRequest}
+     * @return {@String}
+     */
+    @PostMapping(
+        value = arrayOf("/trip/past/{time}", "/trip/future/{time}"),
+        consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE),
+        produces = arrayOf(MediaType.TEXT_HTML_VALUE)
+    )
+    @PreAuthorize("permitAll()")
+    @Throws(Exception::class)
+    fun postPlay(
+        @RequestParam @NotNull time: ZonedDateTime, request: HttpServletRequest
+    ): String {
+        if (request.session != null) {
+            request.session.removeAttribute(BttfConst.LAST_EXCEPTION)
+        }
+        // if (past) {
+        //	val t = time.minusYears(1)
+        // } else if (future) {
+        //  val t = time.minusYears(1)
+        // } 
+        val username = userService.getUsername()
+
+        request.requestedSessionId?.let {
+            log.info(
+                "PostPlay username:'{}' ip:'{}' time:{} session:{}",
+                username,
+                statusController.getClientIP(),
+                request.requestedSessionId,
+                time
+            )
+        } ?: log.info(
+            "PostIndex username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(), time
+        )
+        return "redirect: /bttf/play"
     }
 
     /**
@@ -200,7 +289,8 @@ public class IndexController {
         val sort: String
         if (srt == null || srt.length == 0 || !arrayOf(
                 "idU", "idD", "mU", "mD", "a0U", "a0D", "a1U", "a1D", "a2U", "a2D", "a3U", "a3D", "cU", "cD", "lU", "lD"
-            ).contains(srt)) {
+            ).contains(srt)
+        ) {
             sort = "idD"
         } else {
             sort = srt
@@ -303,7 +393,7 @@ public class IndexController {
         pg?.let {
             page.set(pg)
             if (page.get() < 0 || page.get() > max) page.set(0)
-        }?: page.set(0)
+        } ?: page.set(0)
         return page
     }
 
@@ -333,7 +423,7 @@ public class IndexController {
      * Log in
      * <p>
      * The method getLogin for /login
-     * 
+     *
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
      * @return "login" for thymeleaf login.html {@link String}
@@ -358,14 +448,14 @@ public class IndexController {
     }
 
     /**
-     * 
+     *
      * Sign in from log in form
      * <p>
      * The method signin for /login/signin
      * <p>
      * For {@link #getLogin} after submit &lt;Log in&gt; or press
      * &lt;&crarr;Enter&gt;
-     * 
+     *
      * @param username {@link String} Username
      * @param password {@link String} Password
      * @param request  {@link HttpServletRequest}
@@ -375,7 +465,8 @@ public class IndexController {
     fun signin(
         @RequestParam @NotNull username: String,
         @RequestParam @NotNull password: String,
-        request: HttpServletRequest): String {
+        request: HttpServletRequest
+    ): String {
         var redirect = "/bttf/login"
         request.session?.let {
             request.session.getAttribute(BttfConst.SAVED_REQUEST)?.let {
@@ -391,8 +482,13 @@ public class IndexController {
             try {
                 val user: UserInfo = userService.loadUserByUsername(username)
                 val token = UsernamePasswordAuthenticationToken(user, password, user.authorities)
-            	SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
-                log.info("Login username:'{}' redirect:'{}' sessionId:'{}'", username, redirect, request.requestedSessionId)
+                SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
+                log.info(
+                    "Login username:'{}' redirect:'{}' sessionId:'{}'",
+                    username,
+                    redirect,
+                    request.requestedSessionId
+                )
             } catch (e: Exception) {
                 when (e) {
                     is UsernameNotFoundException,
@@ -400,8 +496,11 @@ public class IndexController {
                     is AccountExpiredException,
                     is AuthenticationCredentialsNotFoundException,
                     is BadCredentialsException -> {
-                        val ret = "/bttf/login" + provider.queryProvider(listOf(
-                            Pair("error", "true"), Pair("exception", e::class.java.simpleName)))
+                        val ret = "/bttf/login" + provider.queryProvider(
+                            listOf(
+                                Pair("error", "true"), Pair("exception", e::class.java.simpleName)
+                            )
+                        )
                         val attempt = loginAttemptService.findById(statusController.getClientIP())
                         log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
                         // log.error(e::class.java.simpleName, e)
@@ -438,7 +537,7 @@ public class IndexController {
             val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
             val statusCode = status?.let {
                 Integer.valueOf(status.toString())
-            }?: 200
+            } ?: 200
             val statusText = HttpStatus.valueOf(statusCode).reasonPhrase
             model.addAttribute("status", statusCode)
             model.addAttribute("error", statusText)
@@ -457,7 +556,7 @@ public class IndexController {
                         log.error(e.message + " " + e.stackTrace, e)
                         // throw e
                     } else {
-                    	log.error(e.message, e)
+                        log.error(e.message, e)
                     }
                 }
                 else -> {} // throw e
@@ -467,11 +566,11 @@ public class IndexController {
     }
 
     /**
-     * 
+     *
      * Get error message from session
      * <p>
      * Used {@link BadCredentialsException} and {@link LockedException}
-     * 
+     *
      * @param request {@link HttpServletRequest}
      * @param key     {@link String}
      * @param model   {@link Model}
@@ -482,24 +581,24 @@ public class IndexController {
         request.session?.let {
             val ex = request.session.getAttribute(key)
             when (ex) {
-                is UsernameNotFoundException -> 
+                is UsernameNotFoundException ->
                     ret = BttfConst.ERROR_USERNAME_NOT_FOUND
-                is BadCredentialsException -> 
+                is BadCredentialsException ->
                     ret = BttfConst.ERROR_INVALID_USERNAME_AND_PASSWORD
                 is LockedException ->
                     ret = BttfConst.ERROR_USERNAME_IS_LOCKED
                 is AccountExpiredException ->
-                	ret = BttfConst.ERROR_ACCOUNT_EXPIRED
+                    ret = BttfConst.ERROR_ACCOUNT_EXPIRED
                 is AuthenticationCredentialsNotFoundException ->
                     ret = BttfConst.ERROR_AUTHENTICATION_CREDETIALS_NOT_FOUND
                 is BttfException, ->
-                    ret = ex.message?.let { ex.message!! }?: ex::class.java.simpleName
+                    ret = ex.message?.let { ex.message!! } ?: ex::class.java.simpleName
                 is InternalServerError -> {
                     ret = ex.message + " " + ex.stackTrace
                     log.warn(ret, ex)
                 }
                 is Exception ->
-                    ret = ex.message?.let { ex.message!! }?: ex::class.java.simpleName
+                    ret = ex.message?.let { ex.message!! } ?: ex::class.java.simpleName
                 else -> {}
             }
         }
@@ -528,7 +627,8 @@ public class IndexController {
         if (methodName.equals("getError")) {
             val err = getErrorMessage(request, BttfConst.LAST_EXCEPTION, model)
             if (!err.equals("OK")) {
-                log.warn("AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,
+                log.warn(
+                    "AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,
                     model.getAttribute("status"),
                     request.getAttribute(BttfConst.FORWARD_URI)
                 )
