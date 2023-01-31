@@ -1,11 +1,13 @@
 package local.intranet.bttf.test
 
+import javax.crypto.spec.IvParameterSpec
 import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.UserService
+import local.intranet.bttf.api.service.BttfService
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.assertEquals
@@ -13,6 +15,7 @@ import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -31,6 +34,9 @@ import org.springframework.test.context.junit4.SpringRunner
 @SpringBootTest
 class bttfTest {
 
+    @Value("\${bttf.sec.key}")
+    private lateinit var key: String
+    
     @Autowired
     private lateinit var statusController: StatusController
 
@@ -71,6 +77,15 @@ class bttfTest {
         assertThat(userService.loadUserByUsername("lhs")).isNotNull
         assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
 
+        val year1 = 2023L
+        val salt = AESUtil.setHex(AESUtil.generateSalt())
+        val iv = AESUtil.generateIv().getIV()
+        val secretKey1 = AESUtil.getKeyFromPassword(AESUtil.getHex(key), AESUtil.getHex(salt))
+        val en = BttfService.secForPlayer(year1, secretKey1, IvParameterSpec(iv))
+        val secretKey2 = AESUtil.getKeyFromPassword(AESUtil.getHex(key), AESUtil.getHex(salt))
+        val year2 = AESUtil.decrypt(AESUtil.getHex(en), secretKey2, IvParameterSpec(iv)).toLong()
+        assertEquals(year1, year2)
+        
         // a bit of Dadaism
         assertEquals(
             "We have a stuffed grandfather in the closet.",

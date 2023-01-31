@@ -20,6 +20,7 @@ The technology used:
 * OpenAPI - Swagger
 * JPA (PostgreSQL, MariaDB, H2)
 * Quartz Scheduler
+* AES encrypted data transmitted to the form
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container)
 * Nginx (load balancer and PhP FastCGI for SQL Adminer)

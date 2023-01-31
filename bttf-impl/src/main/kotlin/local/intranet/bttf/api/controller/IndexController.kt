@@ -1,6 +1,9 @@
 package local.intranet.bttf.api.controller
 
 import java.util.concurrent.atomic.AtomicInteger // for thymeleaf  .incrementAndGet()
+import java.security.InvalidAlgorithmParameterException
+import java.security.InvalidKeyException
+import java.security.NoSuchAlgorithmException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -21,6 +24,7 @@ import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.security.AESUtil
+import local.intranet.bttf.api.service.BttfService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.UserService
@@ -160,22 +164,55 @@ public class IndexController {
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
      * @return "play" for thymeleaf play.html {@link String}
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
      */
     @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
+    @Throws(
+        NoSuchPaddingException::class, NoSuchAlgorithmException::class,
+        InvalidAlgorithmParameterException::class,
+        InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
+    )
     fun getPlay(request: HttpServletRequest, model: Model): String {
-        val time = request.session?.let {
-            request.session.getAttribute(BttfConst.APPLICATION_YEAR)?.let {
-            	val year = request.session.getAttribute(BttfConst.APPLICATION_YEAR) as Long
-            	val z = ZonedDateTime.now(ZoneId.systemDefault())
-            	z.plusYears(year - z.year)
-            } ?: ZonedDateTime.now(ZoneId.systemDefault())
-        } ?: ZonedDateTime.now(ZoneId.systemDefault())
+        val iv: IvParameterSpec
+        val time = if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null &&
+            request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
+            request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
+        ) {
+            val salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
+            iv = IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
+            val secretKey = AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt)
+            val z = ZonedDateTime.now(ZoneId.systemDefault())
+            z.plusYears(
+                AESUtil.decrypt(
+                    AESUtil.getHex(
+                        request.session.getAttribute(BttfConst.APPLICATION_YEAR) as String
+                    ),
+                    secretKey, iv
+                ).toLong() - z.year
+            )
+        } else {
+            iv = AESUtil.generateIv()
+            ZonedDateTime.now(ZoneId.systemDefault())
+        }
+
+        val salt = AESUtil.generateSalt()
+        val secretKey = AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt)
+
         model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
         model.addAttribute("implementationVersion", statusController.getImplementationVersion())
         model.addAttribute("time", time)
+        model.addAttribute("secretKey", secretKey)
+        model.addAttribute("secretIv", iv)
         addModel(request, model)
         request.requestedSessionId?.let {
+            request.getSession().setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
+            request.getSession().setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
             log.info(
                 "GetPlay username:'{}' ip:'{}' time:{} session:{}",
                 model.asMap().get("username"), statusController.getClientIP(),
@@ -193,9 +230,15 @@ public class IndexController {
      *
      * HTML Play
      *
-     * @param year {@link Long?}
+     * @param cryptedYear {@link String?}
      * @param request {@link HttpServletRequest}
      * @return {@String}
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
      */
     @PostMapping(
         value = arrayOf("/play/year/{year}"),
@@ -203,24 +246,49 @@ public class IndexController {
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("permitAll()")
-    @Throws(Exception::class)
+    @Throws(
+        NoSuchPaddingException::class, NoSuchAlgorithmException::class,
+        InvalidAlgorithmParameterException::class,
+        InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
+    )
     fun postPlay(
-        @PathVariable(value = "year", required = false) year: Long?, request: HttpServletRequest
+        @PathVariable(value = "year", required = false) cryptedYear: String?, request: HttpServletRequest
     ): String {
-        val time = year?.let {
+        val salt: String?
+        val iv: IvParameterSpec?
+        val time = if (request.session != null && cryptedYear != null &&
+            request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
+            request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
+        ) {
+            salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
+            iv = IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
+            val year =
+                AESUtil.decrypt(AESUtil.getHex(cryptedYear), AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt), iv)
+                    .toLong()
             val z = ZonedDateTime.now(ZoneId.systemDefault())
             z.plusYears(year - z.year)
-        } ?: ZonedDateTime.now(ZoneId.systemDefault())
-        request.session?.let {
-            request.session.setAttribute(BttfConst.APPLICATION_YEAR, time.year.toLong())
+        } else {
+            salt = null
+            iv = null
+            ZonedDateTime.now(ZoneId.systemDefault())
+        }
+        if (request.session != null && salt != null && iv != null) {
+            request.session.setAttribute(
+                BttfConst.APPLICATION_YEAR,
+                BttfService.secForPlayer(time.year.toLong(), AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt), iv)
+            )
         }
         val username = userService.getUsername()
-
-        request.requestedSessionId?.let {log.info("PostPlay username:'{}' ip:'{}' time:{} session:{}",
-            username, statusController.getClientIP(), request.requestedSessionId,
-            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
-        } ?: log.info("PostIndex username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(),
-            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+        request.requestedSessionId?.let {
+            log.info(
+                "PostPlay username:'{}' ip:'{}' time:{} session:{}",
+                username, statusController.getClientIP(), request.requestedSessionId,
+                time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+            )
+        } ?: log.info(
+            "PostIndex username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(),
+            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+        )
         return "redirect: /bttf/play"
     }
 

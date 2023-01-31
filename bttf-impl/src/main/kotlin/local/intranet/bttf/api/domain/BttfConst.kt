@@ -79,6 +79,18 @@ object BttfConst {
     
     /**
      *
+     * APPLICATION_SALT = "BTTF_APPLICATION_SALT"
+     */
+    const val APPLICATION_SALT: String = "BTTF_APPLICATION_SALT"
+    
+    /**
+     *
+     * APPLICATION_SECRET_IV = "BTTF_APPLICATION_SECRET_IV"
+     */
+    const val APPLICATION_SECRET_IV: String = "BTTF_APPLICATION_SECRET_IV"
+    
+    /**
+     *
      * FORWARD_URI = "javax.servlet.forward.request_uri"
      */
     const val FORWARD_URI: String = "javax.servlet.forward.request_uri"
