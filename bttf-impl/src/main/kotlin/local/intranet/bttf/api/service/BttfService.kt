@@ -44,7 +44,7 @@ public class BttfService {
 
         /**
          *
-         * SecForPlayer in thymeleaf
+         * SecForPlayer for thymeleaf play.html
          * <p>
          * used {@link local.intranet.bttf.api.controller.IndexController}
          *
