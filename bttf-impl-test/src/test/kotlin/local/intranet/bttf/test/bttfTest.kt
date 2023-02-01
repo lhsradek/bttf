@@ -36,7 +36,7 @@ class bttfTest {
 
     @Value("\${bttf.sec.key}")
     private lateinit var key: String
-    
+
     @Autowired
     private lateinit var statusController: StatusController
 
@@ -78,14 +78,14 @@ class bttfTest {
         assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
 
         val year1 = 2023L
-        val salt = AESUtil.setHex(AESUtil.generateSalt())
-        val iv = AESUtil.generateIv().getIV()
-        val secretKey1 = AESUtil.getKeyFromPassword(AESUtil.getHex(key), AESUtil.getHex(salt))
-        val en = BttfService.secForPlayer(year1, secretKey1, IvParameterSpec(iv))
-        val secretKey2 = AESUtil.getKeyFromPassword(AESUtil.getHex(key), AESUtil.getHex(salt))
-        val year2 = AESUtil.decrypt(AESUtil.getHex(en), secretKey2, IvParameterSpec(iv)).toLong()
+        val salt = AESUtil.generateSalt()
+        val iv = AESUtil.generateIv()
+        val secretKey1 = AESUtil.getKeyFromPassword(key, salt)
+        val en = BttfService.secForPlayer(year1, secretKey1, iv)
+        val secretKey2 = AESUtil.getKeyFromPassword(key, salt)
+        val year2 = AESUtil.decrypt(AESUtil.getHex(en), secretKey2, iv).toLong()
         assertEquals(year1, year2)
-        
+
         // a bit of Dadaism
         assertEquals(
             "We have a stuffed grandfather in the closet.",

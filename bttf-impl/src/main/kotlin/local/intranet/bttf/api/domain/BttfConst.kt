@@ -76,19 +76,19 @@ object BttfConst {
      * APPLICATION_YEAR = "BTTF_APPLICATION_YEAR"
      */
     const val APPLICATION_YEAR: String = "BTTF_APPLICATION_YEAR"
-    
+
     /**
      *
      * APPLICATION_SALT = "BTTF_APPLICATION_SALT"
      */
     const val APPLICATION_SALT: String = "BTTF_APPLICATION_SALT"
-    
+
     /**
      *
      * APPLICATION_SECRET_IV = "BTTF_APPLICATION_SECRET_IV"
      */
     const val APPLICATION_SECRET_IV: String = "BTTF_APPLICATION_SECRET_IV"
-    
+
     /**
      *
      * FORWARD_URI = "javax.servlet.forward.request_uri"
@@ -136,6 +136,13 @@ object BttfConst {
      * ERROR_ACCOUNT_EXPIRED = "Account expired!"
      */
     const val ERROR_ACCOUNT_EXPIRED: String = "Account expired!"
+
+    /**
+     *
+     * ERROR_INTERNAL = "You clicked too fast or were you looking at the html source. You're brought back to the now! ;-)"
+     */
+    const val ERROR_INTERNAL: String =
+        "You clicked too fast or were you looking at the html source. You're brought back to the now! ;-)"
 
 
 }

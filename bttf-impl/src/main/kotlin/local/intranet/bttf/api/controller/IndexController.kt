@@ -1,9 +1,10 @@
 package local.intranet.bttf.api.controller
 
-import java.util.concurrent.atomic.AtomicInteger // for thymeleaf  .incrementAndGet()
+import java.util.concurrent.atomic.AtomicInteger
 import java.security.InvalidAlgorithmParameterException
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
+import java.security.spec.InvalidKeySpecException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -164,65 +165,78 @@ public class IndexController {
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
      * @return "play" for thymeleaf play.html {@link String}
-     * @throws NoSuchPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidAlgorithmParameterException
-     * @throws InvalidKeyException
-     * @throws BadPaddingException
-     * @throws IllegalBlockSizeException
      */
     @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    @Throws(
-        NoSuchPaddingException::class, NoSuchAlgorithmException::class,
-        InvalidAlgorithmParameterException::class,
-        InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
-    )
     fun getPlay(request: HttpServletRequest, model: Model): String {
-        val iv: IvParameterSpec
-        val time = if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null &&
-            request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
-            request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
-        ) {
-            val salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
-            iv = IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
-            val secretKey = AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt)
-            val z = ZonedDateTime.now(ZoneId.systemDefault())
-            z.plusYears(
-                AESUtil.decrypt(
-                    AESUtil.getHex(
-                        request.session.getAttribute(BttfConst.APPLICATION_YEAR) as String
-                    ),
-                    secretKey, iv
-                ).toLong() - z.year
-            )
-        } else {
-            iv = AESUtil.generateIv()
-            ZonedDateTime.now(ZoneId.systemDefault())
-        }
-
-        val salt = AESUtil.generateSalt()
-        val secretKey = AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt)
-
-        model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
-        model.addAttribute("implementationVersion", statusController.getImplementationVersion())
-        model.addAttribute("time", time)
-        model.addAttribute("secretKey", secretKey)
-        model.addAttribute("secretIv", iv)
-        addModel(request, model)
-        request.requestedSessionId?.let {
-            request.getSession().setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
-            request.getSession().setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
-            log.info(
-                "GetPlay username:'{}' ip:'{}' time:{} session:{}",
+        try {
+            val time =
+                if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null &&
+                    request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
+                    request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
+                ) {
+                    try {
+                        // A player who clicks on the form so fast that the data cannot be encrypted will
+                        // be punished by returning to the now! ;-)
+                        val salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
+                        val iv =
+                            IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
+                        val secretKey = AESUtil.getKeyFromPassword(key, salt)
+                        val z = ZonedDateTime.now(ZoneId.systemDefault())
+                        z.plusYears(
+                            AESUtil.decrypt(
+                                AESUtil.getHex(
+                                    request.session.getAttribute(BttfConst.APPLICATION_YEAR) as String
+                                ),
+                                secretKey, iv
+                            ).toLong() - z.year
+                        )
+                    } catch (e: Exception) {
+                        ZonedDateTime.now(ZoneId.systemDefault())
+                    }
+                } else {
+                    ZonedDateTime.now(ZoneId.systemDefault())
+                }
+            addModel(request, model)
+            val iv = AESUtil.generateIv()
+            val salt = AESUtil.generateSalt()
+            val secretKey = AESUtil.getKeyFromPassword(key, salt)
+            model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+            model.addAttribute("implementationVersion", statusController.getImplementationVersion())
+            model.addAttribute("time", time)
+            model.addAttribute("secretIv", iv)
+            model.addAttribute("secretKey", secretKey)
+            // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+            request.requestedSessionId?.let {
+                request.session.setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
+                request.session.setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
+                log.info(
+                    "GetPlay username:'{}' ip:'{}' time:{} session:{}",
+                    model.asMap().get("username"), statusController.getClientIP(),
+                    time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), request.requestedSessionId
+                )
+            } ?: log.info(
+                "GetPlay username:'{}' ip:'{}' time:{}",
                 model.asMap().get("username"), statusController.getClientIP(),
-                time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), request.requestedSessionId
+                time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
             )
-        } ?: log.info(
-            "GetIndex username:'{}' ip:'{}' time:{}",
-            model.asMap().get("username"), statusController.getClientIP(),
-            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
-        )
+        } catch (e: Exception) {
+            when (e) {
+                is NoSuchPaddingException,
+                is NoSuchAlgorithmException,
+                is InvalidAlgorithmParameterException,
+                is InvalidKeyException,
+                is InvalidKeySpecException,
+                is BadPaddingException,
+                is IllegalBlockSizeException -> {
+                    log.warn("GetPlay error:'{}' message:'{}'", e::class.java.simpleName, e.message)
+                }
+                is InternalServerError -> {
+                    log.error(e.message, e)
+                }
+            }
+            throw e
+        }
         return "play"
     }
 
@@ -233,12 +247,6 @@ public class IndexController {
      * @param cryptedYear {@link String?}
      * @param request {@link HttpServletRequest}
      * @return {@String}
-     * @throws NoSuchPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidAlgorithmParameterException
-     * @throws InvalidKeyException
-     * @throws BadPaddingException
-     * @throws IllegalBlockSizeException
      */
     @PostMapping(
         value = arrayOf("/play/year/{year}"),
@@ -246,49 +254,60 @@ public class IndexController {
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("permitAll()")
-    @Throws(
-        NoSuchPaddingException::class, NoSuchAlgorithmException::class,
-        InvalidAlgorithmParameterException::class,
-        InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
-    )
     fun postPlay(
         @PathVariable(value = "year", required = false) cryptedYear: String?, request: HttpServletRequest
     ): String {
-        val salt: String?
-        val iv: IvParameterSpec?
-        val time = if (request.session != null && cryptedYear != null &&
-            request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
-            request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
-        ) {
-            salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
-            iv = IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
-            val year =
-                AESUtil.decrypt(AESUtil.getHex(cryptedYear), AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt), iv)
-                    .toLong()
-            val z = ZonedDateTime.now(ZoneId.systemDefault())
-            z.plusYears(year - z.year)
-        } else {
-            salt = null
-            iv = null
-            ZonedDateTime.now(ZoneId.systemDefault())
-        }
-        if (request.session != null && salt != null && iv != null) {
-            request.session.setAttribute(
-                BttfConst.APPLICATION_YEAR,
-                BttfService.secForPlayer(time.year.toLong(), AESUtil.getKeyFromPassword(AESUtil.getHex(key), salt), iv)
-            )
-        }
-        val username = userService.getUsername()
-        request.requestedSessionId?.let {
-            log.info(
-                "PostPlay username:'{}' ip:'{}' time:{} session:{}",
-                username, statusController.getClientIP(), request.requestedSessionId,
+        try {
+            val time = if (request.session != null && cryptedYear != null &&
+                request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
+                request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
+            ) {
+                val salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
+                val iv = IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
+                val year =
+                    AESUtil.decrypt(AESUtil.getHex(cryptedYear), AESUtil.getKeyFromPassword(key, salt), iv)
+                        .toLong()
+                val z = ZonedDateTime.now(ZoneId.systemDefault())
+                z.plusYears(year - z.year)
+            } else {
+                ZonedDateTime.now(ZoneId.systemDefault())
+            }
+            if (request.session != null) {
+                val iv = AESUtil.generateIv()
+                val salt = AESUtil.generateSalt()
+                request.session.setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
+                request.session.setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
+                request.session.setAttribute(
+                    BttfConst.APPLICATION_YEAR,
+                    BttfService.secForPlayer(time.year.toLong(), AESUtil.getKeyFromPassword(key, salt), iv)
+                )
+            }
+            val username = userService.getUsername()
+            // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+            request.requestedSessionId?.let {
+                log.info(
+                    "PostPlay username:'{}' ip:'{}' time:{} session:{}",
+                    username, statusController.getClientIP(), request.requestedSessionId,
+                    time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+                )
+            } ?: log.info(
+                "PostPlay username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(),
                 time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
             )
-        } ?: log.info(
-            "PostIndex username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(),
-            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
-        )
+        } catch (e: Exception) {
+            when (e) {
+                is NoSuchPaddingException,
+                is NoSuchAlgorithmException,
+                is InvalidAlgorithmParameterException,
+                is InvalidKeyException,
+                is InvalidKeySpecException,
+                is BadPaddingException,
+                is IllegalBlockSizeException -> {
+                    log.warn("PostPlay error:'{}' message:'{}'", e::class.java.simpleName, e.message)
+                }
+            }
+            throw e
+        }
         return "redirect: /bttf/play"
     }
 
@@ -508,7 +527,7 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/login"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     fun getLogin(request: HttpServletRequest, model: Model): String {
-        val err = getErrorMessage(request, BttfConst.LAST_EXCEPTION, model)
+        val err = getErrorMessage(request, model)
         if (request.session != null && err.equals("OK")) {
             request.session.removeAttribute(BttfConst.LAST_EXCEPTION)
         } else if (request.session != null) {
@@ -546,48 +565,46 @@ public class IndexController {
         request: HttpServletRequest
     ): String {
         var redirect = "/bttf/login"
-        request.session?.let {
-            request.session.getAttribute(BttfConst.SAVED_REQUEST)?.let {
-                val savedRequest: DefaultSavedRequest? =
-                    request.session.getAttribute(BttfConst.SAVED_REQUEST) as DefaultSavedRequest
-                savedRequest?.let {
-                    savedRequest.getRedirectUrl()?.let {
-                        redirect = savedRequest.getRedirectUrl()
-                    }
+        request.session.getAttribute(BttfConst.SAVED_REQUEST)?.let {
+            val savedRequest: DefaultSavedRequest? =
+                request.session.getAttribute(BttfConst.SAVED_REQUEST) as DefaultSavedRequest
+            savedRequest?.let {
+                savedRequest.getRedirectUrl()?.let {
+                    redirect = savedRequest.getRedirectUrl()
                 }
             }
+        }
 
-            try {
-                val user: UserInfo = userService.loadUserByUsername(username)
-                val token = UsernamePasswordAuthenticationToken(user, password, user.authorities)
-                SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
-                log.info(
-                    "Login username:'{}' redirect:'{}' sessionId:'{}'",
-                    username,
-                    redirect,
-                    request.requestedSessionId
-                )
-            } catch (e: Exception) {
-                when (e) {
-                    is UsernameNotFoundException,
-                    is LockedException,
-                    is AccountExpiredException,
-                    is AuthenticationCredentialsNotFoundException,
-                    is BadCredentialsException -> {
-                        val ret = "/bttf/login" + provider.queryProvider(
-                            listOf(
-                                Pair("error", "true"), Pair("exception", e::class.java.simpleName)
-                            )
+        try {
+            val user: UserInfo = userService.loadUserByUsername(username)
+            val token = UsernamePasswordAuthenticationToken(user, password, user.authorities)
+            SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
+            log.info(
+                "Login username:'{}' redirect:'{}' sessionId:'{}'",
+                username,
+                redirect,
+                request.requestedSessionId
+            )
+        } catch (e: Exception) {
+            when (e) {
+                is UsernameNotFoundException,
+                is LockedException,
+                is AccountExpiredException,
+                is AuthenticationCredentialsNotFoundException,
+                is BadCredentialsException -> {
+                    val ret = "/bttf/login" + provider.queryProvider(
+                        listOf(
+                            Pair("error", "true"), Pair("exception", e::class.java.simpleName)
                         )
-                        val attempt = loginAttemptService.findById(statusController.getClientIP())
-                        log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
-                        // log.error(e::class.java.simpleName, e)
-                        log.error(e::class.java.simpleName)
-                        request.session.setAttribute(BttfConst.LAST_EXCEPTION, e)
-                        redirect = ret
-                    }
-                    else -> throw e
+                    )
+                    val attempt = loginAttemptService.findById(statusController.getClientIP())
+                    log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
+                    // log.error(e::class.java.simpleName, e)
+                    log.error(e::class.java.simpleName)
+                    request.session.setAttribute(BttfConst.LAST_EXCEPTION, e)
+                    redirect = ret
                 }
+                else -> throw e
             }
         }
         return "redirect: " + redirect
@@ -616,10 +633,18 @@ public class IndexController {
             val statusCode = status?.let {
                 Integer.valueOf(status.toString())
             } ?: 200
-            val statusText = HttpStatus.valueOf(statusCode).reasonPhrase
-            model.addAttribute("status", statusCode)
-            model.addAttribute("error", statusText)
-            addModel(request, model)
+            if (statusCode == 200) {
+                request.session.removeAttribute(BttfConst.LAST_EXCEPTION)
+            } else {
+                val statusText = HttpStatus.valueOf(statusCode).reasonPhrase
+                model.addAttribute("status", statusCode)
+                if (statusCode == 500) {
+                    model.addAttribute("error", BttfConst.ERROR_INTERNAL)
+                } else {
+                    model.addAttribute("error", statusText)
+                }
+                addModel(request, model)
+            }
             //  model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         } catch (e: Exception) {
             when (e) {
@@ -632,16 +657,12 @@ public class IndexController {
                 is InternalServerError -> {
                     if (e is InternalServerError) {
                         log.error(e.message + " " + e.stackTrace, e)
-                        if (dbg.toBoolean()) {
-                            throw e
-                        }
+                        // if (dbg.toBoolean()) throw e
                     } else {
                         log.error(e.message, e)
                     }
                 }
-                else -> if (dbg.toBoolean()) {
-                    throw e
-                }
+                // else -> if (dbg.toBoolean()) throw e
             }
         }
         return "error"
@@ -654,37 +675,47 @@ public class IndexController {
      * Used {@link BadCredentialsException} and {@link LockedException}
      *
      * @param request {@link HttpServletRequest}
-     * @param key     {@link String}
      * @param model   {@link Model}
      * @return error message {@link String}
      */
-    protected fun getErrorMessage(request: HttpServletRequest, key: String, model: Model): String {
+    protected fun getErrorMessage(request: HttpServletRequest, model: Model): String {
         var ret = "OK"
-        request.session?.let {
-            val ex = request.session.getAttribute(key)
+        val ex: Any? = request.session.getAttribute(BttfConst.LAST_EXCEPTION)
+        if (ex != null && ex is Exception) {
             when (ex) {
-                is UsernameNotFoundException ->
+                is UsernameNotFoundException -> {
                     ret = BttfConst.ERROR_USERNAME_NOT_FOUND
-                is BadCredentialsException ->
-                    ret = BttfConst.ERROR_INVALID_USERNAME_AND_PASSWORD
-                is LockedException ->
-                    ret = BttfConst.ERROR_USERNAME_IS_LOCKED
-                is AccountExpiredException ->
-                    ret = BttfConst.ERROR_ACCOUNT_EXPIRED
-                is AuthenticationCredentialsNotFoundException ->
-                    ret = BttfConst.ERROR_AUTHENTICATION_CREDETIALS_NOT_FOUND
-                is BttfException, ->
-                    ret = ex.message?.let { ex.message!! } ?: ex::class.java.simpleName
-                is InternalServerError -> {
-                    ret = ex.message + " " + ex.stackTrace
-                    log.warn(ret, ex)
                 }
-                is Exception ->
+                is BadCredentialsException -> {
+                    ret = BttfConst.ERROR_INVALID_USERNAME_AND_PASSWORD
+                }
+                is LockedException -> {
+                    ret = BttfConst.ERROR_USERNAME_IS_LOCKED
+                }
+                is AccountExpiredException -> {
+                    ret = BttfConst.ERROR_ACCOUNT_EXPIRED
+                }
+                is AuthenticationCredentialsNotFoundException -> {
+                    ret = BttfConst.ERROR_AUTHENTICATION_CREDETIALS_NOT_FOUND
+                }
+                is BttfException -> {
                     ret = ex.message?.let { ex.message!! } ?: ex::class.java.simpleName
-                else -> {}
+                }
+                is NoSuchPaddingException,
+                is NoSuchAlgorithmException,
+                is InvalidAlgorithmParameterException,
+                is InvalidKeyException,
+                is InvalidKeySpecException,
+                is BadPaddingException,
+                is InternalServerError -> {
+                    log.warn(ex.message + " " + ex.stackTrace, ex)
+                    ret = BttfConst.ERROR_INTERNAL
+                }
             }
         }
-        if (!ret.equals("OK")) model.addAttribute("getError", ret)
+        if (!ret.equals("OK")) {
+            model.addAttribute("getError", ret)
+        }
         return ret
     }
 
@@ -707,7 +738,7 @@ public class IndexController {
         model.addAttribute("role", userService.getAuthoritiesRoles().joinToString(separator = " "))
         val methodName = Thread.currentThread().stackTrace[2].methodName
         if (methodName.equals("getError")) {
-            val err = getErrorMessage(request, BttfConst.LAST_EXCEPTION, model)
+            val err = getErrorMessage(request, model)
             if (!err.equals("OK")) {
                 log.warn(
                     "AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,

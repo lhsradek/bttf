@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.scheduler
 
 import local.intranet.bttf.api.config.ApplicationConfig
+import local.intranet.bttf.api.redis.RedisMessagePublisher
 
 import org.quartz.CronTrigger
 import org.quartz.JobDetail
@@ -29,7 +30,7 @@ import org.springframework.util.StringUtils
  */
 @Configuration
 @EnableAutoConfiguration
-@AutoConfigureAfter(ApplicationConfig::class)
+@AutoConfigureAfter(ApplicationConfig::class, RedisMessagePublisher::class)
 @ConditionalOnExpression("\${scheduler.enabled}")
 public class SchedulerConfig {
 
