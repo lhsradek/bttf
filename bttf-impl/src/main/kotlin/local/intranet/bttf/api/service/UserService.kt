@@ -117,7 +117,7 @@ class UserService : UserDetailsService {
     override fun loadUserByUsername(username: String): UserInfo {
         val ip: String = statusController.getClientIP()
         if (loginAttemptService.isBlocked(ip)) {
-        	throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
+            throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
         }
         val user: User? = userRepository.findByName(username)
 
@@ -140,7 +140,7 @@ class UserService : UserDetailsService {
                 }
                 throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
-        }?: throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
+        } ?: throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
     }
 
     /**
@@ -152,11 +152,11 @@ class UserService : UserDetailsService {
     fun getUsername(): String {
         var ret = ""
         SecurityContextHolder.getContext().authentication?.let {
-        	httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let { 
-        		if (httpSession.maxInactiveInterval < 3600) {
-        			httpSession.setMaxInactiveInterval(3600)
-        		}
-        		ret = SecurityContextHolder.getContext().authentication.name
+            httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
+                if (httpSession.maxInactiveInterval < 3600) {
+                    httpSession.setMaxInactiveInterval(3600)
+                }
+                ret = SecurityContextHolder.getContext().authentication.name
             }
         }
         // if (dbg.toBoolean()) log.debug("'{}'", ret)
@@ -217,10 +217,11 @@ class UserService : UserDetailsService {
     fun getUserRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
-        for (r in RoleType.values())
+        for (r in RoleType.values()) {
             if (!r.equals(RoleType.ANONYMOUS_ROLE)) {
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))
             }
+        }
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

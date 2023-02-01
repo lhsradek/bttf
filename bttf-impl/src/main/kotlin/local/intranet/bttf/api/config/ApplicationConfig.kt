@@ -44,7 +44,8 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
 
     // @Value("\${bttf.app.debug:false}") private lateinit var dbg: String  // toBoolean
 
-    @Autowired private lateinit var servletContext: ServletContext
+    @Autowired
+    private lateinit var servletContext: ServletContext
 
     /**
      *
