@@ -3,7 +3,6 @@ package local.intranet.bttf.test
 import javax.crypto.spec.IvParameterSpec
 import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
-import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.UserService
@@ -17,9 +16,6 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import org.springframework.data.domain.Sort.Order
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.test.context.junit4.SpringRunner
 

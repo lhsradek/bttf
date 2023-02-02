@@ -1,6 +1,5 @@
 package local.intranet.bttf.api.info.content
 
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceContext

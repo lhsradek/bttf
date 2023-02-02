@@ -10,8 +10,6 @@ import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 import org.springframework.data.redis.serializer.GenericToStringSerializer
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 
 /**
  *

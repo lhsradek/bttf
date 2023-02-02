@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import local.intranet.bttf.api.info.content.LoginCache
 import org.jetbrains.annotations.NotNull
 
 /**

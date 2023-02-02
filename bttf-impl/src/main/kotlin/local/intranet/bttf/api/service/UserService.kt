@@ -10,7 +10,6 @@ import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.security.LogoutSuccess
-import local.intranet.bttf.api.service.LoginAttemptService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Autowired
