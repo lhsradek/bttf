@@ -34,6 +34,6 @@ Thank you all for these technologies. Thanks to Microsoft for finally making fri
 Development Plan: This recession game is supposed to be multiplayer and the manager will see who is playingin log. Whoever plays long enough will get the manager's password. Whoever lasts even longer gets and travels many years in time, gets an admin password and can try OpenAPI. You've probably already understood that I'm more focused on the backend, so wait for javascript or react or something from https://kotlinlang.org/docs/js-overview.html until later.
 
 <p>
-<img src="src/main/webapp/res/bttf.png" width="400px" height="400px"/>
+<img src="src/main/webapp/res/bttf.png" width="400px" height="328px"/>
 <p/>
 
