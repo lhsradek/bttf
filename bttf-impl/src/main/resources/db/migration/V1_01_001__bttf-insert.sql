@@ -68,8 +68,3 @@ INSERT INTO bttf_user_role (user_id, role_id) (
     SELECT id user_id, (SELECT id FROM bttf_role
     WHERE role_name='userRole') role_id
     FROM bttf_user WHERE user_name='user');
--- INSERT INTO bttf_user_role (user_id, role_id) (
---    SELECT id user_id, (SELECT id FROM bttf_role
---    WHERE role_name='anonymousRole') role_id
---    FROM bttf_user WHERE user_name='anonymous');
-   
