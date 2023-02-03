@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.Parameter
 import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
+import local.intranet.bttf.api.info.JobInfo
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
+import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
@@ -15,6 +17,7 @@ import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.http.MediaType
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.access.prepost.PreAuthorize
@@ -48,6 +51,9 @@ public class InfoController {
     @Autowired
     private lateinit var roleService: RoleService
     
+    @Autowired(required=false)
+    private lateinit var jobService: JobService
+    
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
 
@@ -57,7 +63,8 @@ public class InfoController {
      * User informations
      * <p>
      * Accessible to the
-     * {@link local.intranet.bttf.api.domain.type.RoleType#USER_ROLE}.
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
      * Used {@link local.intranet.bttf.api.service.UserService#getUserInfo}.
      * <p>
@@ -106,7 +113,8 @@ public class InfoController {
      * Role informations
      * <p>
      * Accessible to the
-     * {@link local.intranet.bttf.api.domain.type.RoleType#USER_ROLE}.
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
      * Used {@link local.intranet.bttf.api.service.RoleService#getRoleInfo}.
      * <p>
@@ -133,7 +141,44 @@ public class InfoController {
 
     /**
      *
+     * Job information
+     * <p>
+     * Accessible to the
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.JobService#getJobInfo}.
+     * <p>
+     *
+     * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
+     */
+    @GetMapping(value = arrayOf("/job"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @Operation(
+        operationId = "getJobInfo",
+        summary = "Get Job Info",
+        description = "Get Job Info\n\n"
+                + "This method is calling JobService.getJobInfo\n\n",
+                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+                // + "getJobInfo()\" target=\"_blank\">InfoController.getJobInfo</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    @ConditionalOnExpression("\${scheduler.enabled}")
+    fun getJobInfo(): JobInfo {
+        val ret = jobService.getJobInfo()
+        return ret
+    }
+
+    /**
+     *
      * Get attempts
+     * <p>
+     * Accessible to the
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     * <p>
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.LoginAttemptService#getLoginAttempts}.
      *
      * @param printBlocked {@link Boolean}
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
@@ -145,7 +190,7 @@ public class InfoController {
         description = "Get Login Attempts\n\n"
                 + "This method get loggin attempts\n\n",
                 // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                // + "getLoginAttempts()\" target=\"_blank\">LoginAttemptService.getLoginAttempts</a>",
+                // + "getLoginAttempts()\" target=\"_blank\">InfoController.getLoginAttempts</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
@@ -155,4 +200,5 @@ public class InfoController {
         return ret
     }
 
+    
 }

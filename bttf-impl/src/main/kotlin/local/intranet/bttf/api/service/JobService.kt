@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.service
 
 import local.intranet.bttf.api.domain.type.StatusType
+import local.intranet.bttf.api.info.JobInfo
 import local.intranet.bttf.api.model.entity.Counter
 import local.intranet.bttf.api.model.repository.CounterRepository
 import java.time.Instant
@@ -28,6 +29,11 @@ public class JobService {
     @Autowired
     private lateinit var counterRepository: CounterRepository
 
+
+    @Transactional(readOnly = true)
+    fun getJobInfo(): JobInfo {
+        return JobInfo()
+    }
 
     /**
      *
