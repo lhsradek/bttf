@@ -7,10 +7,12 @@ import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.CounterInfo
+import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
+import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
 import org.jetbrains.annotations.NotNull
@@ -47,15 +49,18 @@ public class InfoController {
 
     @Autowired
     private lateinit var userService: UserService
-    
+
     @Autowired
     private lateinit var roleService: RoleService
-    
-    @Autowired(required=false)
+
+    @Autowired(required = false)
     private lateinit var jobService: JobService
-    
+
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
+
+    @Autowired
+    private lateinit var loggingEventService: LoggingEventService
 
 
     /**
@@ -63,6 +68,7 @@ public class InfoController {
      * User informations
      * <p>
      * Accessible to the
+     * <br>
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
@@ -85,8 +91,8 @@ public class InfoController {
         summary = "Get User Info",
         description = "Get User Info\n\n"
                 + "This method is calling UserService.getUserInfo\n\n",
-                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                // + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
@@ -113,6 +119,7 @@ public class InfoController {
      * Role informations
      * <p>
      * Accessible to the
+     * <br>
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
@@ -130,8 +137,8 @@ public class InfoController {
         summary = "Get Role Info",
         description = "Get Role Info\n\n"
                 + "This method is calling RoleService.getRoleInfo\n\n",
-                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                // + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
@@ -144,6 +151,7 @@ public class InfoController {
      * Job information
      * <p>
      * Accessible to the
+     * <br>
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
@@ -158,15 +166,14 @@ public class InfoController {
         summary = "Get Job Info",
         description = "Get Job Info\n\n"
                 + "This method is calling JobService.getJobInfo\n\n",
-                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                // + "getJobInfo()\" target=\"_blank\">InfoController.getJobInfo</a>",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "getJobInfo()\" target=\"_blank\">InfoController.getJobInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
     fun getJobInfo(): CounterInfo {
-        val ret: CounterInfo = jobService.getJobInfo()
-        return ret
+        return jobService.getJobInfo()
     }
 
     /**
@@ -174,6 +181,7 @@ public class InfoController {
      * Get attempts
      * <p>
      * Accessible to the
+     * <br>
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
@@ -189,16 +197,43 @@ public class InfoController {
         summary = "Get Login Attempts",
         description = "Get Login Attempts\n\n"
                 + "This method get loggin attempts\n\n",
-                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-                // + "getLoginAttempts()\" target=\"_blank\">InfoController.getLoginAttempts</a>",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "getLoginAttempts()\" target=\"_blank\">InfoController.getLoginAttempts</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     fun getLoginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
             List<Triple<String, Int, ZonedDateTime>> {
-        val ret = loginAttemptService.getLoginAttempts(printBlocked)
-        return ret
+        return loginAttemptService.getLoginAttempts(printBlocked)
     }
 
-    
+    /**
+     *
+     * Count Total Logging Events
+     * <p>
+     * Accessible to the
+     * <br>
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.LoggingEventService#countTotalLoggingEvents}.
+     * <p>
+     *
+     * @return {@link List}&lt;{@link LevelCount}&gt;
+     */
+    @GetMapping(value = arrayOf("/countTotalLoggingEvents"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @Operation(
+        operationId = "countTotalLoggingEvents",
+        summary = "Count Total Logging Events",
+        description = "Count Total Logging Events\n\n"
+                + "This method is calling LoggingEventService.countTotalLoggingEvents\n\n",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "countTotalLoggingEvents()\" target=\"_blank\">InfoController.countTotalLoggingEvents</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    fun countTotalLoggingEvents(): List<LevelCount> {
+        return loggingEventService.countTotalLoggingEvents()
+    }
+
 }

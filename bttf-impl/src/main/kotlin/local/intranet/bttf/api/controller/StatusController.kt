@@ -53,15 +53,12 @@ class StatusController {
 
     /**
      *
-     * text/plain: "OK"
-     * <p>
-     * Accessible to the
-     * {@link local.intranet.bttf.api.domain.type.RoleType#USER_ROLE}
+     * text/plain: "OK" if BTTF API is running
      *
      * @see <a href="/bttf/swagger-ui/#/status-controller/getPlainStatus" target=
      *      "_blank">bttf/swagger-ui/#/status-controller/getPlainStatus</a>
      *
-     * @return "OK" if BTTF API is running
+     * @return {@link String}
      */
     @GetMapping(value = arrayOf("/status"), produces = arrayOf(MediaType.TEXT_PLAIN_VALUE))
     @Operation(
@@ -166,7 +163,5 @@ class StatusController {
         }?: httpServletRequest.remoteAddr
         return ret
     }
-
-
 
 }

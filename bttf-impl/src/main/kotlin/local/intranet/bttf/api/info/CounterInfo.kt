@@ -29,11 +29,14 @@ import local.intranet.bttf.api.service.JobService
 data class CounterInfo(
 
     @JsonProperty("count")
+    @Size(min = 0)
     val cnt: Long,
 
     @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val date: ZonedDateTime,
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val status: StatusType,
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
