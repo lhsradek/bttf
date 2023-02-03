@@ -162,7 +162,7 @@ class StatusController {
     fun getClientIP(): String {
         val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
         val ret = xfHeader?.let {
-            xfHeader.split(",")[0]
+            xfHeader.split(",").first()
         }?: httpServletRequest.remoteAddr
         return ret
     }
