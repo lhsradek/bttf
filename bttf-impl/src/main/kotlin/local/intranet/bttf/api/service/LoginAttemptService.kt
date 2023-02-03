@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
  *
  */
 @Service
-public class LoginAttemptService {
+class LoginAttemptService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

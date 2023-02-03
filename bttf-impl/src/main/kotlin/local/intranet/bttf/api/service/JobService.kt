@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
  */
 @Service
 @ConditionalOnExpression("\${scheduler.enabled}")
-public class JobService {
+class JobService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull
  *
  */
 @Service
-public class LoggingEventService {
+class LoggingEventService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 

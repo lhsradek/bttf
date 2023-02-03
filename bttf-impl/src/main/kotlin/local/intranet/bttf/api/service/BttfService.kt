@@ -24,7 +24,7 @@ import javax.crypto.spec.IvParameterSpec
  *
  */
 @Service
-public class BttfService {
+class BttfService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
