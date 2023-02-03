@@ -24,24 +24,24 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
  */
 @Entity
 @Table(name = "bttf_role")
-data class Role(
+public data class Role(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    public val id: Long? = null,
 
     @NotNull
     @Column(name = "role_name", nullable = false)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val roleName: String,
+    public val roleName: String,
 
     @NotNull
     @Column(nullable = false)
-    val enabled: Boolean = true) {
+    public val enabled: Boolean = true) {
 
     @Column(nullable = true)
     @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(name = "bttf_user_role")
-    val user = mutableListOf<User>()
+    public val user = mutableListOf<User>()
 
 }

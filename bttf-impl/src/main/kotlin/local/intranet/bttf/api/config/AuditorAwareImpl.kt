@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder
  *
  */
 @ConditionalOnExpression("\${bttf.envers.enabled}")
-class AuditorAwareImpl : AuditorAware<String> {
+public class AuditorAwareImpl : AuditorAware<String> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -26,7 +26,7 @@ class AuditorAwareImpl : AuditorAware<String> {
      * Get current auditor
      * @return {@link Optional}&lt;{@link String}&gt;
      */
-    override fun getCurrentAuditor(): Optional<String> {
+    public override fun getCurrentAuditor(): Optional<String> {
         val ret: Optional<String>
         val authentication = SecurityContextHolder.getContext().authentication
         if (SecurityContextHolder.getContext().authentication != null && authentication.isAuthenticated()) {

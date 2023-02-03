@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
  *
  */
 @Service
-class RoleService {
+public class RoleService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -29,7 +29,7 @@ class RoleService {
     private lateinit var roleRepository: RoleRepository
 
     @Transactional(readOnly = true)
-    fun getRoleInfo(): RoleInfo {
+    public fun getRoleInfo(): RoleInfo {
         return RoleInfo(getUsersRoles())
     }
 

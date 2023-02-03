@@ -27,15 +27,17 @@ import org.springframework.context.annotation.Configuration
  */
 @Configuration
 @ConditionalOnExpression("\${bttf.springdoc.enabled}")
-class OpenApiConfig {
+public class OpenApiConfig {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     private val API = "BTTF API"
 
-    @Value("\${bttf.app.debug:false}") private lateinit var dbg: String // toBoolean
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
-    @Autowired private lateinit var statusController: StatusController
+    @Autowired
+    private lateinit var statusController: StatusController
 
     /**
      *
@@ -44,7 +46,7 @@ class OpenApiConfig {
      * @return {@link GroupedOpenApi}
      */
     @Bean
-    fun groupedOpenApi(): GroupedOpenApi {
+    public fun groupedOpenApi(): GroupedOpenApi {
         val ret = GroupedOpenApi.builder()
             .pathsToMatch("/api/v1/**")
             .group("bttf")
@@ -61,7 +63,7 @@ class OpenApiConfig {
      * @return {@link OpenAPI}
      */
     @Bean
-    fun bttfOpenApi(): OpenAPI {
+    protected fun bttfOpenApi(): OpenAPI {
         val ret = OpenAPI()
             .info(
                 Info().title(API)

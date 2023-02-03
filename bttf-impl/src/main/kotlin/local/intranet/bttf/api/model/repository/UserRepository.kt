@@ -12,7 +12,7 @@ import local.intranet.bttf.api.model.entity.User
  * @author Radek Kádner
  *
  */
-interface UserRepository : CrudRepository<User, Long> {
+public interface UserRepository : CrudRepository<User, Long> {
 
     /**
      *
@@ -22,6 +22,6 @@ interface UserRepository : CrudRepository<User, Long> {
      * @return {@link User}?
      */
     @Query(value = "select u from User u where u.userName = ?1")
-    fun findByName(userName: String): User?
+    public fun findByName(userName: String): User?
 
 }

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
  *
  */
 @Component
-class AuthenticationFailureListener : ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
+public class AuthenticationFailureListener : ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -34,7 +34,7 @@ class AuthenticationFailureListener : ApplicationListener<AuthenticationFailureB
      *
      * Application event listener
      */
-    override fun onApplicationEvent(e: AuthenticationFailureBadCredentialsEvent) {
+    public override fun onApplicationEvent(e: AuthenticationFailureBadCredentialsEvent) {
         val ip = statusController.getClientIP()
         loginAttemptService.loginFailed(ip)
         val arr = mutableListOf<String>()

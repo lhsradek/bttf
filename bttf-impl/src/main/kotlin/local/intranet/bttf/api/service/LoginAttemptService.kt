@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
  *
  */
 @Service
-class LoginAttemptService {
+public class LoginAttemptService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -43,7 +43,7 @@ class LoginAttemptService {
      * Init be executed after injecting this service.
      */
     @PostConstruct
-    fun init() {
+    public fun init() {
         loginAttempt = AttemptCache.init(waitSec.toLong(), SECONDS, printBlocked.toBoolean(), maxAttempt.toInt())
     }
 
@@ -54,7 +54,7 @@ class LoginAttemptService {
      * @param printBlocked {@link Boolean}
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
      */
-    fun getLoginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
+    public fun getLoginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
         // val ret = loginAttempt.getCache(printBlocked)
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
@@ -68,7 +68,7 @@ class LoginAttemptService {
      * @param key {@link String}
      * @return {@link Int}
      */
-    fun findById(@NotNull key: String): Int {
+    public fun findById(@NotNull key: String): Int {
         val ret: Int = loginAttempt.getById(key)?.let {
             loginAttempt.getById(key)
         } ?: 0
@@ -81,7 +81,7 @@ class LoginAttemptService {
      *
      * @param key {@link String}
      */
-    fun loginSucceeded(@NotNull key: String) {
+    public fun loginSucceeded(@NotNull key: String) {
         loginAttempt.invalidateKey(key)
     }
 
@@ -91,7 +91,7 @@ class LoginAttemptService {
      *
      * @param key {@link String}
      */
-    fun loginFailed(@NotNull key: String) {
+    public fun loginFailed(@NotNull key: String) {
         loginAttempt.keyToCache(key)
     }
 
@@ -102,7 +102,7 @@ class LoginAttemptService {
      * @param key {@link String}
      * @return {@link Boolean}
      */
-    fun isBlocked(@NotNull key: String): Boolean {
+    public fun isBlocked(@NotNull key: String): Boolean {
         return loginAttempt.isBlocked(key)
     }
 
@@ -110,7 +110,7 @@ class LoginAttemptService {
      *
      * for scheduler {@link local.intranet.bttf.api.scheduler.BttfJob}
      */
-    fun flushCache() {
+    public fun flushCache() {
         loginAttempt.removeExpiredKeys()
     }
 

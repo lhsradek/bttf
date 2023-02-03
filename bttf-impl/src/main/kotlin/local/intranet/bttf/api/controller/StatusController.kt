@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(BttfConst.API + BttfConst.INFO_VERSION_PATH + BttfConst.STATUS_BASE_INFO)
 @Tag(name = BttfConst.STATUS_TAG)
-class StatusController {
+public class StatusController {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -69,7 +69,7 @@ class StatusController {
                 // + "target=\"_blank\">StatusController.getPlainStatus</a>",
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
-    fun getPlainStatus(): String {
+    public fun getPlainStatus(): String {
         return "OK"
     }
 
@@ -79,7 +79,7 @@ class StatusController {
      *
      * @return version BttfApplication
      */
-    fun getImplementationVersion(): String {
+    public fun getImplementationVersion(): String {
         // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
         // val keyFirstElement: String = list.keys.first()
         // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
@@ -95,7 +95,7 @@ class StatusController {
      *
      * @return ${bttf.app.stage}
      */
-    fun getStage(): String {
+    public fun getStage(): String {
         return stage
     }
 
@@ -105,7 +105,7 @@ class StatusController {
      *
      * @return environment.getActiveProfiles()
      */
-    fun getActiveProfiles(): String {
+    public fun getActiveProfiles(): String {
         return environment.getActiveProfiles().joinToString(separator = " ")
     }
 
@@ -115,7 +115,7 @@ class StatusController {
      *
      * @return serverName (The second word) from {@link #getVirtualServerName()}
      */
-    fun getServerName(): String {
+    public fun getServerName(): String {
         return getVirtualServerName().split("/").last()
     }
 
@@ -126,7 +126,7 @@ class StatusController {
      * @return serverSoftware's name (The first word) without version from
      *         {@link #getServerInfo()}
      */
-    fun getServerSoftware(): String {
+    public fun getServerSoftware(): String {
         return getServerInfo().split("/").first()
     }
 
@@ -156,7 +156,7 @@ class StatusController {
      * 
      * @return {@link String} as ip
      */
-    fun getClientIP(): String {
+    public fun getClientIP(): String {
         val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
         val ret = xfHeader?.let {
             xfHeader.split(",").first()

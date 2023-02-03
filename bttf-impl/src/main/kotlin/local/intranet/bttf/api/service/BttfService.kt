@@ -24,7 +24,7 @@ import javax.crypto.spec.IvParameterSpec
  *
  */
 @Service
-class BttfService {
+public class BttfService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -40,7 +40,7 @@ class BttfService {
     @Autowired
     private lateinit var statusController: StatusController
 
-    companion object {
+    public companion object {
 
         /**
          *
@@ -56,7 +56,7 @@ class BttfService {
          */
         @JvmStatic
         @Throws(BttfException::class)
-        fun secForPlayer(id: Long, secretKey: SecretKey, iv: IvParameterSpec): String {
+        public fun secForPlayer(id: Long, secretKey: SecretKey, iv: IvParameterSpec): String {
             try {
                 return AESUtil.setHex(AESUtil.encrypt("$id", secretKey, iv))
             } catch (e: Exception) {

@@ -8,7 +8,7 @@ package local.intranet.bttf.api.redis
  * https://www.baeldung.com/spring-data-redis-tutorial
  *
  */
-interface MessagePublisher {
+public interface MessagePublisher {
 
     /**
      *
@@ -16,6 +16,6 @@ interface MessagePublisher {
      *
      * @param message {@link String}
      */
-    fun publish(message: String)
+    public fun publish(message: String)
 
 }

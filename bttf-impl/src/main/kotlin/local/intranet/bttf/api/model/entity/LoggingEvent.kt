@@ -26,44 +26,44 @@ import javax.validation.constraints.Size
 @Entity
 @Immutable
 @Table(name = "logging_event")
-data class LoggingEvent(
+public data class LoggingEvent(
 
     @Id
     @Column(name = "event_id")
-    val id: Long? = null,
+    public val id: Long? = null,
     
     @Column(name = "formatted_message")
-    val formattedMessage: String,
+    public val formattedMessage: String,
 
     @Column(name = "level_string")
     @Size(max = DefaultFieldLengths.DEFAULT_STATUS)
-    val levelString: String,
+    public val levelString: String,
 
     @Column(name = "caller_class")
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val callerClass: String,
+    public val callerClass: String,
 
     @Column(name = "caller_method")
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val callerMethod: String,
+    public val callerMethod: String,
 
     @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg0: String?,
+    public val arg0: String?,
 
     @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg1: String?,
+    public val arg1: String?,
 
     @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg2: String?,
+    public val arg2: String?,
 
     @Column(nullable = true)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val arg3: String?,
+    public val arg3: String?,
 
     @NotNull
-    val timestmp: Long
+    public val timestmp: Long
  
 )

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull
  *
  * https://hackmd.io/@pierodibello/ByEVNHg-v
  */ 
-interface LoginCache {
+public interface LoginCache {
 
     /**
      * It doesn't have to exist, if exist return number of attempts
@@ -22,7 +22,7 @@ interface LoginCache {
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun getById(@NotNull key: String): Int?
+    public fun getById(@NotNull key: String): Int?
     
     /**
      * Put new key or increment number of attempts
@@ -31,7 +31,7 @@ interface LoginCache {
      */ 
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun keyToCache(@NotNull key: String)
+    public fun keyToCache(@NotNull key: String)
     
     /**
      *
@@ -41,7 +41,7 @@ interface LoginCache {
      */           
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun invalidateKey(@NotNull key: String)
+    public fun invalidateKey(@NotNull key: String)
     
     /**
      *
@@ -53,7 +53,7 @@ interface LoginCache {
      */ 
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun isBlocked(@NotNull key: String): Boolean
+    public fun isBlocked(@NotNull key: String): Boolean
     
     /** 
      * key, number of attempts, creation timestamp of all
@@ -64,6 +64,6 @@ interface LoginCache {
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>>
+    public fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>>
     
 }

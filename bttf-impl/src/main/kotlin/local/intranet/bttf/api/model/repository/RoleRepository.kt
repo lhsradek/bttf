@@ -12,7 +12,7 @@ import local.intranet.bttf.api.model.entity.Role
  * @author Radek Kádner
  *
  */
-interface RoleRepository : CrudRepository<Role, Long> {
+public interface RoleRepository : CrudRepository<Role, Long> {
 
     /**
      *
@@ -22,6 +22,6 @@ interface RoleRepository : CrudRepository<Role, Long> {
      * @return {@link Role}?
      */
     @Query(value = "select u from Role u where u.roleName = ?1")
-    fun findByName(roleName: String): Role?
+    public fun findByName(roleName: String): Role?
 
 }

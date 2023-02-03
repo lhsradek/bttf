@@ -4,11 +4,11 @@ package local.intranet.bttf.api.info
  *
  * https://hackmd.io/@pierodibello/ByEVNHg-v
  */ 
-data class TimedEntry(val key: String, var value: Int, val maxDurationInMillis: Long) {
+public data class TimedEntry(val key: String, var value: Int, val maxDurationInMillis: Long) {
     
-    var creationTime: Long = now()
+    public var creationTime: Long = now()
 
-    fun isExpired() = (now() - creationTime) > maxDurationInMillis
+    public fun isExpired() = (now() - creationTime) > maxDurationInMillis
         
     private fun now() = System.currentTimeMillis()
     

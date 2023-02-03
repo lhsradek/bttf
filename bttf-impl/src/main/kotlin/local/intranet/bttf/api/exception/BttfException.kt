@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
  * @author Radek Kádner
  *
  */
-class BttfException : ConnectException {
+public class BttfException : ConnectException {
 
     private val log = LoggerFactory.getLogger(javaClass)
     
@@ -21,7 +21,7 @@ class BttfException : ConnectException {
      *
      * @param msg {@link String}
      */
-    constructor(msg: String) : super(msg)
+    public constructor(msg: String) : super(msg)
 
     /**
      *
@@ -30,7 +30,7 @@ class BttfException : ConnectException {
      * @param msg {@link String}
      * @param t   {@link Throwable}
      */
-    constructor(msg: String, t: Throwable) : super(msg) {
+    public constructor(msg: String, t: Throwable) : super(msg) {
         log.error(msg, t)
     }
 

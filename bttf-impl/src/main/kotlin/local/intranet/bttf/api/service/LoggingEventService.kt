@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull
  *
  */
 @Service
-class LoggingEventService {
+public class LoggingEventService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -54,7 +54,7 @@ class LoggingEventService {
      * @return {@link List}&lt;{@link LevelCount}&gt;
      */
     @Transactional(readOnly = true)
-    fun countTotalLoggingEvents(): List<LevelCount> {
+    public fun countTotalLoggingEvents(): List<LevelCount> {
         return loggingEventRepository.countTotalLoggingEvents()
     }
 
@@ -72,7 +72,7 @@ class LoggingEventService {
      */
     @Transactional(readOnly = true)
     @Throws(Exception::class)
-    fun findPageByLevelString(pageable: Pageable, levelString: List<String>): Page<LoggingEventInfo> {
+    public fun findPageByLevelString(pageable: Pageable, levelString: List<String>): Page<LoggingEventInfo> {
         try {
             val pa: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, levelString)
             val list = mutableListOf<LoggingEventInfo>()
@@ -103,7 +103,7 @@ class LoggingEventService {
      */
     @Transactional(readOnly = true)
     @Throws(Exception::class)
-    fun findPageByCaller(
+    public fun findPageByCaller(
         page: Int, @NotNull cnt: Int, sort: Sort, callerClass: List<String>, callerMethod: List<String>
     ): Page<LoggingEventInfo> {
         try {

@@ -10,7 +10,7 @@ package local.intranet.bttf.api.domain.type
  *
  * @author Radek Kádner
  */
-enum class RoleType(val role: String) {
+public enum class RoleType(val role: String) {
 
     /**
      *

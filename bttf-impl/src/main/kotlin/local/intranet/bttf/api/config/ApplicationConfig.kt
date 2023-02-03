@@ -55,7 +55,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @ConfigurationProperties(prefix = "spring.datasource")
     @ConditionalOnExpression("\${#strings.length(spring.datasource.url) > 0}")
-    fun dataSource(): DataSource {
+    public fun dataSource(): DataSource {
         // val ret: DataSource = DataSourceBuilder.create().build()
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
@@ -72,7 +72,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @ConfigurationProperties(prefix = "spring.secondaryDatasource")
     @ConditionalOnExpression("\${#strings.length(spring.secondaryDatasource.url) > 0}")
-    fun secondaryDataSource(): DataSource {
+    public fun secondaryDataSource(): DataSource {
         // val ret: DataSource = DataSourceBuilder.create().build()
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
@@ -87,7 +87,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @Bean
     @ConditionalOnExpression("\${bttf.envers.enabled}")
-    fun auditorProvider(): AuditorAware<String> {
+    public fun auditorProvider(): AuditorAware<String> {
         // val ret = AuditorAwareImpl()
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
@@ -103,7 +103,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      * @return {@link HttpSessionEventPublisher}
      */
     @Bean
-    fun sessionEventPublisher(): HttpSessionEventPublisher {
+    public fun sessionEventPublisher(): HttpSessionEventPublisher {
         val ret = HttpSessionEventPublisher()
         servletContext.setSessionTrackingModes(mutableSetOf(SessionTrackingMode.COOKIE))
         // if (dbg.toBoolean()) log.debug("{}", ret)
@@ -123,7 +123,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      * @return {@link SimpleUrlHandlerMapping}
      */
     @Bean
-    fun faviconHandlerMapping(): SimpleUrlHandlerMapping {
+    public fun faviconHandlerMapping(): SimpleUrlHandlerMapping {
         val ret = SimpleUrlHandlerMapping()
         ret.setOrder(Int.MIN_VALUE)
         ret.setUrlMap(mapOf("/favicon.*" to faviconRequestHandler()))
@@ -154,7 +154,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      * @param objectMapper {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
     @Autowired
-    fun configureJackson(objectMapper: ObjectMapper) {
+    public fun configureJackson(objectMapper: ObjectMapper) {
         // val tzd = TimeZone.getDefault()
         // objectMapper.setTimeZone(tzd)
         // if (dbg.toBoolean()) log.debug("{}", tzd)

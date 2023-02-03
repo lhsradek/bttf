@@ -25,7 +25,7 @@ public class BttfDbAppender : DBAppender() {
      *
      * @param eventObject {@link ILoggingEvent}
      */
-    override fun doAppend(eventObject: ILoggingEvent) {
+    public override fun doAppend(eventObject: ILoggingEvent) {
         fixFormattedMessage(eventObject)
         while (eventObject.throwableProxy != null) {
             val throwableProxy: IThrowableProxy? = eventObject.throwableProxy
@@ -42,7 +42,7 @@ public class BttfDbAppender : DBAppender() {
      *
      * @param throwableProxy {@link IThrowableProxy}
      */
-    fun fixMessage(throwableProxy: IThrowableProxy) {
+    public fun fixMessage(throwableProxy: IThrowableProxy) {
         try {
             val message: String = throwableProxy.message
             val fixedMessage: String = fixMessage(message)
@@ -61,7 +61,7 @@ public class BttfDbAppender : DBAppender() {
      *
      * @param eventObject {@link ILoggingEvent}
      */
-    fun fixFormattedMessage(eventObject: ILoggingEvent) {
+    public fun fixFormattedMessage(eventObject: ILoggingEvent) {
         try {
             val formattedMessage: String = eventObject.formattedMessage
             var fixedMessage: String = fixMessage(formattedMessage)
@@ -79,7 +79,7 @@ public class BttfDbAppender : DBAppender() {
         }
     }
 
-    fun fixMessage(message: String): String {
+    public fun fixMessage(message: String): String {
         val maxLength: Int = 240
         var ret: String = message
         if (message.contains("\u0000") || message.contains("\\x00") || message.length >= maxLength) {

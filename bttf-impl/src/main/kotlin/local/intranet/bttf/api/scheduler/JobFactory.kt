@@ -25,9 +25,10 @@ import org.springframework.stereotype.Component
  */
 @Component
 @ConditionalOnExpression("\${scheduler.enabled}")
-class JobFactory : ApplicationContextAware, SchedulerContextAware, SpringBeanJobFactory() {
+public class JobFactory : ApplicationContextAware, SchedulerContextAware, SpringBeanJobFactory() {
 
-    @Transient lateinit var beanFactory: AutowireCapableBeanFactory
+    @Transient
+    lateinit var beanFactory: AutowireCapableBeanFactory
 
     /**
      *
@@ -36,7 +37,7 @@ class JobFactory : ApplicationContextAware, SchedulerContextAware, SpringBeanJob
      * @param applicationContext {@link ApplicationContext}
      */
     @Throws(BeansException::class)
-    override fun setApplicationContext(applicationContext: ApplicationContext) {
+    public override fun setApplicationContext(applicationContext: ApplicationContext) {
         super.setApplicationContext(applicationContext)
         beanFactory = applicationContext.autowireCapableBeanFactory
     }

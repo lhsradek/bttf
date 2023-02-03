@@ -48,7 +48,7 @@ import org.springframework.web.filter.CorsFilter
     // jsr250Enabled = true,
     prePostEnabled = true
 )
-class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
+public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
 
     @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
     private lateinit var authenticated: List<String>
@@ -66,7 +66,7 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
      * @return {@link CorsFilter}
      */
     @Bean
-    fun corsFilter(): CorsFilter {
+    public fun corsFilter(): CorsFilter {
         val source: UrlBasedCorsConfigurationSource = UrlBasedCorsConfigurationSource()
         val config: CorsConfiguration = CorsConfiguration()
         config.setAllowCredentials(true)
@@ -89,7 +89,7 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
      */
     @Bean
     @Throws(BttfException::class)
-    override fun authenticationManagerBean(): AuthenticationManager {
+    override public fun authenticationManagerBean(): AuthenticationManager {
         try {
             val ret: AuthenticationManager = super.authenticationManagerBean()
             return ret
@@ -107,7 +107,7 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
      * @return {@link PasswordEncoder}
      */
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
+    public fun passwordEncoder(): PasswordEncoder {
         val ret: PasswordEncoder = BCryptPasswordEncoder()
         return ret
     }
@@ -120,7 +120,7 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
      * @throws {@link Exception}
      */
     @Throws(Exception::class)
-    override fun configure(auth: AuthenticationManagerBuilder) {
+    override public fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
     }
 
@@ -135,7 +135,7 @@ class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurer
      * @throws {@link Exception}
      */
     @Throws(Exception::class)
-    override fun configure(http: HttpSecurity) {
+    override public fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
             .authorizeRequests { authorizeRequests ->
                 permitAll.filter { it.length > 0 }

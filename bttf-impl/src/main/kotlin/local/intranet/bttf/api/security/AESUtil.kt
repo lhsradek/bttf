@@ -41,9 +41,9 @@ import org.springframework.security.crypto.codec.Hex
  * <p>
  *
  */
-class AESUtil {
+public class AESUtil {
 
-    companion object {
+    public companion object {
 
         /**
          *
@@ -71,7 +71,7 @@ class AESUtil {
             InvalidAlgorithmParameterException::class,
             InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
         )
-        fun encrypt(input: String, key: SecretKey, iv: IvParameterSpec): String {
+        public fun encrypt(input: String, key: SecretKey, iv: IvParameterSpec): String {
             val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
             cipher.init(Cipher.ENCRYPT_MODE, key, iv)
             return Base64.getEncoder().encodeToString(cipher.doFinal(input.toByteArray()))
@@ -98,7 +98,7 @@ class AESUtil {
             InvalidAlgorithmParameterException::class,
             InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
         )
-        fun decrypt(cipherText: String, key: SecretKey, iv: IvParameterSpec): String {
+        public fun decrypt(cipherText: String, key: SecretKey, iv: IvParameterSpec): String {
             val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding".toUpperCase())
             cipher.init(Cipher.DECRYPT_MODE, key, iv)
             return String(cipher.doFinal(Base64.getDecoder().decode(cipherText)))
@@ -114,7 +114,7 @@ class AESUtil {
          */
         @JvmStatic
         @Throws(NoSuchPaddingException::class)
-        fun generateKey(n: Int): SecretKey {
+        public fun generateKey(n: Int): SecretKey {
             try {
                 val keyGenerator = KeyGenerator.getInstance("AES")
                 keyGenerator.init(n)
@@ -131,7 +131,7 @@ class AESUtil {
          * @return {@link String}
          */
         @JvmStatic
-        fun generateSalt(): String {
+        public fun generateSalt(): String {
             val random = SecureRandom()
             val ret = ByteArray(20)
             random.nextBytes(ret)
@@ -150,7 +150,7 @@ class AESUtil {
          */
         @JvmStatic
         @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
-        fun getKeyFromPassword(password: String, salt: String): SecretKey {
+        public fun getKeyFromPassword(password: String, salt: String): SecretKey {
             return SecretKeySpec(SecretKeyFactory
                 .getInstance("PBKDF2WithHmacSHA256")
                 .generateSecret(PBEKeySpec(password.toCharArray(),
@@ -164,7 +164,7 @@ class AESUtil {
          * @return {@link IvParameterSpec}
          */
         @JvmStatic
-        fun generateIv(): IvParameterSpec {
+        public fun generateIv(): IvParameterSpec {
             val iv = ByteArray(16)
             SecureRandom().nextBytes(iv)
             return IvParameterSpec(iv)
@@ -178,7 +178,7 @@ class AESUtil {
          * @return plain text
          */
         @JvmStatic
-        fun getBase64(data: String): String {
+        public fun getBase64(data: String): String {
             return String(Base64.getDecoder().decode(data))
         }
 
@@ -190,7 +190,7 @@ class AESUtil {
          * @return base64
          */
         @JvmStatic
-        fun setBase64(data: String): String {
+        public fun setBase64(data: String): String {
             return String(Base64.getEncoder().encode(data.toByteArray(Charset.forName("UTF-8"))))
         }
 
@@ -202,7 +202,7 @@ class AESUtil {
          * @return plain text
          */
         @JvmStatic
-        fun getHex(data: String): String {
+        public fun getHex(data: String): String {
             return String(Hex.decode(data))
         }
 
@@ -214,7 +214,7 @@ class AESUtil {
          * @return hex
          */
         @JvmStatic
-        fun setHex(data: String): String {
+        public fun setHex(data: String): String {
             return String(Hex.encode(data.toByteArray(Charset.forName("UTF-8"))))
         }
 

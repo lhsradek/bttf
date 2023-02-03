@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional
  *
  */
 @Service
-class UserService : UserDetailsService {
+public class UserService : UserDetailsService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -67,7 +67,7 @@ class UserService : UserDetailsService {
      * @return {@link LogoutSuccess}
      */
     @Bean
-    fun logoutSuccess(): LogoutSuccessHandler {
+    public fun logoutSuccess(): LogoutSuccessHandler {
         return LogoutSuccess()
     }
 
@@ -87,7 +87,7 @@ class UserService : UserDetailsService {
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
     )
-    fun getUserInfo(): UserInfo {
+    public fun getUserInfo(): UserInfo {
         // val ret = loadUserByUsername(getUsername())
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
@@ -111,7 +111,7 @@ class UserService : UserDetailsService {
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
     )
-    override fun loadUserByUsername(username: String): UserInfo {
+    public override fun loadUserByUsername(username: String): UserInfo {
         val ip: String = statusController.getClientIP()
         if (loginAttemptService.isBlocked(ip)) {
             throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
@@ -149,7 +149,7 @@ class UserService : UserDetailsService {
      *
      * @return {@link String}
      */
-    fun getUsername(): String {
+    public fun getUsername(): String {
         var ret = ""
         SecurityContextHolder.getContext().authentication?.let {
             httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
@@ -169,7 +169,7 @@ class UserService : UserDetailsService {
      *
      * @return {@link Boolean}
      */
-    fun isAuthenticated(): Boolean {
+    public fun isAuthenticated(): Boolean {
         val list = getAuthoritiesRoles()
         val ret = if (list.size > 0 && !list.first().equals(RoleType.ANONYMOUS_ROLE.role)) true else false
         // if (dbg.toBoolean()) log.debug("{}", ret)
@@ -182,7 +182,7 @@ class UserService : UserDetailsService {
      *
      * @return {@link List}&lt;{@link String}&gt;
      */
-    fun getAuthoritiesRoles(): List<String> {
+    public fun getAuthoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
         httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
             SecurityContextHolder.getContext().authentication?.let {
@@ -212,7 +212,7 @@ class UserService : UserDetailsService {
      *         {@link local.intranet.bttf.api.controller.IndexController#getLogin}
      *         if user is logged.
      */
-    fun getUserRoles(): Map<String, Boolean> {
+    public fun getUserRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
         for (r in RoleType.values()) {

@@ -39,7 +39,7 @@ public class Provider {
      *               {@link String}&gt;&gt;
      * @return {@link String}
      */
-    fun queryProvider(params: List<Pair<String, String>>): String {
+    public fun queryProvider(params: List<Pair<String, String>>): String {
         val query = StringBuilder()
         var first = true
         params.forEach {
@@ -66,7 +66,7 @@ public class Provider {
      *
      * @return {@link AuditReader}
      */
-    fun auditReader(): AuditReader {
+    public fun auditReader(): AuditReader {
         val ret: AuditReader
         val r = AuditReaderFactory.get(entityManager) as AuditReaderImpl
         if (r.session.isOpen()) {

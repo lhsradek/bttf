@@ -53,7 +53,7 @@ public class SchedulerConfig {
      * @return {@link SpringBeanJobFactory}
      */
     @Bean
-    fun springBeanJobFactory(): SpringBeanJobFactory {
+    public fun springBeanJobFactory(): SpringBeanJobFactory {
         val ret = JobFactory()
         ret.setApplicationContext(applicationContext)
         log.info("Configuring Job factory:'{}'", ret::class.java.simpleName)
@@ -67,7 +67,7 @@ public class SchedulerConfig {
      * @return {@link JobDetailFactoryBean}
      */
     @Bean
-    fun jobDetail(): JobDetailFactoryBean {
+    public fun jobDetail(): JobDetailFactoryBean {
         val ret = JobDetailFactoryBean()
         ret.setJobClass(BttfJob::class.java)
         val name = StringUtils.uncapitalize(BttfJob::class.java.simpleName)
@@ -93,7 +93,7 @@ public class SchedulerConfig {
      * @return {@link SchedulerFactoryBean}
      */
     @Bean
-    fun scheduler(trigger: CronTrigger, job: JobDetail): SchedulerFactoryBean {
+    public fun scheduler(trigger: CronTrigger, job: JobDetail): SchedulerFactoryBean {
         val ret = SchedulerFactoryBean()
         ret.setJobFactory(springBeanJobFactory())
         ret.setTriggers(trigger)
@@ -112,7 +112,7 @@ public class SchedulerConfig {
      * @return {@link CronTriggerFactoryBean}
      */
     @Bean
-    fun trigger(job: JobDetail): CronTriggerFactoryBean {
+    public fun trigger(job: JobDetail): CronTriggerFactoryBean {
         val ret = CronTriggerFactoryBean()
         ret.setJobDetail(job)
         ret.setName("trigger")

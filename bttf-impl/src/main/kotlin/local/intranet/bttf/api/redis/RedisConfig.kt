@@ -25,7 +25,7 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer
  */
 @Configuration
 @EnableAutoConfiguration
-class RedisConfig {
+public class RedisConfig {
 
     @Value("\${spring.redis.password}")
     private lateinit var password: String
@@ -49,7 +49,7 @@ class RedisConfig {
      * @return {@link JedisConnectionFactory}
      */
     @Bean
-    fun jedisConnectionFactory(): JedisConnectionFactory {
+    public fun jedisConnectionFactory(): JedisConnectionFactory {
         val ret = JedisConnectionFactory()
         ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setPassword(password) }
         ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setDatabase(database.toInt()) }
@@ -67,7 +67,7 @@ class RedisConfig {
      * @return {@link RedisTemplate}&lt;{@link String}, {@link Object}&gt;
      */
     @Bean
-    fun redisTemplate(): RedisTemplate<String, Any> {
+    public fun redisTemplate(): RedisTemplate<String, Any> {
         val ret = RedisTemplate<String, Any>()
         ret.setConnectionFactory(jedisConnectionFactory())
         ret.setValueSerializer(GenericToStringSerializer<Any>(Any::class.java))
@@ -80,7 +80,7 @@ class RedisConfig {
      * @return {@link MessageListenerAdapter}
      */
     @Bean
-    fun messageListener(): MessageListenerAdapter {
+    public fun messageListener(): MessageListenerAdapter {
         return MessageListenerAdapter(RedisMessageSubscriber())
     }
 
@@ -91,7 +91,7 @@ class RedisConfig {
      * @return {@link RedisMessageListenerContainer}
      */
     @Bean
-    fun redisContainer(): RedisMessageListenerContainer {
+    public fun redisContainer(): RedisMessageListenerContainer {
         val ret = RedisMessageListenerContainer()
         ret.setConnectionFactory(jedisConnectionFactory())
         ret.addMessageListener(messageListener(), topic())
@@ -105,7 +105,7 @@ class RedisConfig {
      * @return {@link MessagePublisher}
      */
     @Bean
-    fun redisPublisher(): MessagePublisher {
+    public fun redisPublisher(): MessagePublisher {
         return RedisMessagePublisher(redisTemplate(), topic())
     }
 
@@ -116,7 +116,7 @@ class RedisConfig {
      * @return {@link ChannelTopic}
      */
     @Bean
-    fun topic(): ChannelTopic {
+    public fun topic(): ChannelTopic {
         return ChannelTopic("bttf:messageQueue")
     }
 

@@ -12,7 +12,7 @@ import local.intranet.bttf.api.model.entity.Counter
  * @author Radek Kádner
  *
  */
-interface CounterRepository : CrudRepository<Counter, Long> {
+public interface CounterRepository : CrudRepository<Counter, Long> {
 
 	/**
 	 *
@@ -22,6 +22,6 @@ interface CounterRepository : CrudRepository<Counter, Long> {
 	 * @return {@link Counter}?
 	 */
 	@Query(value = "select u from Counter u where u.counterName = ?1")
-	fun findByName(counterName: String): Counter?
+	public fun findByName(counterName: String): Counter?
 
 }

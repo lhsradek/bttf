@@ -111,7 +111,7 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/license"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    fun getLicense(request: HttpServletRequest, model: Model): String {
+    public fun getLicense(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
@@ -136,7 +136,7 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    fun getIndex(
+    public fun getIndex(
         request: HttpServletRequest, model: Model
     ): String {
         addModel(request, model)
@@ -168,7 +168,7 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    fun getPlay(request: HttpServletRequest, model: Model): String {
+    public fun getPlay(request: HttpServletRequest, model: Model): String {
         try {
             val time =
                 if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null) {
@@ -234,7 +234,7 @@ public class IndexController {
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("permitAll()")
-    fun postPlay(
+    public fun postPlay(
         @PathVariable(value = "year", required = false) cryptedYear: String?, request: HttpServletRequest
     ): String {
         try {
@@ -312,7 +312,7 @@ public class IndexController {
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    fun getBttfLog(
+    public fun getBttfLog(
         @PathVariable(value = "page", required = false) pg: Int?,
         @PathVariable(value = "sort", required = false) srt: String?,
         @PathVariable(required = false) filter: String?,
@@ -499,7 +499,7 @@ public class IndexController {
      * @return "login" for thymeleaf login.html {@link String}
      */
     @GetMapping(value = arrayOf("/login"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
-    fun getLogin(request: HttpServletRequest, model: Model): String {
+    public fun getLogin(request: HttpServletRequest, model: Model): String {
         val err = getErrorMessage(request, model)
         if (request.session != null && err.equals("OK")) {
             request.session.removeAttribute(BttfConst.LAST_EXCEPTION)
@@ -532,7 +532,7 @@ public class IndexController {
      * @return redirect url {@link String}
      */
     @PostMapping(path = arrayOf("/login/signin"), consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
-    fun signin(
+    public fun signin(
         @RequestParam @NotNull username: String,
         @RequestParam @NotNull password: String,
         request: HttpServletRequest
@@ -600,7 +600,7 @@ public class IndexController {
         method = arrayOf(RequestMethod.GET, RequestMethod.POST),
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
-    fun getError(request: HttpServletRequest, model: Model): String {
+    public fun getError(request: HttpServletRequest, model: Model): String {
         try {
             val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
             val statusCode = status?.let {

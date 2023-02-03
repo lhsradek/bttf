@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
  */
 @Service
 @AutoConfigureAfter(RedisMessageSubscriber::class)
-class RedisMessagePublisher : MessagePublisher {
+public class RedisMessagePublisher : MessagePublisher {
 
     @Autowired
     private var redisTemplate: RedisTemplate<String, Any>
@@ -30,12 +30,12 @@ class RedisMessagePublisher : MessagePublisher {
      * @param redisTemplate {@link RedisTemplate}&lt;{@link String}, {@link Any}&gt;
      * @param topic         {@link ChannelTopic}
      */
-    constructor(redisTemplate: RedisTemplate<String, Any>, topic: ChannelTopic) {
+    public constructor(redisTemplate: RedisTemplate<String, Any>, topic: ChannelTopic) {
         this.redisTemplate = redisTemplate
         this.topic = topic
     }
 
-    override fun publish(message: String) {
+    public override fun publish(message: String) {
         redisTemplate.convertAndSend(topic.topic, message)
     }
 

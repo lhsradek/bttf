@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
  */
 @Service
 @ConditionalOnExpression("\${scheduler.enabled}")
-class JobService {
+public class JobService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -37,7 +37,7 @@ class JobService {
      * @return {@link CounterInfo}
      */
     @Transactional(readOnly = true)
-    fun getJobInfo(): CounterInfo {
+    public fun getJobInfo(): CounterInfo {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             CounterInfo(
@@ -63,7 +63,7 @@ class JobService {
      * @return {@link Counter}
      */
     @Transactional
-    fun incrementCounter(): CounterInfo {
+    public fun incrementCounter(): CounterInfo {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             counter.cnt++
@@ -98,7 +98,7 @@ class JobService {
      * @return number of invocations from count
      */
     @Transactional(readOnly = true)
-    fun countValue(): Long {
+    public fun countValue(): Long {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             counter.cnt
@@ -116,7 +116,7 @@ class JobService {
      * @return lastInvocation
      */
     @Transactional(readOnly = true)
-    fun lastInvocation(): ZonedDateTime {
+    public fun lastInvocation(): ZonedDateTime {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             ZonedDateTime.ofInstant(Instant.ofEpochMilli(counter.timestmp), ZoneId.systemDefault())
@@ -131,7 +131,7 @@ class JobService {
      * @return {@link StatusType}
      */
     @Transactional(readOnly = true)
-    fun getStatus(): StatusType {
+    public fun getStatus(): StatusType {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             StatusType.valueOf(counter.status)

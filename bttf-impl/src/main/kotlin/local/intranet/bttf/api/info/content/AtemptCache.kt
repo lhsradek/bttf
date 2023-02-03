@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull
  * inspired by
  * https://hackmd.io/@pierodibello/ByEVNHg-v
  */
-class AttemptCache() : LoginCache {
+public class AttemptCache() : LoginCache {
 
     private val hashMap = ConcurrentHashMap<String, TimedEntry>()
     private var cacheTimeValidityInMillis: Long = 0
@@ -27,7 +27,7 @@ class AttemptCache() : LoginCache {
      *
      * @return {@link Int?}
      */
-    override fun getById(@NotNull key: String): Int? {
+    public override fun getById(@NotNull key: String): Int? {
         val timedEntry = hashMap[key]
         if (timedEntry == null || timedEntry.isExpired()) {
             return null
@@ -35,7 +35,7 @@ class AttemptCache() : LoginCache {
         return timedEntry.value
     }
 
-    override fun keyToCache(@NotNull key: String) {
+    public override fun keyToCache(@NotNull key: String) {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             timedEntry?.let {
@@ -47,13 +47,13 @@ class AttemptCache() : LoginCache {
         }
     }
 
-    override fun invalidateKey(@NotNull key: String) {
+    public override fun invalidateKey(@NotNull key: String) {
         if (hashMap.containsKey(key)) {
             hashMap.remove(key)
         }
     }
 
-    override fun isBlocked(@NotNull key: String): Boolean {
+    public override fun isBlocked(@NotNull key: String): Boolean {
         val ret: Boolean
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
@@ -73,7 +73,7 @@ class AttemptCache() : LoginCache {
         return ret
     }
 
-    override fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
+    public override fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
         val ret = mutableListOf<Triple<String, Int, ZonedDateTime>>()
         if (printBlocked) {
             hashMap.filter { b -> isBlocked(b.key) == true }.forEach {
@@ -91,7 +91,7 @@ class AttemptCache() : LoginCache {
         return ret
     }
 
-    fun removeExpiredKeys() {
+    public fun removeExpiredKeys() {
         for (item in hashMap) {
             val timedEntry = item.value
             if (timedEntry.isExpired()) {
@@ -100,10 +100,10 @@ class AttemptCache() : LoginCache {
         }
     }
 
-    companion object {
+    public companion object {
 
         @JvmStatic
-        fun init(duration: Long, timeUnit: TimeUnit, printBlocked: Boolean, maxAtempt: Int) =
+        public fun init(duration: Long, timeUnit: TimeUnit, printBlocked: Boolean, maxAtempt: Int) =
             AttemptCache().apply {
                 cacheTimeValidityInMillis = MILLISECONDS.convert(duration, timeUnit)
                 this.printBlocked = printBlocked

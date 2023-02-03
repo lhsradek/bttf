@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
  *
  */
 @Service
-class RedisMessageSubscriber : MessageListener {
+public class RedisMessageSubscriber : MessageListener {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -28,7 +28,7 @@ class RedisMessageSubscriber : MessageListener {
      * @param message {@link Message}
      * @param pattern {@link ByteArray?}
      */
-    override fun onMessage(message: Message, pattern: ByteArray?) {
+    public override fun onMessage(message: Message, pattern: ByteArray?) {
         pattern?.let {
             log.info(
                 "[message:{} uuid:{} pattern:{}]",

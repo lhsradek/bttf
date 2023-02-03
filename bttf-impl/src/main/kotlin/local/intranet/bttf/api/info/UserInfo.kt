@@ -35,7 +35,8 @@ import javax.validation.constraints.Size
     "isAccountNonExpired",
     "isAccountNonLocked"
 )
-data class UserInfo (
+public data class UserInfo (
+    
     private val username: String,
     private val password: String,
     private val isEnabled: Boolean,
@@ -52,7 +53,7 @@ data class UserInfo (
      * @return the username (never <code>null</code>)
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
-    override fun getUsername(): String = username
+    public override fun getUsername(): String = username
 
     /**
      *
@@ -62,7 +63,7 @@ data class UserInfo (
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonIgnore
-    override fun getPassword(): String = password
+    public override fun getPassword(): String = password
 
     /**
      *
@@ -72,7 +73,7 @@ data class UserInfo (
      * @return <code>true</code> if the user is enabled, <code>false</code>
      *         otherwise
      */
-    override fun isEnabled(): Boolean = isEnabled
+    public override fun isEnabled(): Boolean = isEnabled
 
     /**
      *
@@ -82,7 +83,7 @@ data class UserInfo (
      * @return <code>true</code> if the user's credentials are valid (ie
      *         non-expired), <code>false</code> if no longer valid (ie expired)
      */
-    override fun isCredentialsNonExpired(): Boolean = isCredentialsNonExpired
+    public override fun isCredentialsNonExpired(): Boolean = isCredentialsNonExpired
 
     /**
      *
@@ -92,7 +93,7 @@ data class UserInfo (
      * @return <code>true</code> if the user's credentials are valid (ie
      *         non-expired), <code>false</code> if no longer valid (ie expired)
      */
-    override fun isAccountNonExpired(): Boolean = isAccountNonExpired
+    public override fun isAccountNonExpired(): Boolean = isAccountNonExpired
 
     /**
      *
@@ -102,7 +103,7 @@ data class UserInfo (
      * @return <code>true</code> if the user is not locked, <code>false</code>
      *         otherwise
      */
-    override fun isAccountNonLocked(): Boolean = isAccountNonLocked
+    public override fun isAccountNonLocked(): Boolean = isAccountNonLocked
 
     /**
      *
@@ -112,13 +113,13 @@ data class UserInfo (
      */
     @JsonIgnore
     @Size(min = 0)
-    override fun getAuthorities(): MutableList<GrantedAuthority> = authorities
+    public override fun getAuthorities(): MutableList<GrantedAuthority> = authorities
 
     /**
      *
      * Returns a string representation of the object.
      */
-    override fun toString(): String {
+    public override fun toString(): String {
         return "UserInfo [username=" + username + ", password=" + BttfConst.STATUS_PROTECTED +
                 ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
     }

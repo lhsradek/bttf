@@ -23,21 +23,21 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
  */
 @Entity
 @Table(name = "bttf_user")
-data class User(
+public data class User(
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    public val id: Long? = null,
 
     @NotNull
     @Column(name = "user_name", nullable = false)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val userName: String,
+    public val userName: String,
 
     @NotNull
     @Column(name = "password", nullable = false)
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
-    val password: String,
+    public val password: String,
 
     /**
      *
@@ -49,7 +49,7 @@ data class User(
      */
     @NotNull
     @Column(name = "account_non_expired", nullable = false)
-    val accountNonExpired: Boolean = true,
+    public val accountNonExpired: Boolean = true,
 
     /**
      *
@@ -61,7 +61,7 @@ data class User(
      */
     @NotNull
     @Column(name = "account_non_locked", nullable = false)
-    val accountNonLocked: Boolean = true,
+    public val accountNonLocked: Boolean = true,
 
     /**
      *
@@ -72,14 +72,14 @@ data class User(
      *
      */
     @Column(name = "credentials_non_expired")
-    val credentialsNonExpired: Boolean = true,
+    public val credentialsNonExpired: Boolean = true,
 
     @Column(nullable = false)
-    val enabled: Boolean = true) {
+    public val enabled: Boolean = true) {
 
     @Column(nullable = true)
     @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(name = "bttf_user_role")
-    val role = mutableListOf<Role>()
+    public val role = mutableListOf<Role>()
     
 }

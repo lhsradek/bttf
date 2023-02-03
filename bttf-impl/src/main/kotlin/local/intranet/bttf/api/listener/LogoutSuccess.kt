@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
  * @author Radek Kádner
  *
  */
-class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
+public class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -31,7 +31,7 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
      * Login is in
      * {@link local.intranet.bttf.api.controller.IndexController#signin}
      */
-    override fun onLogoutSuccess(
+    public override fun onLogoutSuccess(
         request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
         try {
             request.cookies?.let {

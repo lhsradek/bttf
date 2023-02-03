@@ -19,7 +19,7 @@ import local.intranet.bttf.api.model.entity.LoggingEvent
  * @author Radek Kádner
  *
  */
-interface LoggingEventRepository : JpaRepository<LoggingEvent, Long> {
+public interface LoggingEventRepository : JpaRepository<LoggingEvent, Long> {
 
     /**
      *
@@ -31,7 +31,7 @@ interface LoggingEventRepository : JpaRepository<LoggingEvent, Long> {
         value = "select new local.intranet.bttf.api.info.LevelCount(u.levelString, count(u.levelString)) " +
                 "from LoggingEvent u group by u.levelString order by u.levelString asc"
     )
-    fun countTotalLoggingEvents(): List<LevelCount>
+    public fun countTotalLoggingEvents(): List<LevelCount>
 
     /**
      *
@@ -42,7 +42,7 @@ interface LoggingEventRepository : JpaRepository<LoggingEvent, Long> {
      * @return {@link Page}&lt;{@link LoggingEvent}&gt;
      */
     @Query(value = "select u from LoggingEvent u where u.levelString in ?1")
-    fun findPageByLevelString(pageable: Pageable, levelString: List<String>): Page<LoggingEvent>
+    public fun findPageByLevelString(pageable: Pageable, levelString: List<String>): Page<LoggingEvent>
 
     /**
      *
@@ -55,7 +55,7 @@ interface LoggingEventRepository : JpaRepository<LoggingEvent, Long> {
      * @return {@link Page}&lt;{@link LoggingEvent}&gt;
      */
     @Query(value = "select u from LoggingEvent u where u.callerClass in ?1 and u.callerMethod in ?2 and levelString in ?3")
-    fun findPageByCaller(
+    public fun findPageByCaller(
         pageable: Pageable, callerClass: List<String>, callerMethod: List<String>, levelString: List<String>
     ): Page<LoggingEvent>
 

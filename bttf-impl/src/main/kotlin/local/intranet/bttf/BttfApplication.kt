@@ -45,7 +45,7 @@ import org.springframework.web.WebApplicationInitializer
 @EnableAutoConfiguration
 @EnableJpaRepositories
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *", redisNamespace = "spring:session:bttf")
-class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {
+public class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {
 
     /**
      * https://www.baeldung.com/kotlin/logging
@@ -68,7 +68,7 @@ class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer(
      * @param builder a builder for the application context
      * @return the application builder
      */
-    override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
+    public override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
         log.info("Entering application.")
         builder.bannerMode(Banner.Mode.OFF)
         return builder.sources(BttfApplication::class.java)

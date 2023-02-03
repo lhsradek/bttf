@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnExpression("\${scheduler.enabled}")
 @AutoConfigureAfter(LoginAttemptService::class, RedisMessagePublisher::class)
-class BttfJob : Job {
+public class BttfJob : Job {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -42,7 +42,7 @@ class BttfJob : Job {
      * @throws JobExecutionException
      */
     @Throws(JobExecutionException::class)
-    override fun execute(context: JobExecutionContext) {
+    public override fun execute(context: JobExecutionContext) {
         jobService.incrementCounter()
         loginAttemptService.flushCache()
         // Redis as a message broker

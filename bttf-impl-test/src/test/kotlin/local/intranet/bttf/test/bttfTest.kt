@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 // @DataJpaTest
 @SpringBootTest
-class bttfTest {
+public class bttfTest {
 
     @Value("\${bttf.sec.key}")
     private lateinit var key: String
@@ -59,7 +59,7 @@ class bttfTest {
      */
     @Test
     // @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    fun givenTest() {
+    public fun givenTest() {
         assertThat(statusController).isNotNull
         assertThat(statusController.getPlainStatus()).isNotBlank
         assertThat(statusController.getImplementationVersion()).isNotBlank

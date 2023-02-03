@@ -97,7 +97,7 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class)
-    fun getUserInfo(): UserInfo {
+    public fun getUserInfo(): UserInfo {
         try {
             return userService.getUserInfo()
         } catch (e: Exception) {
@@ -142,7 +142,7 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    fun getRoleInfo(): RoleInfo {
+    public fun getRoleInfo(): RoleInfo {
         return roleService.getRoleInfo()
     }
 
@@ -172,7 +172,7 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    fun getJobInfo(): CounterInfo {
+    public fun getJobInfo(): CounterInfo {
         return jobService.getJobInfo()
     }
 
@@ -202,7 +202,7 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    fun getLoginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
+    public fun getLoginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
             List<Triple<String, Int, ZonedDateTime>> {
         return loginAttemptService.getLoginAttempts(printBlocked)
     }
@@ -232,7 +232,7 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    fun countTotalLoggingEvents(): List<LevelCount> {
+    public fun countTotalLoggingEvents(): List<LevelCount> {
         return loggingEventService.countTotalLoggingEvents()
     }
 

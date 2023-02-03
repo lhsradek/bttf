@@ -26,20 +26,20 @@ import local.intranet.bttf.api.service.JobService
  *
  */
 @JsonPropertyOrder("name", "count", "date", "status")
-data class CounterInfo(
+public data class CounterInfo(
 
     @JsonProperty("count")
     @Size(min = 0)
-    val cnt: Long,
+    public val cnt: Long,
 
     @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    val date: ZonedDateTime,
+    public val date: ZonedDateTime,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    val status: StatusType,
+    public val status: StatusType,
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    val name: String
+    public val name: String
 )

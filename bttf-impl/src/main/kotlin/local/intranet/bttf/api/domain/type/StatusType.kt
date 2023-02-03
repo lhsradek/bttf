@@ -10,7 +10,7 @@ package local.intranet.bttf.api.domain.type
  * 
  * @author Radek Kádner
  */
-enum class StatusType(val status: String) {
+public enum class StatusType(val status: String) {
 
 	/**
 	 * 

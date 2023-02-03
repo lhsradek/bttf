@@ -26,25 +26,25 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
 @Audited
 @EntityListeners(AuditingEntityListener::class)
 @Table(name = "bttf_counter")
-data class Counter(
+public data class Counter(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    public val id: Long? = null,
 
     @NotNull
     @Column(name = "counter_name", nullable = false)
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
-    val counterName: String,
+    public val counterName: String,
 
     @Min(0)
-    var cnt: Long, // var to change
+    public var cnt: Long, // var to change
 
     @Min(0)
-    var timestmp: Long, // var to change
+    public var timestmp: Long, // var to change
 
     @NotNull
     @Column(name = "status", nullable = false)
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
-    val status: String
+    public val status: String
 )
