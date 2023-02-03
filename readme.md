@@ -17,11 +17,11 @@ The technology used:
 
 * Kotlin therefore Java
 * Spring Boot ([controllers](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/controller), [services](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/service), [listeners](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/listener), [thymeleaf](https://github.com/lhsradek/bttf/tree/main/bttf-app/src/main/resources/templates), flyway, [quartz scheduler](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/scheduler))
-* JPA (hibernate with envers audit)
+* [JPA](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/model) (hibernate with envers audit)
 * DB: PostgreSQL, MariaDB, H2 (with human readable stored procedures) [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
 * OpenAPI [See](https://github.com/lhsradek/bttf/blob/main/png/bttf03.png)
 * AES encrypted data transmitted to the form.
-* Redis (Sessions, Message broker)
+* [Redis](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/redis) (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container) [See](https://github.com/lhsradek/bttf/blob/main/png/bttf05.png)
 * Nginx (load balancer for Tomcat and PhP FastCGI for SQL Adminer)
 * Traefik (load balancer for Docker)
