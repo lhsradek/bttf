@@ -7,7 +7,7 @@ import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
 import local.intranet.bttf.api.controller.StatusController
-import local.intranet.bttf.api.security.LogoutSuccess
+import local.intranet.bttf.api.listener.LogoutSuccess
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.beans.factory.annotation.Autowired
@@ -59,7 +59,7 @@ class UserService : UserDetailsService {
     /**
      *
      * Bean for logout
-     * {@link local.intranet.bttf.api.security.LogoutSuccess#onLogoutSuccess}.
+     * {@link local.intranet.bttf.api.listener.LogoutSuccess#onLogoutSuccess}.
      * <p>
      * Login is in
      * {@link local.intranet.bttf.api.controller.IndexController#signin}
