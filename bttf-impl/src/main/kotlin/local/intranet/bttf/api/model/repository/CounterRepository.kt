@@ -3,7 +3,6 @@ package local.intranet.bttf.api.model.repository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import local.intranet.bttf.api.model.entity.Counter
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 
 /**
  * 
@@ -13,7 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
  * @author Radek Kádner
  *
  */
-@ConditionalOnExpression("\${scheduler.enabled}")
 interface CounterRepository : CrudRepository<Counter, Long> {
 
 	/**
