@@ -24,7 +24,7 @@ The technology used:
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container) [See](https://github.com/lhsradek/bttf/blob/main/png/bttf05.png)
 * Nginx (load balancer for Tomcat and PhP FastCGI for SQL Adminer)
-* Traefik (load balancer for docker)
+* Traefik (load balancer for Docker)
 * Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker and DockerHub
 * Linux (Alpine, Debian, Ubuntu)
