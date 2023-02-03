@@ -3,7 +3,7 @@ package local.intranet.bttf.api.domain.type
 /**
  * 
  * {@link StatusType} for
- * {@link local.intranet.bttf.api.controller.StatusController} and
+ * {@link local.intranet.bttf.api.service.JobService} and
  * {@link local.intranet.bttf.api.model.entity.Counter}
  * <p>
  * UP, DOWN, NONE

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
-import local.intranet.bttf.api.info.JobInfo
+import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.service.JobService
@@ -164,8 +164,8 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    fun getJobInfo(): JobInfo {
-        val ret = jobService.getJobInfo()
+    fun getJobInfo(): CounterInfo {
+        val ret: CounterInfo = jobService.getJobInfo()
         return ret
     }
 

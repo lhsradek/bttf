@@ -19,10 +19,10 @@ The technology used:
 * Spring Boot (controllers, services, listeners, thymeleaf, flyway, quartz scheduler)
 * JPA (hibernate with envers audit)
 * DB: PostgreSQL, MariaDB, H2 (with stored procedures) [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
-* OpenAPI - Swagger
+* OpenAPI - Swagger [See](https://github.com/lhsradek/bttf/blob/main/png/bttf03.png)
 * AES encrypted data transmitted to the form. [See](https://github.com/lhsradek/bttf/blob/main/png/bttf07.png)
 * Redis (Sessions, Message broker)
-* Tomcat (Webs servlet/JSP container)
+* Tomcat (Webs servlet/JSP container) [See](https://github.com/lhsradek/bttf/blob/main/png/bttf05.png)
 * Nginx (load balancer and PhP FastCGI for SQL Adminer)
 * Traefik (load balancer for docker)
 * Elasticsearch (Filebeat, Metricbeat, APM)

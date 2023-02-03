@@ -3,6 +3,7 @@ package local.intranet.bttf.api.info
 import javax.validation.constraints.Size
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonProperty
 import local.intranet.bttf.api.domain.DefaultFieldLengths
 import local.intranet.bttf.api.service.RoleService
 
@@ -16,7 +17,7 @@ import local.intranet.bttf.api.service.RoleService
  *
  * @param role {@link List}&lt;{@link RolePlain}&gt;
 */
-@JsonPropertyOrder("name", "roles")
+@JsonPropertyOrder("service", "roles")
 data class RoleInfo (
 
     @Size(min = 0)
@@ -31,7 +32,8 @@ data class RoleInfo (
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    fun name(): String {
+    @JsonProperty("service")
+    fun serviceName(): String {
         return RoleService::class.java.getSimpleName()
     }
 

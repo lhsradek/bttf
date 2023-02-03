@@ -1,7 +1,5 @@
 package local.intranet.bttf.api.service
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
 import javax.servlet.http.HttpSession
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.type.RoleType
@@ -184,7 +182,6 @@ class UserService : UserDetailsService {
      *
      * @return {@link List}&lt;{@link String}&gt;
      */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     fun getAuthoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
         httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
@@ -215,7 +212,6 @@ class UserService : UserDetailsService {
      *         {@link local.intranet.bttf.api.controller.IndexController#getLogin}
      *         if user is logged.
      */
-    @JsonIgnore
     fun getUserRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
         val list = getAuthoritiesRoles()
