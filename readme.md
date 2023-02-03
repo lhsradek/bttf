@@ -20,7 +20,7 @@ The technology used:
 * JPA (hibernate with envers audit)
 * DB: PostgreSQL, MariaDB, H2 (with stored procedures) [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
 * OpenAPI - Swagger [See](https://github.com/lhsradek/bttf/blob/main/png/bttf03.png)
-* AES encrypted data transmitted to the form. [See](https://github.com/lhsradek/bttf/blob/main/png/bttf07.png)
+* AES encrypted data transmitted to the form.
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container) [See](https://github.com/lhsradek/bttf/blob/main/png/bttf05.png)
 * Nginx (load balancer for Tomcat and PhP FastCGI for SQL Adminer)
