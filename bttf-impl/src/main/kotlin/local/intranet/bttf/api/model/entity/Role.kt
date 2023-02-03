@@ -12,7 +12,6 @@ import javax.persistence.ManyToMany
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
-
 import local.intranet.bttf.api.domain.DefaultFieldLengths
 
 /**
@@ -25,7 +24,7 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
  */
 @Entity
 @Table(name = "bttf_role")
-data class Role constructor(
+data class Role(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +35,7 @@ data class Role constructor(
     @Size(max = DefaultFieldLengths.DEFAULT_NAME)
     val roleName: String,
 
+    @NotNull
     @Column(nullable = false)
     val enabled: Boolean = true) {
 

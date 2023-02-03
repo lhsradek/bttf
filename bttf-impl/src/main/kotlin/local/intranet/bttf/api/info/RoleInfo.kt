@@ -17,7 +17,7 @@ import local.intranet.bttf.api.service.RoleService
  * @param role {@link List}&lt;{@link RolePlain}&gt;
 */
 @JsonPropertyOrder("name", "roles")
-data class RoleInfo constructor(
+data class RoleInfo (
 
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -33,14 +33,6 @@ data class RoleInfo constructor(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     fun name(): String {
         return RoleService::class.java.getSimpleName()
-    }
-
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "RoleInfo [name=" + name() + ", role=" + role + "]"
     }
 
 }

@@ -171,29 +171,9 @@ public class IndexController {
     fun getPlay(request: HttpServletRequest, model: Model): String {
         try {
             val time =
-                if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null &&
-                    request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
-                    request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
-                ) {
-                    try {
-                        // A player who clicks on the form so fast that the data cannot be encrypted will
-                        // be punished by returning to the now! ;-)
-                        val salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
-                        val iv =
-                            IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
-                        val secretKey = AESUtil.getKeyFromPassword(key, salt)
-                        val z = ZonedDateTime.now(ZoneId.systemDefault())
-                        z.plusYears(
-                            AESUtil.decrypt(
-                                AESUtil.getHex(
-                                    request.session.getAttribute(BttfConst.APPLICATION_YEAR) as String
-                                ),
-                                secretKey, iv
-                            ).toLong() - z.year
-                        )
-                    } catch (e: Exception) {
-                        ZonedDateTime.now(ZoneId.systemDefault())
-                    }
+                if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null) {
+                    val z = ZonedDateTime.now(ZoneId.systemDefault())
+                    z.plusYears(request.session.getAttribute(BttfConst.APPLICATION_YEAR) as Long - z.year)
                 } else {
                     ZonedDateTime.now(ZoneId.systemDefault())
                 }
@@ -273,14 +253,7 @@ public class IndexController {
                 ZonedDateTime.now(ZoneId.systemDefault())
             }
             if (request.session != null) {
-                val iv = AESUtil.generateIv()
-                val salt = AESUtil.generateSalt()
-                request.session.setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
-                request.session.setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
-                request.session.setAttribute(
-                    BttfConst.APPLICATION_YEAR,
-                    BttfService.secForPlayer(time.year.toLong(), AESUtil.getKeyFromPassword(key, salt), iv)
-                )
+                request.session.setAttribute(BttfConst.APPLICATION_YEAR, time.year.toLong())
             }
             val username = userService.getUsername()
             // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }

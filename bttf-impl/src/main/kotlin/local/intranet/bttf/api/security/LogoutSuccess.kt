@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler
-import org.springframework.util.StringUtils
 
 /**
  *
@@ -35,9 +34,9 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
     override fun onLogoutSuccess(
         request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
         try {
-            if (request.cookies != null) {
+            request.cookies?.let {
                 for (cookie in request.cookies) {
-                    if (cookie != null) {
+                    cookie?.let {
                         val cookieToDelete = Cookie(cookie.name, null)
                         cookieToDelete.setMaxAge(0)
                         response.addCookie(cookieToDelete)
@@ -46,7 +45,7 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
             }
             if (authentication.principal != null && authentication.name != null) {
                 log.info("Logout username:'{}' refererUrl:'{}' sessionId:{}",
-                    authentication.name, request.getHeader("Referer"), request.getSession().getId())
+                    authentication.name, request.getHeader("Referer"), request.session.getId())
             }
             super.onLogoutSuccess(request, response, authentication)
             request.session.invalidate()
@@ -66,16 +65,16 @@ class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler() {
      */
     override protected fun determineTargetUrl(request: HttpServletRequest, response: HttpServletResponse): String {
         if (isAlwaysUseDefaultTargetUrl()) {
-            return getDefaultTargetUrl()
+            return defaultTargetUrl
         }
         var targetUrl: String = ""
         if (targetUrlParameter != null) {
             targetUrl = request.getParameter(targetUrlParameter)
-            if (StringUtils.hasText(targetUrl)) {
+            if (targetUrl.isNotEmpty()) {
                 return targetUrl
             }
         }
-        if (!StringUtils.hasText(targetUrl)) {
+        if (targetUrl.isNullOrEmpty()) {
             targetUrl = defaultTargetUrl
         }
         return targetUrl

@@ -5,19 +5,22 @@ import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.LoginAttemptService
-import local.intranet.bttf.api.service.UserService
 import local.intranet.bttf.api.service.BttfService
+import local.intranet.bttf.api.service.UserService
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+// import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+// import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.test.context.junit4.SpringRunner
+// import org.springframework.transaction.annotation.Transactional
+// import org.springframework.transaction.annotation.Propagation
 
 /**
  *
@@ -26,13 +29,17 @@ import org.springframework.test.context.junit4.SpringRunner
  * @author Radek Kadner
  *
  */
+
 @RunWith(SpringRunner::class)
+// @DataJpaTest
 @SpringBootTest
 class bttfTest {
 
     @Value("\${bttf.sec.key}")
     private lateinit var key: String
 
+    // @Autowired lateinit var entityManager: TestEntityManager
+            
     @Autowired
     private lateinit var statusController: StatusController
 
@@ -41,7 +48,7 @@ class bttfTest {
 
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
-
+    
     @Autowired
     private lateinit var userService: UserService
 
@@ -51,6 +58,7 @@ class bttfTest {
      *
      */
     @Test
+    // @Transactional(propagation = Propagation.NOT_SUPPORTED)
     fun givenTest() {
         assertThat(statusController).isNotNull
         assertThat(statusController.getPlainStatus()).isNotBlank
@@ -80,23 +88,23 @@ class bttfTest {
         val en = BttfService.secForPlayer(year1, secretKey1, iv)
         val secretKey2 = AESUtil.getKeyFromPassword(key, salt)
         val year2 = AESUtil.decrypt(AESUtil.getHex(en), secretKey2, iv).toLong()
-        assertEquals(year1, year2)
+        assertThat(year1 == year2)
 
         // a bit of Dadaism
-        assertEquals(
-            "We have a stuffed grandfather in the closet.",
+        assertThat(
+            "We have a stuffed grandfather in the closet." ==
             AESUtil.getBase64("V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=")
         )
-        assertEquals(
-            "V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=",
+        assertThat(
+            "V2UgaGF2ZSBhIHN0dWZmZWQgZ3JhbmRmYXRoZXIgaW4gdGhlIGNsb3NldC4=" ==
             AESUtil.setBase64("We have a stuffed grandfather in the closet.")
         )
-        assertEquals(
-            "My cork badtub is like your giraffe rye!",
+        assertThat(
+            "My cork badtub is like your giraffe rye!" ==
             AESUtil.getHex("4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521")
         )
-        assertEquals(
-            "4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521",
+        assertThat(
+            "4d7920636f726b20626164747562206973206c696b6520796f757220676972616666652072796521" ==
             AESUtil.setHex("My cork badtub is like your giraffe rye!")
         )
 

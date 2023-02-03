@@ -142,7 +142,6 @@ object BttfConst {
      * ERROR_INTERNAL = "You clicked too fast or were you looking at the html source. You're brought back to the now! ;-)"
      */
     const val ERROR_INTERNAL: String =
-        "You clicked too fast or were you looking at the html source. You're brought back to the now! ;-)"
-
+        "You clicked too fast or were you looking at the html source."
 
 }

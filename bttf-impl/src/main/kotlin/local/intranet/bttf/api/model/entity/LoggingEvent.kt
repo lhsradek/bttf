@@ -26,7 +26,7 @@ import javax.validation.constraints.Size
 @Entity
 @Immutable
 @Table(name = "logging_event")
-data class LoggingEvent constructor(
+data class LoggingEvent(
 
     @Id
     @Column(name = "event_id")

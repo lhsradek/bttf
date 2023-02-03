@@ -68,7 +68,7 @@ class RedisConfig {
      */
     @Bean
     fun redisTemplate(): RedisTemplate<String, Any> {
-        val ret: RedisTemplate<String, Any> = RedisTemplate()
+        val ret = RedisTemplate<String, Any>()
         ret.setConnectionFactory(jedisConnectionFactory())
         ret.setValueSerializer(GenericToStringSerializer<Any>(Any::class.java))
         return ret

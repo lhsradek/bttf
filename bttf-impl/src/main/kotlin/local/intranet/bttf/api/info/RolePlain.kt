@@ -21,19 +21,13 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths;
  *
  */
 @JsonPropertyOrder("id", "roleName", "enabled", "users")
-data class RolePlain constructor( 
+data class RolePlain (
+    
     val id: Long?,
+    
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     val roleName: String,
+    
     val enabled: Boolean,
-    val users: List<String>) {
-
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "RolePlain [id=" + id + ", roleName=" + roleName + ", enabled=" + enabled + ", users=" + "users]"
-    }
-
-}
+    
+    val users: List<String>)

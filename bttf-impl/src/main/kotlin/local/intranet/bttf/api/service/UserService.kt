@@ -173,7 +173,7 @@ class UserService : UserDetailsService {
      */
     fun isAuthenticated(): Boolean {
         val list = getAuthoritiesRoles()
-        val ret = if (list.size > 0 && !list.get(0).equals(RoleType.ANONYMOUS_ROLE.role)) true else false
+        val ret = if (list.size > 0 && !list.first().equals(RoleType.ANONYMOUS_ROLE.role)) true else false
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

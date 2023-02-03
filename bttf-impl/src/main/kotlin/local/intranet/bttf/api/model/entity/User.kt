@@ -3,7 +3,6 @@ package local.intranet.bttf.api.model.entity
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -12,10 +11,7 @@ import javax.persistence.ManyToMany
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
-
-import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.DefaultFieldLengths
-import local.intranet.bttf.api.security.AESUtil
 
 /**
  *
@@ -27,7 +23,7 @@ import local.intranet.bttf.api.security.AESUtil
  */
 @Entity
 @Table(name = "bttf_user")
-data class User constructor(
+data class User(
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,6 +47,7 @@ data class User constructor(
      *  -> AccountExpiredException
      *
      */
+    @NotNull
     @Column(name = "account_non_expired", nullable = false)
     val accountNonExpired: Boolean = true,
 
@@ -62,6 +59,7 @@ data class User constructor(
      *  -> LockedException
      *
      */
+    @NotNull
     @Column(name = "account_non_locked", nullable = false)
     val accountNonLocked: Boolean = true,
 

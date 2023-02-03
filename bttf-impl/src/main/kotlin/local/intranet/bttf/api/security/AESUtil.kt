@@ -99,7 +99,7 @@ class AESUtil {
             InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
         )
         fun decrypt(cipherText: String, key: SecretKey, iv: IvParameterSpec): String {
-            val cipher: Cipher = Cipher.getInstance("AES/CBC/PKCS5Padding".toUpperCase())
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding".toUpperCase())
             cipher.init(Cipher.DECRYPT_MODE, key, iv)
             return String(cipher.doFinal(Base64.getDecoder().decode(cipherText)))
         }

@@ -15,6 +15,38 @@ CREATE TABLE revinfo (
     CONSTRAINT primary_key_revinfo PRIMARY KEY (rev)
 );
 
+----- TABLE bttf_counter -----
+
+CREATE TABLE bttf_counter (
+    id BIGINT IDENTITY NOT NULL,
+    counter_name VARCHAR(255) NOT NULL,
+    cnt BIGINT, 
+    timestmp BIGINT, 
+    status VARCHAR(16) NOT NULL,
+    CONSTRAINT primary_key_counter PRIMARY KEY (id),
+    CONSTRAINT counter_name_uk UNIQUE (counter_name)
+);
+
+----- TABLE bttf_counter_a -----
+
+CREATE TABLE bttf_counter_a (
+    id BIGINT NOT NULL,
+    rev BIGINT REFERENCES revinfo (rev),
+    revtype TINYINT,
+    counter_name VARCHAR(255) NULL,
+    counter_name_m BOOLEAN,
+    cnt BIGINT NULL,
+    cnt_m BOOLEAN,
+    timestmp BIGINT NULL,
+    timestmp_m BOOLEAN,
+    status VARCHAR(16) NULL,
+    status_m BOOLEAN,
+    CONSTRAINT primary_bttf_counter_a PRIMARY KEY (id, rev)
+);
+CREATE INDEX key_bttf_counter_a_rev ON bttf_counter_a (rev);
+
+
+
 ----- TABLE bttf_role -----
 
 CREATE TABLE bttf_role (
@@ -56,3 +88,33 @@ CREATE INDEX key_user_role_role_id ON bttf_user_role (role_id);
 CREATE VIEW bttf_view AS SELECT ROWNUM() id, a.id user_id, a.user_name, a.enabled user_enabled, c.id role_id,
   c.role_name, c.enabled role_enabled FROM bttf_user a JOIN bttf_user_role b ON a.id = b.user_id
   JOIN bttf_role c ON b.role_id = c.id ORDER BY a.id, c.id;
+  
+----- VIEW bttf_counter_view -----
+
+CREATE VIEW bttf_counter_view AS SELECT
+    id, counter_name,
+    CASE WHEN cnt > 0 THEN
+        TO_CHAR (cnt) ELSE '' END cnt,
+    CASE WHEN timestmp > 0 THEN
+        TO_CHAR(DATEADD('SECOND', (3600 * RIGHT(CAST(CURRENT_TIMESTAMP AS TIMESTAMP WITH TIME ZONE), 2) + timestmp / 1000),
+        DATE '1970-01-01'), 'YYYY-MM-DD HH24:MI:SS') ELSE '' END date,
+    status
+FROM bttf_counter ORDER BY id;
+  
+
+----- VIEW index_counter_a_view -----
+
+CREATE VIEW bttf_counter_a_view AS SELECT
+    TO_CHAR(DATEADD('SECOND', (3600 * RIGHT(CAST(CURRENT_TIMESTAMP AS TIMESTAMP WITH TIME ZONE), 2) + revtstmp / 1000),
+        DATE '1970-01-01'), 'YYYY-MM-DD HH24:MI:SS') revdate,
+    a.id, a.rev, a.revtype,
+    a.counter_name,
+    CASE WHEN a.cnt > 0 THEN
+        TO_CHAR (a.cnt) ELSE '' END cnt,
+    CASE WHEN a.timestmp > 0 THEN
+        TO_CHAR(DATEADD('SECOND', (3600 * RIGHT(CAST(CURRENT_TIMESTAMP AS TIMESTAMP WITH TIME ZONE), 2) + a.timestmp / 1000),
+        DATE '1970-01-01'), 'YYYY-MM-DD HH24:MI:SS') ELSE '' END date
+FROM bttf_counter_a a, revinfo r WHERE a.rev = r.rev ORDER BY revtstmp, id, rev;
+
+
+

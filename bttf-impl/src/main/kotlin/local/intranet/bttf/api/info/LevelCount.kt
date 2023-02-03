@@ -11,14 +11,4 @@ package local.intranet.bttf.api.info
  * @param level {@link String}
  * @param total {@link Long}
  */
-data class LevelCount constructor(val level: String, val total: Long) {
-
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "LevelCount [level=" + level + ", total=" + total + "]"
-    }
-
-}
+data class LevelCount (val level: String, val total: Long)

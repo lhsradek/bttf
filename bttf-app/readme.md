@@ -15,12 +15,12 @@ See:
 
 The technology used:
 
-* Kotlin therefore Java (OpenJDK)
-* Spring Boot (controllers, services, listeners, thymeleaf, flyway)
+* Kotlin therefore Java
+* Spring Boot (controllers, services, listeners, thymeleaf, flyway, quartz scheduler)
+* JPA (hibernate with envers audit)
+* DB: PostgreSQL, MariaDB, H2 (with stored procedures)
 * OpenAPI - Swagger
-* JPA (PostgreSQL, MariaDB, H2)
-* Quartz Scheduler
-* AES encrypted data transmitted to the form 
+* AES encrypted data transmitted to the form. [See](https://github.com/lhsradek/bttf/blob/main/png/bttf07.png)
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container)
 * Nginx (load balancer and PhP FastCGI for SQL Adminer)
@@ -28,6 +28,7 @@ The technology used:
 * Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker and DockerHub
 * Linux (Alpine, Debian, Ubuntu)
+* Midjourney
 
 Thank you all for these technologies. Thanks to Microsoft for finally making friends with Linux and for GitHub. Thanks to Google for translater and advice leader on StackOverflow.
 

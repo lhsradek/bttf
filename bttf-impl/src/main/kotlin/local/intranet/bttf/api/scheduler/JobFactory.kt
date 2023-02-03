@@ -38,7 +38,7 @@ class JobFactory : ApplicationContextAware, SchedulerContextAware, SpringBeanJob
     @Throws(BeansException::class)
     override fun setApplicationContext(applicationContext: ApplicationContext) {
         super.setApplicationContext(applicationContext)
-        beanFactory = applicationContext.getAutowireCapableBeanFactory()
+        beanFactory = applicationContext.autowireCapableBeanFactory
     }
 
     /**

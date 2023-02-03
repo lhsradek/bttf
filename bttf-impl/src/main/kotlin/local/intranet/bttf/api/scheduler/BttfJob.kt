@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.scheduler
 
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
+import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.redis.RedisMessagePublisher
 import org.quartz.Job
@@ -28,15 +29,14 @@ class BttfJob : Job {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired
+    private lateinit var jobService: JobService
+
+    @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
 
     @Autowired
     private lateinit var redisMessagePublisher: RedisMessagePublisher
-
-    private companion object {
-        val count = AtomicInteger()  // static variable
-    }
-
+    
     /**
      *
      * @param context {@link JobExecutionContext}
@@ -44,15 +44,10 @@ class BttfJob : Job {
      */
     @Throws(JobExecutionException::class)
     override fun execute(context: JobExecutionContext) {
-
+        jobService.incrementCounter()
         loginAttemptService.flushCache()
-
         // Redis as a message broker
-        redisMessagePublisher.publish(
-            String.format(
-                "Fired:%s count:%d", context.getJobDetail().key.name, count.incrementAndGet()
-            )
-        )
+        redisMessagePublisher.publish("Fired:${context.jobDetail.key.name} count:${jobService.countValue()}")
     }
 
 }

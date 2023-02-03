@@ -35,7 +35,7 @@ import javax.validation.constraints.Size
     "isAccountNonExpired",
     "isAccountNonLocked"
 )
-data class UserInfo constructor(
+data class UserInfo (
     private val username: String,
     private val password: String,
     private val isEnabled: Boolean,

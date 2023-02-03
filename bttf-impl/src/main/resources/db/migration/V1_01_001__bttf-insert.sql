@@ -7,7 +7,6 @@
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (1, 'adminRole', true);
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (2, 'managerRole', true);
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (3, 'userRole', true);
-INSERT INTO bttf_role (id, role_name, enabled) VALUES (4, 'anonymousRole', true);
 
 
 ----- TABLE bttf_user -----
@@ -27,11 +26,6 @@ INSERT INTO bttf_user
     VALUES (3, 'user',
     '$2a$04$CXVR7TLO8SuJoiUR8M8oW.RYi6rHlkkK6rAcT.bLKDqhx6ZsZ0jmu',
     true, true, true, true);
--- INSERT INTO bttf_user
---  (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
---    VALUES (4, 'anonymous', '$2a$12$GqlV3DxsT7ouFI4rLdxXou1K4U0vfMra.RdfvOGeW2LiUNY6VmPKe',
---    true, true, true, true);
-
     
 ----- TABLE bttf_user_role -----
   

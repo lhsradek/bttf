@@ -4,7 +4,6 @@ import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener
-import org.springframework.lang.Nullable
 import org.springframework.stereotype.Service
 
 /**
@@ -29,7 +28,7 @@ class RedisMessageSubscriber : MessageListener {
      * @param message {@link Message}
      * @param pattern {@link ByteArray?}
      */
-    override fun onMessage(message: Message, @Nullable pattern: ByteArray?) {
+    override fun onMessage(message: Message, pattern: ByteArray?) {
         if (pattern == null) {
             log.info("[message:{} uuid:{}]",
                 message.toString(), UUID.randomUUID())

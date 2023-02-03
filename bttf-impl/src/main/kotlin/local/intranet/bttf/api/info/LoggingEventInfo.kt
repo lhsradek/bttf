@@ -22,7 +22,7 @@ import java.time.ZonedDateTime
  * @param arg3             {@link String}
  * @param date             {@link ZonedDateTime}
  */
-data class LoggingEventInfo constructor(
+data class LoggingEventInfo (
     val id: Long,
     val formattedMessage: String,
     val levelString: String,
@@ -32,16 +32,4 @@ data class LoggingEventInfo constructor(
     val arg1: String,
     val arg2: String,
     val arg3: String,
-    val date: ZonedDateTime ) {
-
-    /**
-     *
-     * Returns a string representation of the object.
-     */
-    override fun toString(): String {
-        return "LoggingEventInfo [id=" + id + ", formattedMessage=" + formattedMessage + ", levelString=" + levelString +
-                ", callerClass=" + callerClass + ", callerMethod=" + callerMethod + ", arg0=" + arg0 + ", arg1=" +
-                arg1 + ", arg2=" + arg2 + ", arg3=" + arg3 + ", date=" + date + "]"
-    }
-
-}
+    val date: ZonedDateTime )
