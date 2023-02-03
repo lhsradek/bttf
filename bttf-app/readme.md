@@ -23,7 +23,7 @@ The technology used:
 * AES encrypted data transmitted to the form. [See](https://github.com/lhsradek/bttf/blob/main/png/bttf07.png)
 * Redis (Sessions, Message broker)
 * Tomcat (Webs servlet/JSP container) [See](https://github.com/lhsradek/bttf/blob/main/png/bttf05.png)
-* Nginx (load balancer and PhP FastCGI for SQL Adminer)
+* Nginx (load balancer for Tomcat and PhP FastCGI for SQL Adminer)
 * Traefik (load balancer for docker)
 * Elasticsearch (Filebeat, Metricbeat, APM)
 * Docker and DockerHub
