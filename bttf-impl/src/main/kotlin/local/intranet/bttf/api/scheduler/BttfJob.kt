@@ -1,6 +1,5 @@
 package local.intranet.bttf.api.scheduler
 
-import java.util.concurrent.atomic.AtomicLong
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.redis.RedisMessagePublisher
