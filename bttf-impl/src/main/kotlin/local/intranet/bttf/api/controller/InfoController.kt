@@ -88,7 +88,7 @@ public class InfoController {
     @GetMapping(value = arrayOf("/user"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "getUserInfo",
-        summary = "Get User Info",
+        summary = "User Info",
         description = "Get User Info\n\n"
                 + "This method is calling UserService.getUserInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
@@ -134,7 +134,7 @@ public class InfoController {
     @GetMapping(value = arrayOf("/role"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "getRoleInfo",
-        summary = "Get Role Info",
+        summary = "Role Info",
         description = "Get Role Info\n\n"
                 + "This method is calling RoleService.getRoleInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
@@ -163,7 +163,7 @@ public class InfoController {
     @GetMapping(value = arrayOf("/job"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "getJobInfo",
-        summary = "Get Job Info",
+        summary = "Job Info",
         description = "Get Job Info\n\n"
                 + "This method is calling JobService.getJobInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
@@ -194,7 +194,7 @@ public class InfoController {
     @GetMapping(value = arrayOf("/loginAttempts"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "getLoginAttempts",
-        summary = "Get Login Attempts",
+        summary = "Login Attempts",
         description = "Get Login Attempts\n\n"
                 + "This method get loggin attempts\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
@@ -224,7 +224,7 @@ public class InfoController {
     @GetMapping(value = arrayOf("/countTotalLoggingEvents"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "countTotalLoggingEvents",
-        summary = "Count Total Logging Events",
+        summary = "Total Logging Events",
         description = "Count Total Logging Events\n\n"
                 + "This method is calling LoggingEventService.countTotalLoggingEvents\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
