@@ -35,7 +35,7 @@ public class AuthenticationFailureListener : ApplicationListener<AuthenticationF
      * Application event listener
      */
     public override fun onApplicationEvent(e: AuthenticationFailureBadCredentialsEvent) {
-        val ip = statusController.getClientIP()
+        val ip = statusController.clientIP()
         loginAttemptService.loginFailed(ip)
         val arr = mutableListOf<String>()
         e.authentication?.let {

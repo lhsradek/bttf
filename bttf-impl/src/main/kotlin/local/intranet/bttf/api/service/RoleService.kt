@@ -28,26 +28,32 @@ public class RoleService {
     @Autowired
     private lateinit var roleRepository: RoleRepository
 
+    /**
+     *
+     * For {@link local.intranet.bttf.api.controller.InfoController#userInfo}
+     *
+     * @return {@link UserInfo}
+     */
     @Transactional(readOnly = true)
-    public fun getRoleInfo(): RoleInfo {
-        return RoleInfo(getUsersRoles())
+    public fun roleInfo(): RoleInfo {
+        return RoleInfo(usersRoles())
     }
 
     /**
      *
-     * Get userRole for {@link local.intranet.bttf.api.controller.InfoController#getUsersRoles}
+     * Get userRole for {@link local.intranet.bttf.api.controller.InfoController#usersRoles}
      *
      * @return {@link List}&lt;{@link RolePlain}&gt;
      */
     @Transactional(readOnly = true)
-    protected fun getUsersRoles(): List<RolePlain> {
+    protected fun usersRoles(): List<RolePlain> {
         val ret = arrayListOf<RolePlain>()
         roleRepository.findAll().forEach {
-            ret.add(RolePlain(it.id, it.roleName, it.enabled, it.user.map {
+            ret.add(RolePlain(it.id!!, it.roleName, it.enabled, it.user.map {
                 it.userName
             }))
         }
-        // if (dbg.toBoolean()) log.debug("GetUserRoles ret:{}", ret)
+        // if (dbg.toBoolean()) log.debug("UserRoles ret:{}", ret)
         return ret;
     }
 

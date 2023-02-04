@@ -13,7 +13,7 @@ import javax.validation.constraints.Size
  * {@link local.intranet.bttf.api.service.LoggingEventService#countTotalLoggingEvents} and
  * {@link local.intranet.core.api.controller.InfoController#loggingEvent}
  *
- * Constructor with parameters
+ * @constructor with parameters
  *
  * @param level {@link String}
  * @param total {@link Long}

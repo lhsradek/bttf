@@ -73,7 +73,7 @@ public class UserService : UserDetailsService {
 
     /**
      *
-     * For {@link local.intranet.bttf.api.controller.InfoController#getUserInfo}
+     * For {@link local.intranet.bttf.api.controller.InfoController#userInfo}
      *
      * @return {@link UserInfo}
      * @throws LockedException           if the user is locked.
@@ -87,11 +87,11 @@ public class UserService : UserDetailsService {
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
     )
-    public fun getUserInfo(): UserInfo {
+    public fun userInfo(): UserInfo {
         // val ret = loadUserByUsername(getUsername())
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
-        return loadUserByUsername(getUsername())
+        return loadUserByUsername(username())
     }
 
     /**
@@ -112,7 +112,7 @@ public class UserService : UserDetailsService {
         AccountExpiredException::class
     )
     public override fun loadUserByUsername(username: String): UserInfo {
-        val ip: String = statusController.getClientIP()
+        val ip: String = statusController.clientIP()
         if (loginAttemptService.isBlocked(ip)) {
             throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
         }
@@ -149,7 +149,7 @@ public class UserService : UserDetailsService {
      *
      * @return {@link String}
      */
-    public fun getUsername(): String {
+    public fun username(): String {
         var ret = ""
         SecurityContextHolder.getContext().authentication?.let {
             httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
@@ -170,7 +170,7 @@ public class UserService : UserDetailsService {
      * @return {@link Boolean}
      */
     public fun isAuthenticated(): Boolean {
-        val list = getAuthoritiesRoles()
+        val list = authoritiesRoles()
         val ret = if (list.size > 0 && !list.first().equals(RoleType.ANONYMOUS_ROLE.role)) true else false
         // if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
@@ -182,7 +182,7 @@ public class UserService : UserDetailsService {
      *
      * @return {@link List}&lt;{@link String}&gt;
      */
-    public fun getAuthoritiesRoles(): List<String> {
+    public fun authoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
         httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
             SecurityContextHolder.getContext().authentication?.let {
@@ -212,9 +212,9 @@ public class UserService : UserDetailsService {
      *         {@link local.intranet.bttf.api.controller.IndexController#getLogin}
      *         if user is logged.
      */
-    public fun getUserRoles(): Map<String, Boolean> {
+    public fun userRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
-        val list = getAuthoritiesRoles()
+        val list = authoritiesRoles()
         for (r in RoleType.values()) {
             if (!r.equals(RoleType.ANONYMOUS_ROLE)) {
                 ret.put(r.role.replace(BttfConst.ROLE_PREFIX, ""), list.contains(r.role))

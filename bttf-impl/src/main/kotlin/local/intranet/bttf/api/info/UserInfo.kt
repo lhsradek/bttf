@@ -17,7 +17,7 @@ import javax.validation.constraints.Size
  *
  * @author Radek Kádner
  *
- * Constructor with parameters
+ * @constructor with parameters
  *
  * @param username                {@link String}
  * @param password                {@link String}

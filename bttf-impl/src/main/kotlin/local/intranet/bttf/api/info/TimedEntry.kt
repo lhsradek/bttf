@@ -3,6 +3,8 @@ package local.intranet.bttf.api.info
 /**
  *
  * https://hackmd.io/@pierodibello/ByEVNHg-v
+ *
+ * @constructor with parameters
  */ 
 public data class TimedEntry(val key: String, var value: Int, val maxDurationInMillis: Long) {
     

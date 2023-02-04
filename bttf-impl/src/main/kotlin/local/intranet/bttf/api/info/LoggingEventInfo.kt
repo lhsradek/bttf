@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
  *
  * @author Radek Kádner
  *
- * Constructor with parameters
+ * @constructor with parameters
  *
  * @param id               {@link Long}
  * @param formattedMessage {@link String}

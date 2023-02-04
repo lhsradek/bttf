@@ -13,7 +13,7 @@ import local.intranet.bttf.api.service.RoleService
  *
  * @author Radek Kádner
  *
- * Constructor with parameter
+ * @constructor with parameters
  *
  * @param role {@link List}&lt;{@link RolePlain}&gt;
 */

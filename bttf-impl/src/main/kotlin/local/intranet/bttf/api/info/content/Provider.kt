@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
  *
  * {@link Provider} for
  * {@link local.intranet.bttf.api.controller.IndexController} and
- * {@link local.intranet.bttf.api.service.BttfService}
+ * {@link local.intranet.bttf.api.service.JobService}
  *
  * @author Radek Kádner
  *
@@ -62,7 +62,8 @@ public class Provider {
 
     /**
      *
-     * Get AuditReader
+     * Get AuditReader for
+     * {@link local.intranet.bttf.api.service.JobService#getCounterAudit}
      *
      * @return {@link AuditReader}
      */

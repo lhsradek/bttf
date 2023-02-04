@@ -117,9 +117,9 @@ public class IndexController {
         request.requestedSessionId?.let {
             log.info(
                 "GetLicense username:'{}' ip:'{}' session:{}", model.asMap().get("username"),
-                statusController.getClientIP(), request.requestedSessionId
+                statusController.clientIP(), request.requestedSessionId
             )
-        } ?: log.info("GetLicense username:'{}' ip:'{}'", model.asMap().get("username"), statusController.getClientIP())
+        } ?: log.info("GetLicense username:'{}' ip:'{}'", model.asMap().get("username"), statusController.clientIP())
         return "license"
     }
 
@@ -143,15 +143,15 @@ public class IndexController {
         model.addAttribute("springBootVersion", SpringBootVersion.getVersion())
         model.addAttribute("springVersion", SpringVersion.getVersion())
         model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
-        model.addAttribute("implementationVersion", statusController.getImplementationVersion())
+        model.addAttribute("implementationVersion", statusController.implementationVersion())
         // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         request.requestedSessionId?.let {
             log.info(
                 "GetIndex username:'{}' ip:'{}' session:{}",
-                model.asMap().get("username"), statusController.getClientIP(), request.requestedSessionId
+                model.asMap().get("username"), statusController.clientIP(), request.requestedSessionId
             )
         } ?: log.info(
-            "GetIndex username:'{}' ip:'{}'", model.asMap().get("username"), statusController.getClientIP()
+            "GetIndex username:'{}' ip:'{}'", model.asMap().get("username"), statusController.clientIP()
         )
         return "index"
     }
@@ -182,7 +182,7 @@ public class IndexController {
             val salt = AESUtil.generateSalt()
             val secretKey = AESUtil.getKeyFromPassword(key, salt)
             model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
-            model.addAttribute("implementationVersion", statusController.getImplementationVersion())
+            model.addAttribute("implementationVersion", statusController.implementationVersion())
             model.addAttribute("time", time)
             model.addAttribute("secretIv", iv)
             model.addAttribute("secretKey", secretKey)
@@ -192,12 +192,12 @@ public class IndexController {
                 request.session.setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
                 log.info(
                     "GetPlay username:'{}' ip:'{}' time:{} session:{}",
-                    model.asMap().get("username"), statusController.getClientIP(),
+                    model.asMap().get("username"), statusController.clientIP(),
                     time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), request.requestedSessionId
                 )
             } ?: log.info(
                 "GetPlay username:'{}' ip:'{}' time:{}",
-                model.asMap().get("username"), statusController.getClientIP(),
+                model.asMap().get("username"), statusController.clientIP(),
                 time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
             )
         } catch (e: Exception) {
@@ -255,16 +255,16 @@ public class IndexController {
             if (request.session != null) {
                 request.session.setAttribute(BttfConst.APPLICATION_YEAR, time.year.toLong())
             }
-            val username = userService.getUsername()
+            val username = userService.username()
             // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
             request.requestedSessionId?.let {
                 log.info(
                     "PostPlay username:'{}' ip:'{}' time:{} session:{}",
-                    username, statusController.getClientIP(), request.requestedSessionId,
+                    username, statusController.clientIP(), request.requestedSessionId,
                     time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
                 )
             } ?: log.info(
-                "PostPlay username:'{}' ip:'{}' time:{}", username, statusController.getClientIP(),
+                "PostPlay username:'{}' ip:'{}' time:{}", username, statusController.clientIP(),
                 time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
             )
         } catch (e: Exception) {
@@ -570,7 +570,7 @@ public class IndexController {
                             Pair("error", "true"), Pair("exception", e::class.java.simpleName)
                         )
                     )
-                    val attempt = loginAttemptService.findById(statusController.getClientIP())
+                    val attempt = loginAttemptService.findById(statusController.clientIP())
                     log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
                     // log.error(e::class.java.simpleName, e)
                     log.error(e::class.java.simpleName)
@@ -701,14 +701,14 @@ public class IndexController {
      */
     protected fun addModel(request: HttpServletRequest, model: Model) {
         model.addAttribute("headerSoftware", headerSoftware)
-        model.addAttribute("activeProfiles", statusController.getActiveProfiles())
-        model.addAttribute("stage", statusController.getStage())
-        model.addAttribute("serverName", statusController.getServerName())
-        model.addAttribute("serverSoftware", statusController.getServerSoftware())
+        model.addAttribute("activeProfiles", statusController.activeProfiles())
+        model.addAttribute("stage", statusController.stage())
+        model.addAttribute("serverName", statusController.serverName())
+        model.addAttribute("serverSoftware", statusController.serverSoftware())
         model.addAttribute("isAuthenticated", userService.isAuthenticated())
-        model.addAttribute("username", userService.getUsername())
-        model.addAttribute("userRoles", userService.getUserRoles())
-        model.addAttribute("role", userService.getAuthoritiesRoles().joinToString(separator = " "))
+        model.addAttribute("username", userService.username())
+        model.addAttribute("userRoles", userService.userRoles())
+        model.addAttribute("role", userService.authoritiesRoles().joinToString(separator = " "))
         val methodName = Thread.currentThread().stackTrace[2].methodName
         if (methodName.equals("getError")) {
             val err = getErrorMessage(request, model)

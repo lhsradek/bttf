@@ -62,14 +62,14 @@ public class StatusController {
      */
     @GetMapping(value = arrayOf("/status"), produces = arrayOf(MediaType.TEXT_PLAIN_VALUE))
     @Operation(
-        operationId = "getPlainStatus",
-        summary = "Get Plain Status",
+        operationId = "plainStatus",
+        summary = "Plain Status",
         description = "Get OK if BTTF API is running\n\n",
                 // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getPlainStatus()\" "
                 // + "target=\"_blank\">StatusController.getPlainStatus</a>",
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
-    public fun getPlainStatus(): String {
+    public fun plainStatus(): String {
         return "OK"
     }
 
@@ -77,9 +77,9 @@ public class StatusController {
      *
      * Implementation version
      *
-     * @return version BttfApplication
+     * @return version {@link String}
      */
-    public fun getImplementationVersion(): String {
+    public fun implementationVersion(): String {
         // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
         // val keyFirstElement: String = list.keys.first()
         // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
@@ -90,12 +90,28 @@ public class StatusController {
     }
 
     /**
+     * 
+     * Session id
      *
-     * Get stage
+     * @return version {@link String}
+     */
+    public fun sessionId(): String {
+        val session = httpServletRequest.getSession(false)
+        val ret = session?.let {
+            session.getId()?.let {
+                session.getId()
+            } ?: ""
+        } ?: ""
+        return ret;
+    }
+
+    /**
+     *
+     * Stage
      *
      * @return ${bttf.app.stage}
      */
-    public fun getStage(): String {
+    public fun stage(): String {
         return stage
     }
 
@@ -105,58 +121,58 @@ public class StatusController {
      *
      * @return environment.getActiveProfiles()
      */
-    public fun getActiveProfiles(): String {
+    public fun activeProfiles(): String {
         return environment.getActiveProfiles().joinToString(separator = " ")
     }
 
     /**
      *
-     * Get server name
+     * Server name
      *
      * @return serverName (The second word) from {@link #getVirtualServerName()}
      */
-    public fun getServerName(): String {
-        return getVirtualServerName().split("/").last()
+    public fun serverName(): String {
+        return virtualServerName().split("/").last()
     }
 
     /**
      *
-     * Get server software
+     * Server software
      *
      * @return serverSoftware's name (The first word) without version from
      *         {@link #getServerInfo()}
      */
-    public fun getServerSoftware(): String {
-        return getServerInfo().split("/").first()
+    public fun serverSoftware(): String {
+        return serverInfo().split("/").first()
     }
 
     /**
      *
      * Get virtualServerName from ServletContext.getVirtualServerName()
      *
-     * @return getVirtualServerName()
+     * @return virtualServerName()
      */
-    protected fun getVirtualServerName(): String {
+    protected fun virtualServerName(): String {
         return servletContext.getVirtualServerName()
     }
 
     /**
      *
-     * Get server info from ServletContext.getServerInfo()
+     * Server info from ServletContext.getServerInfo()
      *
      * @return servletContext.getServerInfo()
      */
-    protected fun getServerInfo(): String {
+    protected fun serverInfo(): String {
         return servletContext.getServerInfo()
     }
     
     /**
      * 
-     * Get client IP
+     * client IP
      * 
      * @return {@link String} as ip
      */
-    public fun getClientIP(): String {
+    public fun clientIP(): String {
         val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
         val ret = xfHeader?.let {
             xfHeader.split(",").first()

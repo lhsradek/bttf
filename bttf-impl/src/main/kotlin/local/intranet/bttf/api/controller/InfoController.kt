@@ -72,11 +72,11 @@ public class InfoController {
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
-     * Used {@link local.intranet.bttf.api.service.UserService#getUserInfo}.
+     * Used {@link local.intranet.bttf.api.service.UserService#userInfo}.
      * <p>
      *
-     * @see <a href="/bttf/swagger-ui/#/info-controller/getUserInfo" target=
-     *      "_blank">swagger-ui/#/info-controller/getUserInfo</a>
+     * @see <a href="/bttf/swagger-ui/#/info-controller/userInfo" target=
+     *      "_blank">swagger-ui/#/info-controller/userInfo</a>
      * @return {@link UserInfo}
      * @throws LockedException           if the user is locked.
      * @throws UsernameNotFoundException if the user could not be found or the user has no GrantedAuthority
@@ -87,19 +87,19 @@ public class InfoController {
      */
     @GetMapping(value = arrayOf("/user"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-        operationId = "getUserInfo",
+        operationId = "userInfo",
         summary = "User Info",
         description = "Get User Info\n\n"
-                + "This method is calling UserService.getUserInfo\n\n",
+                + "This method is calling UserService.userInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-        // + "getUserInfo()\" target=\"_blank\">InfoController.getUserInfo</a>",
+        // + "userInfo()\" target=\"_blank\">InfoController.userInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class)
     public fun getUserInfo(): UserInfo {
         try {
-            return userService.getUserInfo()
+            return userService.userInfo()
         } catch (e: Exception) {
             when (e) {
                 is UsernameNotFoundException,
@@ -123,27 +123,27 @@ public class InfoController {
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
-     * Used {@link local.intranet.bttf.api.service.RoleService#getRoleInfo}.
+     * Used {@link local.intranet.bttf.api.service.RoleService#roleInfo}.
      * <p>
      *
-     * @see <a href="/bttf/swagger-ui/#/info-controller/getRoleInfo" target=
-     *      "_blank">swagger-ui/#/info-controller/getRoleInfo</a>
+     * @see <a href="/bttf/swagger-ui/#/info-controller/roleInfo" target=
+     *      "_blank">swagger-ui/#/info-controller/roleInfo</a>
      * @return {@link RoleInfo}
      *
      */
     @GetMapping(value = arrayOf("/role"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-        operationId = "getRoleInfo",
+        operationId = "roleInfo",
         summary = "Role Info",
         description = "Get Role Info\n\n"
-                + "This method is calling RoleService.getRoleInfo\n\n",
+                + "This method is calling RoleService.roleInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-        // + "getRoleInfo()\" target=\"_blank\">InfoController.getRoleInfo</a>",
+        // + "roleInfo()\" target=\"_blank\">InfoController.roleInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    public fun getRoleInfo(): RoleInfo {
-        return roleService.getRoleInfo()
+    public fun roleInfo(): RoleInfo {
+        return roleService.roleInfo()
     }
 
     /**
@@ -155,25 +155,25 @@ public class InfoController {
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
-     * Used {@link local.intranet.bttf.api.service.JobService#getJobInfo}.
+     * Used {@link local.intranet.bttf.api.service.JobService#jobInfo}.
      * <p>
      *
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/job"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-        operationId = "getJobInfo",
+        operationId = "jobInfo",
         summary = "Job Info",
         description = "Get Job Info\n\n"
                 + "This method is calling JobService.getJobInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-        // + "getJobInfo()\" target=\"_blank\">InfoController.getJobInfo</a>",
+        // + "jobInfo()\" target=\"_blank\">InfoController.jobInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    public fun getJobInfo(): CounterInfo {
-        return jobService.getJobInfo()
+    public fun jobInfo(): CounterInfo {
+        return jobService.jobInfo()
     }
 
     /**
@@ -186,25 +186,25 @@ public class InfoController {
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
      * <p>
-     * Used {@link local.intranet.bttf.api.service.LoginAttemptService#getLoginAttempts}.
+     * Used {@link local.intranet.bttf.api.service.LoginAttemptService#loginAttempts}.
      *
      * @param printBlocked {@link Boolean}
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/loginAttempts"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-        operationId = "getLoginAttempts",
+        operationId = "loginAttempts",
         summary = "Login Attempts",
         description = "Get Login Attempts\n\n"
                 + "This method get loggin attempts\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-        // + "getLoginAttempts()\" target=\"_blank\">InfoController.getLoginAttempts</a>",
+        // + "loginAttempts()\" target=\"_blank\">InfoController.loginAttempts</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    public fun getLoginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
+    public fun loginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
             List<Triple<String, Int, ZonedDateTime>> {
-        return loginAttemptService.getLoginAttempts(printBlocked)
+        return loginAttemptService.loginAttempts(printBlocked)
     }
 
     /**

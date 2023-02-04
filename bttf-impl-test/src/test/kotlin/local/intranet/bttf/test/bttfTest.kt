@@ -53,23 +53,23 @@ public class bttfTest {
     @Test
     public fun givenTest() {
         assertThat(statusController).isNotNull
-        assertThat(statusController.getPlainStatus()).isNotBlank
-        assertThat(statusController.getImplementationVersion()).isNotBlank
-        assertThat(statusController.getStage()).isNotBlank
-        assertThat(statusController.getActiveProfiles()).isNotBlank
-        assertThat(statusController.getServerSoftware()).isNotBlank
+        assertThat(statusController.plainStatus()).isNotBlank
+        assertThat(statusController.implementationVersion()).isNotBlank
+        assertThat(statusController.stage()).isNotBlank
+        assertThat(statusController.activeProfiles()).isNotBlank
+        assertThat(statusController.serverSoftware()).isNotBlank
 
         assertThat(infoController).isNotNull
 
         assertThat(loginAttemptService).isNotNull
-        assertThat(loginAttemptService.getLoginAttempts(true)).isNotNull
-        assertThat(loginAttemptService.getLoginAttempts(false)).isNotNull
+        assertThat(loginAttemptService.loginAttempts(true)).isNotNull
+        assertThat(loginAttemptService.loginAttempts(false)).isNotNull
 
         assertThat(userService).isNotNull
-        assertThat(userService.getUsername()).isNotNull
+        assertThat(userService.username()).isNotNull
         assertThat(userService.isAuthenticated()).isNotNull
-        assertThat(userService.getAuthoritiesRoles()).isNotNull
-        assertThat(userService.getUserRoles().count() > 0)
+        assertThat(userService.authoritiesRoles()).isNotNull
+        assertThat(userService.userRoles().count() > 0)
         assertThat(userService.loadUserByUsername("lhs")).isNotNull
         assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
 

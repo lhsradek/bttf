@@ -68,7 +68,7 @@ public class OpenApiConfig {
             .info(
                 Info().title(API)
                     .description("Back to the Future API")
-                    .version(statusController.getImplementationVersion())
+                    .version(statusController.implementationVersion())
                     .termsOfService("/bttf")
                     .contact(
                         Contact()

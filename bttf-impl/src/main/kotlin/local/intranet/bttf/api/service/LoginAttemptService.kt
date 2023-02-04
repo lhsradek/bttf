@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service
  * {@link LoggingAttemptService} for
  * {@link local.intranet.bttf.BttfApplication} and
  * {@link local.intranet.bttf.api.controller.InfoController#getLoginAttempts}
+ * <p>
+ * I also write &#64;Autowired, although it is optional. Here it strikes me that something is different.
+ * The variable loginAttempt is initialized in &#64;PostConstruct public fun init().
+ * Similarly, I write an optional "public".
+ * Without "public" or "protected" it, one wonders if something is missing for example in JavaDoc
  *
  * @author Radek Kádner
  *
@@ -49,12 +54,12 @@ public class LoginAttemptService {
 
     /**
      *
-     * Get attempts for {@link local.intranet.bttf.api.controller.InfoController#getLoginAttempts}
+     * Get attempts for {@link local.intranet.bttf.api.controller.InfoController#loginAttempts}
      *
      * @param printBlocked {@link Boolean}
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
      */
-    public fun getLoginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
+    public fun loginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
         // val ret = loginAttempt.getCache(printBlocked)
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret

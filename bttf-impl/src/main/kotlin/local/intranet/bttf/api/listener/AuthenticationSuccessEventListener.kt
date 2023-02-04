@@ -36,7 +36,7 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
      * Application event listener
      */
     public override fun onApplicationEvent(e: AuthenticationSuccessEvent) {
-        val ip = statusController.getClientIP()
+        val ip = statusController.clientIP()
         loginAttemptService.loginSucceeded(ip)
         val arr = mutableListOf<String>()
         e.authentication?.let {
