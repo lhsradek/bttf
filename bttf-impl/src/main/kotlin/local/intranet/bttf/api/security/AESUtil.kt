@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.security.spec.InvalidKeySpecException
 import java.util.Base64
+import java.util.Locale
 
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
@@ -20,6 +21,7 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 import org.springframework.security.crypto.codec.Hex
+import org.springframework.util.StringUtils
 
 /**
  *
@@ -99,7 +101,7 @@ public class AESUtil {
             InvalidKeyException::class, BadPaddingException::class, IllegalBlockSizeException::class
         )
         public fun decrypt(cipherText: String, key: SecretKey, iv: IvParameterSpec): String {
-            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding".toUpperCase())
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding".uppercase(Locale.US))
             cipher.init(Cipher.DECRYPT_MODE, key, iv)
             return String(cipher.doFinal(Base64.getDecoder().decode(cipherText)))
         }
@@ -198,7 +200,7 @@ public class AESUtil {
          *
          * Get plain text from hex
          *
-         * @param data as hex
+         * @param data String as hex
          * @return plain text
          */
         @JvmStatic

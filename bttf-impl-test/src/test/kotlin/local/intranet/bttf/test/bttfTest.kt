@@ -15,12 +15,8 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
-// import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-// import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.test.context.junit4.SpringRunner
-// import org.springframework.transaction.annotation.Transactional
-// import org.springframework.transaction.annotation.Propagation
 
 /**
  *
@@ -31,15 +27,12 @@ import org.springframework.test.context.junit4.SpringRunner
  */
 
 @RunWith(SpringRunner::class)
-// @DataJpaTest
 @SpringBootTest
 public class bttfTest {
 
     @Value("\${bttf.sec.key}")
     private lateinit var key: String
 
-    // @Autowired lateinit var entityManager: TestEntityManager
-            
     @Autowired
     private lateinit var statusController: StatusController
 
@@ -58,7 +51,6 @@ public class bttfTest {
      *
      */
     @Test
-    // @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public fun givenTest() {
         assertThat(statusController).isNotNull
         assertThat(statusController.getPlainStatus()).isNotBlank
@@ -109,5 +101,13 @@ public class bttfTest {
         )
 
     }
+    
+// import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+// import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+// import org.springframework.transaction.annotation.Transactional
+// import org.springframework.transaction.annotation.Propagation
+// @DataJpaTest
+// @Autowired lateinit var entityManager: TestEntityManager
+// @Transactional(propagation = Propagation.NOT_SUPPORTED)
 
 }

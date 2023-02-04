@@ -14,7 +14,7 @@
 -- DROP SEQUENCE logging_event_id_seq;
 
 
-CREATE SEQUENCE logging_event_id_seq MINVALUE 1 START 1;
+CREATE SEQUENCE logging_event_id_seq MINVALUE 1;
 
 
 CREATE TABLE logging_event 

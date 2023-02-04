@@ -1,29 +1,31 @@
---
 -- BttfApplication 3.14.15 Flyway script 
 --
 -- This SQL script creates the required tables
 
------ SEQUENCE hibernate_sequence -----
+----- SEQUENCE revinfo_seq -----
 
-CREATE SEQUENCE hibernate_sequence MINVALUE 1 START 1;
+CREATE SEQUENCE revinfo_seq MINVALUE 1;
+
+----- SEQUENCE bttf_counter_seq -----
+
+CREATE SEQUENCE bttf_counter_seq MINVALUE 1;
+
 
 ----- TABLE revinfo -----
 
 CREATE TABLE revinfo (
-    rev BIGINT IDENTITY NOT NULL,
-    revtstmp BIGINT,
-    CONSTRAINT primary_key_revinfo PRIMARY KEY (rev)
+    rev BIGINT DEFAULT nextval('revinfo_seq') PRIMARY KEY,
+    revtstmp BIGINT
 );
 
 ----- TABLE bttf_counter -----
 
 CREATE TABLE bttf_counter (
-    id BIGINT IDENTITY NOT NULL,
+    id BIGINT DEFAULT nextval('bttf_counter_seq') PRIMARY KEY,
     counter_name VARCHAR(255) NOT NULL,
     cnt BIGINT, 
     timestmp BIGINT, 
     status VARCHAR(16) NOT NULL,
-    CONSTRAINT primary_key_counter PRIMARY KEY (id),
     CONSTRAINT counter_name_uk UNIQUE (counter_name)
 );
 
@@ -50,7 +52,7 @@ CREATE INDEX key_bttf_counter_a_rev ON bttf_counter_a (rev);
 ----- TABLE bttf_role -----
 
 CREATE TABLE bttf_role (
-  id BIGINT IDENTITY NOT NULL,
+  id BIGINT NOT NULL,
   role_name CHARACTER VARYING(255) NOT NULL,
   enabled BOOLEAN,
   CONSTRAINT primary_key_role PRIMARY KEY (id),
@@ -60,7 +62,7 @@ CREATE TABLE bttf_role (
 ----- TABLE bttf_user -----
 
 CREATE TABLE bttf_user (
-  id BIGINT IDENTITY NOT NULL,
+  id BIGINT NOT NULL,
   user_name CHARACTER VARYING(255) NOT NULL,
   password CHARACTER VARYING(255) NOT NULL,
   account_non_expired BOOLEAN,

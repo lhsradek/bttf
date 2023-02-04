@@ -67,6 +67,7 @@ public class BttfService {
                     is InvalidAlgorithmParameterException,
                     is BadPaddingException,
                     is IllegalBlockSizeException -> {
+                        // A disguised exception
                         e.message?.let {
                             throw BttfException(e.message!!, e)
                         } ?: run {

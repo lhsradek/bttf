@@ -1,21 +1,20 @@
-package local.intranet.bttf.api.security;
+package local.intranet.bttf.api.security
 
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.service.UserService
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -36,6 +35,9 @@ import org.springframework.web.filter.CorsFilter
  * https://www.baeldung.com/spring-security-login <br>
  * https://www.baeldung.com/spring-security-logout <br>
  * https://stackoverflow.com/questions/24057040/content-security-policy-spring-security
+ * https://docs.spring.io/spring-security/reference/servlet/configuration/kotlin.html
+ * https://www.baeldung.com/kotlin/spring-security-dsl
+ *
  *
  * @author Radek Kádner
  *
@@ -48,7 +50,7 @@ import org.springframework.web.filter.CorsFilter
     // jsr250Enabled = true,
     prePostEnabled = true
 )
-public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityConfigurerAdapter() {
+public class SecurityConfig {
 
     @Value("#{'\${bttf.app.authenticated}'.split('\\s{1,}')}")
     private lateinit var authenticated: List<String>
@@ -77,7 +79,7 @@ public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityCon
         val ret = CorsFilter(source)
         return ret
     }
-
+    
     /**
      *
      * Create AuthenticationManager
@@ -88,15 +90,18 @@ public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityCon
      * @throws {@link BttfException}
      */
     @Bean
-    @Throws(BttfException::class)
-    override public fun authenticationManagerBean(): AuthenticationManager {
+    @Primary
+    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
         try {
-            val ret: AuthenticationManager = super.authenticationManagerBean()
+            val ret: AuthenticationManager = authenticationConfiguration.authenticationManager
             return ret
         } catch (e: Exception) {
-            if (e.message == null) throw BttfException(
-                e::class.java.simpleName + " " + BttfConst.ERROR_ACCOUNT_EXPIRED)
-            else throw BttfException(e.message!!)
+            // A disguised exception
+            e.message?.let {
+                throw BttfException(e.message!!)
+            } ?: throw BttfException(
+                e::class.java.simpleName + " " + BttfConst.ERROR_ACCOUNT_EXPIRED
+            )
         }
     }
 
@@ -120,7 +125,7 @@ public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityCon
      * @throws {@link Exception}
      */
     @Throws(Exception::class)
-    override public fun configure(auth: AuthenticationManagerBuilder) {
+    public fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
     }
 
@@ -132,10 +137,12 @@ public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityCon
      * {@link javax.servlet.http.HttpSession}.
      *
      * @param http {@link HttpSecurity}
+     * @return http.build()
      * @throws {@link Exception}
      */
-    @Throws(Exception::class)
-    override public fun configure(http: HttpSecurity) {
+    @Bean
+    @Throws(BttfException::class)
+    public fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.cors().and().csrf().disable()
             .authorizeRequests { authorizeRequests ->
                 permitAll.filter { it.length > 0 }
@@ -162,6 +169,7 @@ public class SecurityConfig : WebSecurityConfigurer<WebSecurity>, WebSecurityCon
             .invalidateHttpSession(true).deleteCookies("JSESSIONID").and().sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.ALWAYS).sessionFixation().migrateSession()
             .maximumSessions(1)
+        return http.build()
     }
 
 }
