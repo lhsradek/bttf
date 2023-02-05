@@ -30,10 +30,11 @@ public class AuditorAwareImpl : AuditorAware<String> {
         val ret: Optional<String>
         val authentication = SecurityContextHolder.getContext().authentication
         if (SecurityContextHolder.getContext().authentication != null && authentication.isAuthenticated()) {
-            ret = Optional.ofNullable(authentication.principal as String)
+            ret = Optional.ofNullable(SecurityContextHolder.getContext().authentication.name)
         } else {
             ret = Optional.empty()
         }
+        
         if (dbg.toBoolean()) log.debug("{}", ret)
         return ret
     }

@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.redis
 
+import java.time.Duration
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -51,12 +52,12 @@ public class RedisConfig {
     @Bean
     public fun jedisConnectionFactory(): JedisConnectionFactory {
         val ret = JedisConnectionFactory()
-        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setPassword(password) }
-        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setDatabase(database.toInt()) }
-        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setHostName(host) }
-        ret.standaloneConfiguration?.let { ret.standaloneConfiguration?.setPort(port.toInt()) }
-        @Suppress("DEPRECATION")
-        ret.clientConfiguration.getPoolConfig().get().setMaxWaitMillis(timeout.toLong())
+        ret.standaloneConfiguration?.let {
+            ret.standaloneConfiguration?.setPassword(password)
+            ret.standaloneConfiguration?.setDatabase(database.toInt())
+            ret.standaloneConfiguration?.setHostName(host)
+            ret.clientConfiguration.getPoolConfig().get().setMaxWait(Duration.ofSeconds(timeout.toLong()))
+        }
         return ret
     }
 
