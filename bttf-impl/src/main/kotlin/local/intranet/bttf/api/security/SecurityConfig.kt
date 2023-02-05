@@ -133,11 +133,11 @@ public class SecurityConfig {
      *
      * Configure {@link HttpSecurity}
      * <p>
-     * {@link local.intranet.bttf.api.security.LogoutSuccess} invalidates
+     * {@link local.intranet.bttf.api.listener.LogoutSuccess} invalidates
      * {@link javax.servlet.http.HttpSession}.
      *
      * @param http {@link HttpSecurity}
-     * @return http.build()
+     * @return {@link SecurityFilterChain}
      * @throws {@link Exception}
      */
     @Bean
