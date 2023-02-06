@@ -39,7 +39,7 @@ services:
       - ./application/html:/var/www/html:ro
       - ./extras/nginx/default-https.conf:/etc/nginx/conf.d/default.conf:ro
       - ./logs/bttf-nginx:/var/log/nginx
-      - adminer:/var/www/html/ad
+      - adminer:/var/www/html/ad:rw
     networks:
       # for traefik:
       - default
@@ -84,8 +84,8 @@ services:
       - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
       - ELASTIC_APM_JAR=${ELASTIC_APM_JAR}
     volumes:
-      - ./certs/${TOMBOLA_CERTNAME}.crt:/usr/local/tomcat/conf/localhost.pem:ro
-      - ./certs/${TOMBOLA_CERTNAME}.key:/usr/local/tomcat/conf/localhost-key.pem:ro
+      - ./certs/${BTTF_CERTNAME}.crt:/usr/local/tomcat/conf/localhost.pem:ro
+      - ./certs/${BTTF_CERTNAME}.key:/usr/local/tomcat/conf/localhost-key.pem:ro
       - ./extras/usr/local/tomcat/webapps:/usr/local/tomcat/webapps
       - ./extras/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml:ro
       - ./extras/usr/local/tomcat/conf/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml:ro
