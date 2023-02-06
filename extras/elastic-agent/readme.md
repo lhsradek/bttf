@@ -6,7 +6,7 @@ elastic-apm-agent-*.jar is so larg
 
 Because versioning is prohibited. Se here
 
-https://github.com/lhsradek/platypus-lhsdock/blob/main/.gitignore
+https://github.com/lhsradek/bttf/blob/main/.gitignore
 
 Now in .env is:
 
