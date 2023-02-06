@@ -2,6 +2,6 @@
 bttf-app/target/
 bttf-aggregator/bttf.war
 certs/
-extras/elastic-agent/elastic-apm-agent-1.35.0.jar
+extras/elastic-agent/elastic-apm-agent-1.36.0.jar
 logs
 

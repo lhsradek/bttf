@@ -276,7 +276,7 @@ JAVA_OPTS="$JAVA_OPTS -Djava.protocol.handler.pkgs=org.apache.catalina.webresour
 JAVA_OPTS="$JAVA_OPTS -Xms400m" # by lhs
 JAVA_OPTS="$JAVA_OPTS -Xmx400m" # by lhs
 
-CATALINA_OPTS="$CATALINA_OPTS -javaagent:/usr/local/tomcat/lib/elastic-apm-agent-1.35.0.jar"
+CATALINA_OPTS="$CATALINA_OPTS -javaagent:/usr/local/tomcat/lib/$ELASTIC_APM_JAR"
 CATALINA_OPTS="$CATALINA_OPTS -Delastic.apm.environment=$ELASTIC_APM_ENVIRONMENT"
 CATALINA_OPTS="$CATALINA_OPTS -Delastic.apm.service_name=$ELASTIC_APM_SERVICE_NAME"
 CATALINA_OPTS="$CATALINA_OPTS -Delastic.apm.service_node_name=$ELASTIC_APM_SERVICE_NODE_NAME"

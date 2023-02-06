@@ -82,6 +82,7 @@ services:
       - ELASTIC_APM_SERVICE_NAME=${APP_NICK}-${APP_ID}
       - ELASTIC_APM_SERVICE_NODE_NAME=bttf.${APP_HOST}
       - ELASTIC_APM_API_KEY=${ELASTIC_APM_API_KEY}
+      - ELASTIC_APM_JAR=${ELASTIC_APM_JAR}
     volumes:
       - ./certs/${TOMBOLA_CERTNAME}.crt:/usr/local/tomcat/conf/localhost.pem:ro
       - ./certs/${TOMBOLA_CERTNAME}.key:/usr/local/tomcat/conf/localhost-key.pem:ro
@@ -90,7 +91,7 @@ services:
       - ./extras/usr/local/tomcat/conf/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml:ro
       - ./extras/usr/local/tomcat/conf/web.xml:/usr/local/tomcat/conf/web.xml:ro
       - ./extras/usr/local/tomcat/bin/catalina.sh:/usr/local/tomcat/bin/catalina.sh:ro
-      - ./extras/elastic-agent/elastic-apm-agent-1.35.0.jar:/usr/local/tomcat/lib/elastic-apm-agent-1.35.0.jar
+      - ./extras/elastic-agent/${ELASTIC_APM_JAR}:/usr/local/tomcat/lib/${ELASTIC_APM_JAR}
       - ./logs/bttf-tomcat:/usr/local/tomcat/logs
     labels:
       - "traefik.enable=true"
