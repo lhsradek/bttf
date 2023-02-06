@@ -6,7 +6,6 @@ import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.model.entity.Counter
 import local.intranet.bttf.api.model.repository.CounterRepository
-import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.content.Provider
 import org.jetbrains.annotations.NotNull
@@ -32,12 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 public class JobService {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Autowired
-    private lateinit var statusController: StatusController
 
     @Autowired
     private lateinit var counterRepository: CounterRepository
@@ -175,8 +168,7 @@ public class JobService {
             break // the first is enough for openAPI info
         }
         // If RevisionType it's DEL, it wasn't in the for cycle
-        log.debug("CounterAudit username:'{}' ip:{} sessionId:{} ret:{}", userService.username(),
-                    statusController.clientIP(), statusController.sessionId(), ret)
+        log.debug("CounterAudit username:'{}' ret:{}",  ret)
         return ret
     }
 

@@ -8,6 +8,7 @@ import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.stereotype.Component
@@ -27,6 +28,9 @@ public class BttfJob : Job {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    @Value("\${bttf.app.redis.message:false}")
+    private lateinit var message: String // toBoolean
+    
     @Autowired
     private lateinit var jobService: JobService
 
@@ -45,8 +49,11 @@ public class BttfJob : Job {
     public override fun execute(context: JobExecutionContext) {
         jobService.incrementCounter()
         loginAttemptService.flushCache()
+        
         // Redis as a message broker
-        redisMessagePublisher.publish("Fired:${context.jobDetail.key.name} count:${jobService.countValue()}")
+        if (message.toBoolean()) {
+        	redisMessagePublisher.publish("Fired:${context.jobDetail.key.name} count:${jobService.countValue()}")
+        }
     }
 
 }
