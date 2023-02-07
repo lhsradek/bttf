@@ -10,6 +10,10 @@ CREATE SEQUENCE revinfo_seq MINVALUE 1;
 
 CREATE SEQUENCE bttf_counter_seq MINVALUE 1;
 
+----- SEQUENCE bttf_message_seq -----
+
+CREATE SEQUENCE bttf_message_seq MINVALUE 1;
+
 
 ----- TABLE revinfo -----
 
@@ -46,6 +50,35 @@ CREATE TABLE bttf_counter_a (
     CONSTRAINT primary_bttf_counter_a PRIMARY KEY (id, rev)
 );
 CREATE INDEX key_bttf_counter_a_rev ON bttf_counter_a (rev);
+
+
+----- TABLE bttf_message -----
+
+CREATE TABLE bttf_message (
+    id BIGINT DEFAULT nextval('bttf_message_seq') PRIMARY KEY,
+    uuid VARCHAR(255) NOT NULL,
+    service_name VARCHAR(255) NOT NULL,
+    cnt BIGINT, 
+    timestmp BIGINT, 
+    message VARCHAR(255) NOT NULL,
+    CONSTRAINT uuid_uk UNIQUE (uuid)
+);
+
+----- TABLE bttf_message_a -----
+
+CREATE TABLE bttf_message_a (
+    id BIGINT NOT NULL,
+    rev BIGINT REFERENCES revinfo (rev),
+    revtype TINYINT,
+    uuid VARCHAR(255) NULL,
+    uuid_m BOOLEAN,
+    cnt BIGINT NULL,
+    cnt_m BOOLEAN,
+    timestmp BIGINT NULL,
+    timestmp_m BOOLEAN,
+    CONSTRAINT primary_bttf_message_a PRIMARY KEY (id, rev)
+);
+CREATE INDEX key_bttf_message_a_rev ON bttf_message_a (rev);
 
 
 
@@ -104,7 +137,7 @@ CREATE VIEW bttf_counter_view AS SELECT
 FROM bttf_counter ORDER BY id;
   
 
------ VIEW index_counter_a_view -----
+----- VIEW bttf_counter_a_view -----
 
 CREATE VIEW bttf_counter_a_view AS SELECT
     TO_CHAR(DATEADD('SECOND', (3600 * RIGHT(CAST(CURRENT_TIMESTAMP AS TIMESTAMP WITH TIME ZONE), 2) + revtstmp / 1000),
@@ -117,6 +150,4 @@ CREATE VIEW bttf_counter_a_view AS SELECT
         TO_CHAR(DATEADD('SECOND', (3600 * RIGHT(CAST(CURRENT_TIMESTAMP AS TIMESTAMP WITH TIME ZONE), 2) + a.timestmp / 1000),
         DATE '1970-01-01'), 'YYYY-MM-DD HH24:MI:SS') ELSE '' END date
 FROM bttf_counter_a a, revinfo r WHERE a.rev = r.rev ORDER BY revtstmp, id, rev;
-
-
 

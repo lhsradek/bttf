@@ -3,7 +3,10 @@ package local.intranet.bttf.api.info
 import java.time.ZonedDateTime
 import javax.validation.constraints.Size
 import local.intranet.bttf.api.domain.type.StatusType
+import local.intranet.bttf.api.domain.Countable
 import local.intranet.bttf.api.domain.DefaultFieldLengths
+import local.intranet.bttf.api.domain.Invocationable
+import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.model.repository.CounterRepository
 import local.intranet.bttf.api.service.JobService
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -30,18 +33,15 @@ import org.hibernate.envers.RevisionType
  * @param revisionType   {@RevisionType}
  */
 @JsonPropertyOrder("name", "count", "date", "status", "revisionNum", "revisionType")
-public data class CounterInfo(
+public data class CounterInfo constructor(
 
-    @JsonProperty("count")
-    @Size(min = 0)
     public val count: Long,
 
-    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val date: ZonedDateTime,
 
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public val status: StatusType,
+    public val statusType: StatusType,
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -54,4 +54,25 @@ public data class CounterInfo(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Size(min = 0)
     public val revisionType: RevisionType
-)
+
+)  : Countable, Invocationable, Statusable {
+    
+    // @JsonProperty("count")
+    // @Size(min = 0)
+    public override fun countValue(): Long {
+    	return count
+    }
+    
+    // @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
+    // @JsonInclude(JsonInclude.Include.NON_NULL)
+    public override fun lastInvocation(): ZonedDateTime {
+        return date
+    }
+
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public override fun getStatus(): StatusType {
+        return statusType
+    }
+
+}

@@ -31,11 +31,11 @@ public class RedisMessageSubscriber : MessageListener {
     public override fun onMessage(message: Message, pattern: ByteArray?) {
         pattern?.let {
             log.info(
-                "[message:{} uuid:{} pattern:{}]",
+                "[message:{} redis.subscriber.uuid:{} pattern:{}]",
                 message.toString(), UUID.randomUUID(), String(pattern)
             )
         } ?: log.info(
-            "[message:{} uuid:{}]", message.toString(), UUID.randomUUID()
+            "[message:{} redis.subscriber.uuid:{}]", message.toString(), UUID.randomUUID()
         )
     }
 }

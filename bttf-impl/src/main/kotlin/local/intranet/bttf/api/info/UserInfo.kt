@@ -123,5 +123,5 @@ public data class UserInfo (
         return "UserInfo [username=" + username + ", password=" + BttfConst.STATUS_PROTECTED +
                 ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
     }
-
+    
 }

@@ -48,6 +48,37 @@ CREATE TABLE `bttf_counter_a` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
+----- TABLE bttf_message -----
+
+CREATE TABLE `bttf_messgae` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `uuid` VARCHAR(255) DEFAULT NULL,
+    `sertvice_name` VARCHAR(255) DEFAULT NULL,
+    `cnt` BIGINT(20) DEFAULT NULL,
+    `timestmp` BIGINT(20) DEFAULT NULL,
+    `message` VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `bttf_uuid_uk` (`uuid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+----- TABLE bttf_message_a -----
+
+CREATE TABLE `bttf_message_a` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `rev` BIGINT(20) REFERENCES revinfo (rev),
+    `revtype` TINYINT(4) DEFAULT NULL,
+    `uuid` VARCHAR(16) DEFAULT NULL,
+    `uuid_m` BIT(1) DEFAULT NULL,
+    `cnt` BIGINT(20) DEFAULT NULL,
+    `cnt_m` BIT(1) DEFAULT NULL,
+    `timestmp` BIGINT(20) DEFAULT NULL,
+    `timestmp_m` BIT(1) DEFAULT NULL,
+    PRIMARY KEY (`id`,`rev`),
+    CONSTRAINT `bttf_message_a_rev` FOREIGN KEY (`rev`) REFERENCES `revinfo` (`rev`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
 ----- TABLE bttf_role -----
 
 CREATE TABLE `bttf_role` (

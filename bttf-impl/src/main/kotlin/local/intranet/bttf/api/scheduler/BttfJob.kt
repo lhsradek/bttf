@@ -28,8 +28,8 @@ public class BttfJob : Job {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.redis.message:false}")
-    private lateinit var message: String // toBoolean
+    @Value("\${bttf.app.redis.message}")
+    private lateinit var isMessage: String // toBoolean
     
     @Autowired
     private lateinit var jobService: JobService
@@ -47,12 +47,15 @@ public class BttfJob : Job {
      */
     @Throws(JobExecutionException::class)
     public override fun execute(context: JobExecutionContext) {
-        jobService.incrementCounter()
+        
         loginAttemptService.flushCache()
         
+        val counterInfo = jobService.incrementCounter()
+        val message = "Fired:${context.jobDetail.key.name} count:${counterInfo.countValue()}"
+        val messageEvent = jobService.sendMessage(message)
         // Redis as a message broker
-        if (message.toBoolean()) {
-        	redisMessagePublisher.publish("Fired:${context.jobDetail.key.name} count:${jobService.countValue()}")
+        if (isMessage.toBoolean()) {
+        	redisMessagePublisher.publish("$message message.event.uuid:${messageEvent.uuid}")
         }
     }
 

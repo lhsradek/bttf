@@ -1,11 +1,17 @@
 package local.intranet.bttf.api.service
 
+import java.util.UUID
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import local.intranet.bttf.api.domain.Invocationable
+import local.intranet.bttf.api.domain.Statusable
+import local.intranet.bttf.api.domain.Countable
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.model.entity.Counter
+import local.intranet.bttf.api.model.entity.MessageEvent
 import local.intranet.bttf.api.model.repository.CounterRepository
+import local.intranet.bttf.api.model.repository.MessageEventRepository
 import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.content.Provider
 import org.jetbrains.annotations.NotNull
@@ -28,13 +34,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
  */
 @Service
 @ConditionalOnExpression("\${scheduler.enabled}")
-public class JobService {
+public class JobService : Countable, Invocationable, Statusable {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Autowired
     private lateinit var counterRepository: CounterRepository
 
+    @Autowired
+    private lateinit var messageEventRepository: MessageEventRepository
+    
     @Autowired
     private lateinit var provider: Provider
 
@@ -60,6 +69,19 @@ public class JobService {
             StatusType.NONE, javaClass.simpleName, 0, RevisionType.DEL // If it's DEL, it wasn't in getCounterAudit 
         )
         return ret
+    }
+
+    /**
+     *
+     * Send Message
+     *
+     * @return {@link StatusType}
+     */
+    @Transactional // write new message
+    public fun sendMessage(message: String): MessageEvent {
+        return messageEventRepository.save(MessageEvent(
+            null, UUID.randomUUID().toString(), javaClass.simpleName, 0, System.currentTimeMillis(), message
+        ))
     }
 
     /**
@@ -101,7 +123,7 @@ public class JobService {
      * @return number of invocations from count
      */
     @Transactional(readOnly = true)
-    public fun countValue(): Long {
+    public override fun countValue(): Long {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             counter.cnt
@@ -116,7 +138,7 @@ public class JobService {
      * @return lastInvocation
      */
     @Transactional(readOnly = true)
-    public fun lastInvocation(): ZonedDateTime {
+    public override fun lastInvocation(): ZonedDateTime {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             ZonedDateTime.ofInstant(Instant.ofEpochMilli(counter.timestmp), ZoneId.systemDefault())
@@ -131,7 +153,7 @@ public class JobService {
      * @return {@link StatusType}
      */
     @Transactional(readOnly = true)
-    public fun getStatus(): StatusType {
+    public override fun getStatus(): StatusType {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             StatusType.valueOf(counter.status)
@@ -168,7 +190,7 @@ public class JobService {
             break // the first is enough for openAPI info
         }
         // If RevisionType it's DEL, it wasn't in the for cycle
-        log.debug("CounterAudit username:'{}' ret:{}",  ret)
+        log.debug("CounterAudit ret:{}",  ret)
         return ret
     }
 
