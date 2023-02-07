@@ -10,6 +10,7 @@ import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
+import local.intranet.bttf.api.model.entity.MessageEvent
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
@@ -19,6 +20,9 @@ import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.http.MediaType
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -158,14 +162,14 @@ public class InfoController {
      * Used {@link local.intranet.bttf.api.service.JobService#jobInfo}.
      * <p>
      *
-     * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
+     * @return {@link CounterInfo}
      */
     @GetMapping(value = arrayOf("/job"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "jobInfo",
         summary = "Job Info",
         description = "Get Job Info\n\n"
-                + "This method is calling JobService.getJobInfo\n\n",
+                + "This method is calling JobService.jobInfo\n\n",
         // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
         // + "jobInfo()\" target=\"_blank\">InfoController.jobInfo</a>",
         tags = arrayOf(BttfConst.INFO_TAG)
@@ -176,6 +180,42 @@ public class InfoController {
         return jobService.jobInfo()
     }
 
+    /**
+     *
+     * Job message information
+     * <p>
+     * Accessible to the
+     * <br>
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.JobService#messageInfo}.
+     * <p>
+     *
+     * @param page {@link Int}
+     * @param size {@link Int}
+     * @return {@link Page}&lt;{@link MessageEvent}&gt;
+     */
+    @GetMapping(value = arrayOf("/job/message/page/{page}/size/{size}"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @Operation(
+    		operationId = "MessageInfo",
+    		summary = "Job Message Info",
+    		description = "Get Job Message Info\n\n"
+    				+ "This method is calling JobService.messageInfo\n\n",
+    				// + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+    				// + "messageInfo()\" target=\"_blank\">InfoController.messageInfo</a>",
+    				tags = arrayOf(BttfConst.INFO_TAG)
+    		)
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    @ConditionalOnExpression("\${scheduler.enabled}")
+    public fun jobMessageInfo(
+        @PathVariable @Parameter(
+            allowEmptyValue = true, example = "0", description = "Zero-based page index (0..N)") page :Int,
+        @PathVariable @Parameter(
+            example = "20", description = "The size of the page to be returned") size: Int) : Page<MessageEvent> {
+    	return jobService.messageInfo(page, size)
+    }
+    
     /**
      *
      * Get attempts

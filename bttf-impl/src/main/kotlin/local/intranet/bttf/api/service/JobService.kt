@@ -21,6 +21,8 @@ import org.hibernate.envers.query.AuditEntity
 import org.hibernate.envers.query.AuditQuery
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
@@ -71,6 +73,30 @@ public class JobService : Countable, Invocationable, Statusable {
         return ret
     }
 
+    /**
+     *
+     * For {@link local.intranet.bttf.api.controller.InfoController#messageInfo}
+     *
+     * @return {@link CounterInfo}
+     */
+    @Transactional(readOnly = true)
+    public fun messageInfo(page: Int, size: Int): Page<MessageEvent> {
+    	val ret = messageEventRepository.findByName(PageRequest.of(page, size), javaClass.simpleName)
+		return ret
+    }
+    
+    /**
+     *
+     * For {@link local.intranet.bttf.api.controller.InfoController#messageInfo}
+     *
+     * @return {@link CounterInfo}
+     */
+    @Transactional(readOnly = true)
+    public fun messageByUuid(uuid: String): MessageEvent {
+    	val ret = messageEventRepository.findByUuid(uuid)
+		return ret
+    }
+    
     /**
      *
      * Send Message
