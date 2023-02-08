@@ -11,7 +11,7 @@
   <div th:class="'content'">
     <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>
     <div th:class="'content-middle'">
-      <div th:class="'top'">
+      <div th:class="'top'" th:with="now=${T(local.intranet.bttf.api.service.BttfService).secForPlayer(now.year, secretKey, secretIv)}">
         <h2><span>
           <th:block th:text="'Back to the Future'"/>
           <small th:utext="'\'' + ${stage} + '\' on '"/>
@@ -26,8 +26,12 @@
           <small><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
           <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
+          <form th:action="@{|/play/year/${now}|}" method="post">
+          <input th:class="'submit'" type="submit" th:value="'Now'"/>
+          </form>
         <div th:align="'center'">
-          <h3 th:text="'You are in ' + ${#temporals.format(time, 'yyyy')}"/>
+          <h3><span><th:block th:text="'You are in ' + ${#temporals.format(time, 'yyyy')}"/>
+          </span></h3>
         </div>
       </div>
     </div>
@@ -40,6 +44,8 @@
 <form th:action="@{|/play/year/${past}|}" method="post">
 <input th:class="'submit'" type="submit" th:value="'Past'"/>
 </form>        
+          <br/>
+          <img th:src="@{/res/My_cork_badtub_is_like_your_giraffe_rye.png}" th:width="'400px'" th:height="'400px'" th:class="'borderoff'"/>
         </div>
         <div th:class="'content-column-right'" th:align="'left'" th:with="future=${T(local.intranet.bttf.api.service.BttfService).secForPlayer(1L + time.year, secretKey, secretIv)}">
         <h2><span>
@@ -47,7 +53,9 @@
         </span></h2>
 <form th:action="@{|/play/year/${future}|}" method="post">
 <input th:class="'submit'" type="submit" th:value="'Future'"/>
-</form>        
+</form>
+          <br/>
+          <img th:src="@{/res/Your_banana_eye_is_like_a_grandfather_in_the_closet.png}" th:width="'400px'" th:height="'400px'" th:class="'borderoff'"/>
         </div>
       </div>
     </div>
