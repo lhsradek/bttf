@@ -197,7 +197,7 @@ public class JobService : Countable, Invocationable, Statusable {
             break // the first is enough for openAPI info
         }
         // If RevisionType it's DEL, it wasn't in the for cycle
-        log.debug("CounterAudit counterId:{} ret:{}", counterId, ret)
+        // log.debug("CounterAudit counterId:{} ret:{}", counterId, ret)
         return ret
     }
 

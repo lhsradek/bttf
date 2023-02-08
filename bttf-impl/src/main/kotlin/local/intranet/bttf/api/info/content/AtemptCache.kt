@@ -29,18 +29,26 @@ public class AttemptCache() : LoginCache {
      */
     public override fun getById(@NotNull key: String): Int? {
         val timedEntry = hashMap[key]
-        if (timedEntry == null || timedEntry.isExpired()) {
-            return null
+        val ret: Int? = timedEntry?.let {
+            with (timedEntry) {
+            	if (isExpired()) {
+            		null
+                } else {
+                    value
+                }
+            }
         }
-        return timedEntry.value
+        return ret
     }
 
     public override fun keyToCache(@NotNull key: String) {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             timedEntry?.let {
-                timedEntry.value++
-                timedEntry.creationTime = System.currentTimeMillis()
+                with (timedEntry) {
+                	value++
+                	creationTime = System.currentTimeMillis()
+                }
             }
         } else {
             hashMap.put(key, TimedEntry(key, 1, cacheTimeValidityInMillis))
@@ -58,13 +66,15 @@ public class AttemptCache() : LoginCache {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             ret = timedEntry?.let {
-                if (timedEntry.isExpired()) {
-                    invalidateKey(key)
-                    false
-                } else if (timedEntry.value >= maxAtempt) {
-                    true  // is blocked !!!
-                } else {
-                    false
+                with (timedEntry) {
+                    if (isExpired()) {
+                        invalidateKey(key)
+                        false
+                    } else if (value >= maxAtempt) {
+                        true  // is blocked !!!
+                    } else {
+                        false
+                    }
                 }
             } ?: false
         } else {
@@ -109,7 +119,8 @@ public class AttemptCache() : LoginCache {
                 this.printBlocked = printBlocked
                 this.maxAtempt = maxAtempt
             }
-
+        
     }
+    
 }
 

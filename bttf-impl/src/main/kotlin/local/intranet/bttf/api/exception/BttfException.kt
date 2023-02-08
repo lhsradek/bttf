@@ -4,6 +4,8 @@ import java.net.ConnectException
 import org.slf4j.LoggerFactory
 
 /**
+ * It has a harmless exception that I sometimes dress up as some threatening runtime exception.
+ * Which shouldn't be done ;-)
  *
  * {@link BttfException} for
  * {@link local.intranet.bttf.BttfApplication}
@@ -17,12 +19,32 @@ public class BttfException : ConnectException {
     
     /**
      *
+     * Constructor
+     */
+    public constructor() : super() {
+        log.error("${javaClass.simpleName}")
+    }
+
+    /**
+     *
      * Constructor with param
      *
      * @param msg {@link String}
      */
-    public constructor(msg: String) : super(msg)
-
+    public constructor(msg: String) : super(msg) {
+        log.error("${msg}")
+    }
+    
+    /**
+     *
+     * Constructor with param
+     *
+     * @param t   {@link Throwable}
+     */
+    public constructor(t: Throwable) : super() {
+        log.error("${t::class.java.simpleName}")
+    }
+    
     /**
      *
      * Constructor with params
@@ -31,7 +53,7 @@ public class BttfException : ConnectException {
      * @param t   {@link Throwable}
      */
     public constructor(msg: String, t: Throwable) : super(msg) {
-        log.error(msg, t)
+        log.error("${msg} ${t::class.java.simpleName}")
     }
 
 }

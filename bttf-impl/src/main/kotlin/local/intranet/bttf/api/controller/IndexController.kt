@@ -183,6 +183,7 @@ public class IndexController {
             val secretKey = AESUtil.getKeyFromPassword(key, salt)
             model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
             model.addAttribute("implementationVersion", statusController.implementationVersion())
+            model.addAttribute("now", ZonedDateTime.now(ZoneId.systemDefault()))
             model.addAttribute("time", time)
             model.addAttribute("secretIv", iv)
             model.addAttribute("secretKey", secretKey)
