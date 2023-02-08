@@ -9,7 +9,7 @@ import local.intranet.bttf.api.model.entity.MessageEvent
 
 /**
  * 
- * {@link MessageEventRepository} is repository for CRUD with
+ * {@link MessageEventRepository} is repository for JPA with
  * {@link local.intranet.bttf.api.model.entity.MessageEvent}
  * 
  * @author Radek Kádner

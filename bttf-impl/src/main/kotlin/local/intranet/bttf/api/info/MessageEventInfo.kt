@@ -32,7 +32,7 @@ import org.hibernate.envers.RevisionType
  * @param revisionType   {@RevisionType}
  */
 @JsonPropertyOrder("id", "uuid", "name", "count", "date", "uuid", "revisionNum", "revisionType")
-public data class MessageEventInfo constructor(
+public data class MessageEventInfo (
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)

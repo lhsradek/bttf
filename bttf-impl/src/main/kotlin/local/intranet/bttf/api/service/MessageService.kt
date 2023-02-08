@@ -176,8 +176,7 @@ public class MessageService : Countable {
                 ZonedDateTime.ofInstant(Instant.ofEpochMilli(newCnt.timestmp), ZoneId.systemDefault()),
                 StatusType.valueOf(newCnt.status), newCnt.counterName, revisonNum, revisionType
             )
-        } ?: run {
-            with(
+        } ?: with(
                 counterRepository.save(Counter(null, javaClass.simpleName, 1L, System.currentTimeMillis(),
                         StatusType.UP.status))) {
                 CounterInfo(
@@ -188,27 +187,24 @@ public class MessageService : Countable {
                     0,
                     RevisionType.DEL // If it's DEL, it wasn't in getCounterAudit
                 )
-            }
         }
         */
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             with (counter) {
                 val (revisonNum, revisionType) = messageAudit(id)
-                CounterInfo(cnt,
+                CounterInfo(
+                    cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
                     StatusType.valueOf(status), counterName, revisonNum, revisionType)
             }
-        } ?: run {
-            val count = counterRepository.save(
-                Counter(null, javaClass.simpleName, 0, System.currentTimeMillis(),StatusType.UP.status))
-            with (count) {
-                val (revisonNum, revisionType) = messageAudit(id)
-            	CounterInfo(
-            		cnt,
-            		ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-            		StatusType.valueOf(status), counterName, revisonNum, revisionType)
-            }
+        } ?: with (counterRepository.save(
+            Counter(null, javaClass.simpleName, 0, System.currentTimeMillis(),StatusType.UP.status))) {
+            val (revisonNum, revisionType) = messageAudit(id)
+            CounterInfo(
+                cnt,
+                ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
+        		StatusType.valueOf(status), counterName, revisonNum, revisionType)
         }
         // log.debug("GetCounter ret:{}",  ret)
         return ret

@@ -58,7 +58,7 @@ public class BttfService {
         @Throws(BttfException::class)
         public fun secForPlayer(id: Long, secretKey: SecretKey, iv: IvParameterSpec): String {
             try {
-                return AESUtil.setHex(AESUtil.encrypt("$id", secretKey, iv))
+                return AESUtil.setHex(AESUtil.encrypt("${id}", secretKey, iv))
             } catch (e: Exception) {
                 when (e) {
                     is InvalidKeyException,

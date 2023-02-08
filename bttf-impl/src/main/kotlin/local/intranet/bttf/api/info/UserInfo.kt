@@ -36,7 +36,6 @@ import javax.validation.constraints.Size
     "isAccountNonLocked"
 )
 public data class UserInfo (
-    
     private val username: String,
     private val password: String,
     private val isEnabled: Boolean,

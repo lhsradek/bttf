@@ -33,7 +33,7 @@ import org.hibernate.envers.RevisionType
  * @param revisionType   {@RevisionType}
  */
 @JsonPropertyOrder("name", "count", "date", "status", "revisionNum", "revisionType")
-public data class CounterInfo constructor(
+public data class CounterInfo (
 
     public val count: Long,
 

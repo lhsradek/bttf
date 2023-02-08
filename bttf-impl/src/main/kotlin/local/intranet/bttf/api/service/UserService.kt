@@ -139,8 +139,8 @@ public class UserService : UserDetailsService {
                     throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
                 }
             }
-        } ?: run {
-            loginAttemptService.loginFailed(ip)
+        } ?: with (loginAttemptService) {
+            loginFailed(ip)
             throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
         }
     }

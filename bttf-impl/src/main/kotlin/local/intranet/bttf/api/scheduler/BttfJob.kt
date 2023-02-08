@@ -58,16 +58,16 @@ public class BttfJob : Job {
         val message = StringJoiner(BttfConst.BLANK_SPACE)
         message.add("Fired:'${context.jobDetail.key.name}'")
         message.add("message.count:${messageService.countValue()}")
-        val messageEvent = messageService.sendMessage(message.toString())
+        val messageEvent = messageService.sendMessage("${message}")
         jobService.incrementCounter()
         message.add("counter.count:${messageService.countValue()}")
         message.add("message.event.uuid:'${messageEvent.uuid}'")
         
         // Redis as a message broker
         if (isRedis.toBoolean()) {
-        	redisMessagePublisher.publish(message.toString())
+        	redisMessagePublisher.publish("${message}")
         } else {
-            log.info(message.toString())
+            log.info("${message}")
         }
     }
 

@@ -4,8 +4,11 @@ import javax.crypto.spec.IvParameterSpec
 import local.intranet.bttf.api.controller.InfoController
 import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.security.AESUtil
-import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.BttfService
+import local.intranet.bttf.api.service.JobService
+import local.intranet.bttf.api.service.LoginAttemptService
+import local.intranet.bttf.api.service.MessageService
+import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
 
 import org.assertj.core.api.Assertions.assertThat
@@ -34,17 +37,20 @@ public class bttfTest {
     private lateinit var key: String
 
     @Autowired
-    private lateinit var statusController: StatusController
+    private lateinit var infoController: InfoController
 
     @Autowired
-    private lateinit var infoController: InfoController
+    private lateinit var statusController: StatusController
 
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
     
     @Autowired
-    private lateinit var userService: UserService
+    private lateinit var roleService: RoleService
 
+    @Autowired
+    private lateinit var userService: UserService
+    
     /**
      *
      * givenTest
