@@ -8,12 +8,14 @@ import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.LevelCount
+import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.MessageEventInfo
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
-import local.intranet.bttf.api.model.entity.MessageEvent
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
+import local.intranet.bttf.api.service.MessageService
 import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
 import org.jetbrains.annotations.NotNull
@@ -60,12 +62,14 @@ public class InfoController {
     @Autowired(required = false)
     private lateinit var jobService: JobService
 
+    @Autowired(required = false)
+    private lateinit var messageService: MessageService
+
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
-
+    
     @Autowired
     private lateinit var loggingEventService: LoggingEventService
-
 
     /**
      *
@@ -182,38 +186,38 @@ public class InfoController {
 
     /**
      *
-     * Job message information
+     * Message information
      * <p>
      * Accessible to the
      * <br>
      * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
      * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
      * <p>
-     * Used {@link local.intranet.bttf.api.service.JobService#messageInfo}.
+     * Used {@link local.intranet.bttf.api.service.MessageService#messageInfo}.
      * <p>
      *
      * @param page {@link Int}
      * @param size {@link Int}
      * @return {@link Page}&lt;{@link MessageEvent}&gt;
      */
-    @GetMapping(value = arrayOf("/job/message/page/{page}/size/{size}"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @GetMapping(value = arrayOf("/message/page/{page}/size/{size}"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
     		operationId = "MessageInfo",
-    		summary = "Job Message Info",
-    		description = "Get Job Message Info\n\n"
-    				+ "This method is calling JobService.messageInfo\n\n",
+    		summary = "Message Info",
+    		description = "Get Message Info\n\n"
+    				+ "This method is calling MessageService.messageInfo\n\n",
     				// + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
     				// + "messageInfo()\" target=\"_blank\">InfoController.messageInfo</a>",
     				tags = arrayOf(BttfConst.INFO_TAG)
     		)
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    public fun jobMessageInfo(
+    public fun messageInfo(
         @PathVariable @Parameter(
             allowEmptyValue = true, example = "0", description = "Zero-based page index (0..N)") page :Int,
         @PathVariable @Parameter(
-            example = "20", description = "The size of the page to be returned") size: Int) : Page<MessageEvent> {
-    	return jobService.messageInfo(page, size)
+            example = "20", description = "The size of the page to be returned") size: Int) : Page<MessageEventInfo> {
+    	return messageService.messageInfo(page, size)
     }
     
     /**
@@ -274,6 +278,36 @@ public class InfoController {
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     public fun countTotalLoggingEvents(): List<LevelCount> {
         return loggingEventService.countTotalLoggingEvents()
+    }
+
+    /**
+     *
+     * Count Total Message Events
+     * <p>
+     * Accessible to the
+     * <br>
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.MessageService#countTotalMessageEvents}.
+     * <p>
+     *
+     * @return {@link List}&lt;{@link LevelCount}&gt;
+     */
+    @GetMapping(value = arrayOf("/countTotalMessageEvents"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @Operation(
+        operationId = "countTotalMessageEvents",
+        summary = "Total Message Events",
+        description = "Count Total Message Events\n\n"
+                + "This method is calling MessageService.countTotalMessageEvents\n\n",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "countTotalMessageEvents()\" target=\"_blank\">InfoController.countTotalMessageEvents</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    @ConditionalOnExpression("\${scheduler.enabled}")
+    public fun countTotalMessageEvents(): List<MessageCount> {
+        return messageService.countTotalMessageEvents()
     }
 
 }

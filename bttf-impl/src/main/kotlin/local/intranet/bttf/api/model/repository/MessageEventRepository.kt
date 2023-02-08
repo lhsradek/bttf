@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.jpa.repository.JpaRepository
+import local.intranet.bttf.api.info.MessageCount
 import local.intranet.bttf.api.model.entity.MessageEvent
 
 /**
@@ -15,6 +16,18 @@ import local.intranet.bttf.api.model.entity.MessageEvent
  *
  */
 public interface MessageEventRepository : JpaRepository<MessageEvent, Long> {
+
+    /**
+     *
+     * Count total MessageEvents
+     *
+     * @return {@link List}&lt;{@link LevelCount}&gt;
+     */
+    @Query(
+        value = "select new local.intranet.bttf.api.info.MessageCount(u.serviceName, count(u.serviceName)) " +
+                "from MessageEvent u group by u.serviceName order by u.serviceName asc"
+    )
+    public fun countTotalMessageEvents(): List<MessageCount>
 
     /**
      *

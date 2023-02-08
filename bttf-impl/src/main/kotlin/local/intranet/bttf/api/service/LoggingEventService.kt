@@ -7,6 +7,7 @@ import local.intranet.bttf.api.model.repository.LoggingEventRepository
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -19,7 +20,6 @@ import org.springframework.data.jpa.domain.JpaSort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.data.domain.PageImpl
-import org.jetbrains.annotations.NotNull
 
 
 /**
@@ -72,14 +72,14 @@ public class LoggingEventService {
      */
     @Transactional(readOnly = true)
     @Throws(Exception::class)
-    public fun findPageByLevelString(pageable: Pageable, levelString: List<String>): Page<LoggingEventInfo> {
+    public fun findPageByLevelString(pageable: Pageable, messageString: List<String>): Page<LoggingEventInfo> {
         try {
-            val pa: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, levelString)
             val list = mutableListOf<LoggingEventInfo>()
-            pa.forEach {
+            val listPage: Page<LoggingEvent> = loggingEventRepository.findPageByLevelString(pageable, messageString)
+            listPage.forEach {
                 list.add(makeLoggingEventInfo(it))
             }
-            return PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
+            return PageImpl<LoggingEventInfo>(list, pageable, listPage.totalElements)
 
         } catch (e: Exception) {
             // log.error(e.message, e)
@@ -116,13 +116,13 @@ public class LoggingEventService {
             }
             s = s.replace(Direction.ASC.toString(), "").replace(Direction.DESC.toString(), "").replace(":", "").trim()
             val pageable: Pageable = PageRequest.of(page, cnt, JpaSort.unsafe(direction, s.split(" ,")))
-            val pa = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
             val list = mutableListOf<LoggingEventInfo>()
-            pa.forEach {
+            val listPage = loggingEventRepository.findPageByCaller(pageable, callerClass, callerMethod, listOf("INFO"))
+            listPage.forEach {
                 list.add(makeLoggingEventInfo(it))
             }
 
-            return PageImpl<LoggingEventInfo>(list, pageable, pa.totalElements)
+            return PageImpl<LoggingEventInfo>(list, pageable, listPage.totalElements)
 
         } catch (e: Exception) {
             // log.error(e.message, e)

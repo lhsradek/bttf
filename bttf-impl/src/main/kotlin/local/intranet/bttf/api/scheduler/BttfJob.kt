@@ -1,8 +1,11 @@
 package local.intranet.bttf.api.scheduler
 
+import java.util.StringJoiner
+import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.redis.RedisMessagePublisher
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
-import local.intranet.bttf.api.redis.RedisMessagePublisher
+import local.intranet.bttf.api.service.MessageService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
@@ -29,7 +32,7 @@ public class BttfJob : Job {
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Value("\${bttf.app.redis.message}")
-    private lateinit var isMessage: String // toBoolean
+    private lateinit var isRedis: String // toBoolean
     
     @Autowired
     private lateinit var jobService: JobService
@@ -37,6 +40,9 @@ public class BttfJob : Job {
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
 
+    @Autowired
+    private lateinit var messageService: MessageService
+    
     @Autowired
     private lateinit var redisMessagePublisher: RedisMessagePublisher
     
@@ -47,15 +53,21 @@ public class BttfJob : Job {
      */
     @Throws(JobExecutionException::class)
     public override fun execute(context: JobExecutionContext) {
-        
         loginAttemptService.flushCache()
         
-        val counterInfo = jobService.incrementCounter()
-        val message = "Fired:${context.jobDetail.key.name} count:${counterInfo.countValue()}"
-        val messageEvent = jobService.sendMessage(message)
+        val message = StringJoiner(BttfConst.BLANK_SPACE)
+        message.add("Fired:'${context.jobDetail.key.name}'")
+        message.add("message.count:${messageService.countValue()}")
+        val messageEvent = messageService.sendMessage(message.toString())
+        jobService.incrementCounter()
+        message.add("counter.count:${messageService.countValue()}")
+        message.add("message.event.uuid:'${messageEvent.uuid}'")
+        
         // Redis as a message broker
-        if (isMessage.toBoolean()) {
-        	redisMessagePublisher.publish("$message message.event.uuid:${messageEvent.uuid}")
+        if (isRedis.toBoolean()) {
+        	redisMessagePublisher.publish(message.toString())
+        } else {
+            log.info(message.toString())
         }
     }
 

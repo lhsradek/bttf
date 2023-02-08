@@ -46,7 +46,7 @@ public data class MessageEvent(
 
     @Audited
     @Min(0)
-    public var cnt: Int, // var to change
+    public var cnt: Long, // var to change
 
     @Audited
     @Min(0)

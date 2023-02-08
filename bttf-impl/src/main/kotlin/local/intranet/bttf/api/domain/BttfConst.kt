@@ -48,6 +48,12 @@ public object BttfConst {
 
     /**
      *
+     * BLANK_SPACE = " "
+     */
+    public const val BLANK_SPACE = " "
+
+    /**
+     *
      * STATUS_PROTECTED = "[PROTECTED]"
      */
     public const val STATUS_PROTECTED: String = "[PROTECTED]"
@@ -57,8 +63,7 @@ public object BttfConst {
      * ROLE_PREFIX = "ROLE_"
      */
     public const val ROLE_PREFIX: String = "ROLE_"
-
-
+    
     /**
      *
      * SAVED_REQUEST = "SPRING_SECURITY_SAVED_REQUEST"

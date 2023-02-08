@@ -49,9 +49,9 @@ public class RoleService {
     protected fun usersRoles(): List<RolePlain> {
         val ret = arrayListOf<RolePlain>()
         roleRepository.findAll().forEach {
-            ret.add(RolePlain(it.id!!, it.roleName, it.enabled, it.user.map {
-                it.userName
-            }))
+            with(it) {
+                ret.add(RolePlain(id!!, roleName, enabled, user.map { it.userName } ))
+            }
         }
         // if (dbg.toBoolean()) log.debug("UserRoles ret:{}", ret)
         return ret;

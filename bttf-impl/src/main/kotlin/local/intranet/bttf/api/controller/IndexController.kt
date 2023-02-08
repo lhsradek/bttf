@@ -542,8 +542,10 @@ public class IndexController {
             val savedRequest: DefaultSavedRequest? =
                 request.session.getAttribute(BttfConst.SAVED_REQUEST) as DefaultSavedRequest
             savedRequest?.let {
-                savedRequest.getRedirectUrl()?.let {
-                    redirect = savedRequest.getRedirectUrl()
+                with (savedRequest) {
+                    getRedirectUrl()?.let {
+                        redirect = getRedirectUrl()
+                    }
                 }
             }
         }

@@ -119,23 +119,25 @@ public class UserService : UserDetailsService {
         val user: User? = userRepository.findByName(username)
 
         user?.let {
-            if (user.accountNonExpired && user.accountNonLocked && user.credentialsNonExpired && user.enabled) {
-                val authorities = mutableListOf<GrantedAuthority>()
-                user.role.forEach {
-                    authorities.add(SimpleGrantedAuthority(BttfConst.ROLE_PREFIX + it.roleName))
-                }
-                // val ret = UserInfo(user.userName, user.password, true, true, true, true, authorities)
-                // if (dbg.toBoolean()) log.debug("'{}'", ret)
-                // return ret
-                return UserInfo(user.userName, user.password, true, true, true, true, authorities)
+            with(user) {
+                if (accountNonExpired && accountNonLocked && credentialsNonExpired && enabled) {
+                    val authorities = mutableListOf<GrantedAuthority>()
+                    role.forEach {
+                        authorities.add(SimpleGrantedAuthority(BttfConst.ROLE_PREFIX + it.roleName))
+                    }
+                    // val ret = UserInfo(user.userName, user.password, true, true, true, true, authorities)
+                    // if (dbg.toBoolean()) log.debug("'{}'", ret)
+                    // return ret
+                    return UserInfo(userName, password, true, true, true, true, authorities)
 
-            } else {
-                if (!user.credentialsNonExpired) {
-                    throw BadCredentialsException(BttfConst.ERROR_BAD_CREDENTIALS)
-                } else if (!user.accountNonExpired) {
-                    throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
+                } else {
+                    if (!credentialsNonExpired) {
+                        throw BadCredentialsException(BttfConst.ERROR_BAD_CREDENTIALS)
+                    } else if (!accountNonExpired) {
+                        throw AccountExpiredException(BttfConst.ERROR_ACCOUNT_EXPIRED)
+                    }
+                    throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
                 }
-                throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
             }
         } ?: run {
             loginAttemptService.loginFailed(ip)
