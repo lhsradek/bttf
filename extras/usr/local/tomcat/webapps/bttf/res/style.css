@@ -261,6 +261,7 @@ a:hover img {
 }
 
 .submit {
+    opacity: 0.8;
 	cursor: pointer;
 	outline: none;
 	background-color: #999;
