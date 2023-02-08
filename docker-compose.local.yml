@@ -36,7 +36,7 @@ services:
       - ./extras/nginx/add.sh:/docker-entrypoint.d/05-add-packages.sh:ro
       - ./certs/${CERTNAME}.crt:/etc/ssl/private/cacert.pem:ro
       - ./certs/${CERTNAME}.key:/etc/ssl/private/cacert-key.pem:ro
-      - ./application/html:/var/www/html:ro
+      - ./application/html:/var/www/html
       - ./extras/nginx/default-https.conf:/etc/nginx/conf.d/default.conf:ro
       - ./logs/bttf-nginx:/var/log/nginx
       - adminer:/var/www/html/ad:rw
