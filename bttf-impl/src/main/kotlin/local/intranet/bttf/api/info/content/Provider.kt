@@ -63,7 +63,8 @@ public class Provider {
     /**
      *
      * Get AuditReader for
-     * {@link local.intranet.bttf.api.service.JobService#getCounterAudit}
+     * {@link local.intranet.bttf.api.service.JobService#counterAudit} and
+     * {@link local.intranet.bttf.api.service.MessageService#messageAudit}
      *
      * @return {@link AuditReader}
      */
