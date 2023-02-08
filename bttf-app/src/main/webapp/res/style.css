@@ -29,7 +29,7 @@ body:before {
 	bottom: 0.45em;
 	left: 0.45em;
 	right: 0.45em;
-	opacity: 0.20;
+	opacity: 0.25;
 	z-index: -1;
 }
 
@@ -64,6 +64,7 @@ h2 {
 	color: #000;
 	font-weight: bold;
 	font-size: 1.1em;
+	opacity: 0.5;
 }
 
 hr {

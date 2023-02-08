@@ -39,7 +39,7 @@
       <div th:class="'top'">
         <div th:class="'content-column-left'" th:align="'right'" th:with="past=${T(local.intranet.bttf.api.service.BttfService).secForPlayer(-1L + time.year, secretKey, secretIv)}">
         <h2><span>
-          <th:block th:text="'To the Past'"/>
+          <th:block th:text="'Back to'"/>
         </span></h2>
 <form th:action="@{|/play/year/${past}|}" method="post">
 <input th:class="'submit'" type="submit" th:value="'Past'"/>
@@ -49,7 +49,7 @@
         </div>
         <div th:class="'content-column-right'" th:align="'left'" th:with="future=${T(local.intranet.bttf.api.service.BttfService).secForPlayer(1L + time.year, secretKey, secretIv)}">
         <h2><span>
-          <th:block th:text="'To the Future'"/>
+          <th:block th:text="'The Future'"/>
         </span></h2>
 <form th:action="@{|/play/year/${future}|}" method="post">
 <input th:class="'submit'" type="submit" th:value="'Future'"/>
