@@ -19,6 +19,9 @@ import org.hibernate.envers.RevisionType
  *
  * {@link CounterInfo} for
  * {@link local.intranet.core.api.controller.InfoController#getCounterInfo}
+ * implements {@link local.intranet.bttf.api.domain.Countable},
+ * implements {@link local.intranet.bttf.api.domain.Invocationable} and
+ * implements {@link local.intranet.bttf.api.domain.Statusable},
  *
  * @author Radek Kádner
  *
