@@ -47,16 +47,13 @@ public class Provider {
                 val (a, b) = it
                 if (first) {
                     append("?")
-                    append(a)
-                    append("=")
-                    append(b)
                     first = false
                 } else {
                     append("&")
-                    append(a)
-                    append("=")
-                    append(b)
                 }
+                append(a)
+                append("=")
+                append(b)
             }
         }
         return "${query}"
