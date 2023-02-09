@@ -33,10 +33,10 @@ public class LoginAttemptService {
     private lateinit var dbg: String // toBoolean
 
     @Value("\${bttf.app.login.maxAttemt}")
-    private lateinit var maxAttempt: String  // toInt()
+    private lateinit var maxAttempt: String // toInt()
 
     @Value("\${bttf.app.login.waitSec}")
-    private lateinit var waitSec: String       // toLong()
+    private lateinit var waitSec: String // toLong()
 
     @Value("\${bttf.app.login.printBlocked:false}")
     private lateinit var printBlocked: String // toBoolean()

@@ -61,8 +61,8 @@ public data class MessageEventInfo (
 
 )  : Countable {
     
-    // @JsonProperty("count")
-    // @Size(min = 0)
+    @JsonProperty("count")
+    @Size(min = 0)
     public override fun countValue(): Long = count
     
 }

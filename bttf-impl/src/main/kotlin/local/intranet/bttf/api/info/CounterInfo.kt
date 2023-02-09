@@ -20,8 +20,8 @@ import org.hibernate.envers.RevisionType
  * {@link CounterInfo} for
  * {@link local.intranet.core.api.controller.InfoController#getCounterInfo}
  * implements {@link local.intranet.bttf.api.domain.Countable},
- * implements {@link local.intranet.bttf.api.domain.Invocationable} and
- * implements {@link local.intranet.bttf.api.domain.Statusable},
+ * {@link local.intranet.bttf.api.domain.Invocationable} and
+ * {@link local.intranet.bttf.api.domain.Statusable},
  *
  * @author Radek Kádner
  *
@@ -60,12 +60,12 @@ public data class CounterInfo (
 
 )  : Countable, Invocationable, Statusable {
     
-    // @JsonProperty("count")
-    // @Size(min = 0)
+    @JsonProperty("count")
+    @Size(min = 0)
     public override fun countValue(): Long = count
     
-    // @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
-    // @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public override fun lastInvocation(): ZonedDateTime = date
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
