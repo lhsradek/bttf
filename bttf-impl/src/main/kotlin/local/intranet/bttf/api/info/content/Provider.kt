@@ -40,13 +40,15 @@ public class Provider {
      * @return {@link String}
      */
     public fun queryProvider(params: List<Pair<String, String>>): String {
-        val query = StringBuilder()
+        val query = StringBuffer()
         params.forEach {
-            if (query.length == 0) {
-                query.append("?")
-            } else {
+            // val (a, b) = it
+            if (query.length > 0) {
                 query.append("&")
+            } else {
+                query.append("?")
             }
+            // query.append("${a}=${b}")
             query.append("${it.first}=${it.second}")
         }
         return "${query}"
