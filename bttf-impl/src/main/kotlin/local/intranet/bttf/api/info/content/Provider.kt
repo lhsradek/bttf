@@ -41,20 +41,13 @@ public class Provider {
      */
     public fun queryProvider(params: List<Pair<String, String>>): String {
         val query = StringBuilder()
-        var first = true
-        with(query) {
-            params.forEach {
-                val (a, b) = it
-                if (first) {
-                    append("?")
-                    first = false
-                } else {
-                    append("&")
-                }
-                append(a)
-                append("=")
-                append(b)
+        params.forEach {
+            if (query.length == 0) {
+                query.append("?")
+            } else {
+                query.append("&")
             }
+            query.append("${it.first}=${it.second}")
         }
         return "${query}"
     }

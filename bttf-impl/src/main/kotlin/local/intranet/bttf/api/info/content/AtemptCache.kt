@@ -4,6 +4,7 @@ import local.intranet.bttf.api.info.TimedEntry
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.atomic.AtomicInteger
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -137,16 +138,16 @@ public class AttemptCache() : LoginCache {
     }
 
     public fun removeExpiredKeys() {
-        var i = 0;
+        val i = AtomicInteger()
         for (item in hashMap) {
             val timedEntry = item.value
             if (timedEntry.isExpired()) {
-                i++
+                i.incrementAndGet()
                 hashMap.remove(item.key)
             }
         }
-        if (i > 0) {
-            log.info("RemoveExpiredKeys count:{}", i)
+        if (i.get() > 0) {
+            log.info("RemoveExpiredKeys count:{}", i.get())
         }
     }
 
