@@ -45,17 +45,17 @@
 <input th:class="'submit'" type="submit" th:value="'Past'"/>
 </form>        
           <br/>
-          <img th:src="@{/res/My_cork_badtub_is_like_your_giraffe_rye.png}" th:width="'400px'" th:height="'400px'" th:class="'borderoff'"/>
+          <img th:src="@{/res/My_cork_badtub_is_like_your_giraffe_rye.png}" th:width="'450px'" th:height="'450px'" th:class="'borderoff'"/>
         </div>
         <div th:class="'content-column-right'" th:align="'left'" th:with="future=${T(local.intranet.bttf.api.service.BttfService).secForPlayer(1L + time.year, secretKey, secretIv)}">
         <h2><span>
-          <th:block th:text="'The Future'"/>
+          <th:block th:text="'the Future'"/>
         </span></h2>
 <form th:action="@{|/play/year/${future}|}" method="post">
 <input th:class="'submit'" type="submit" th:value="'Future'"/>
 </form>
           <br/>
-          <img th:src="@{/res/Your_banana_eye_is_like_a_grandfather_in_the_closet.png}" th:width="'400px'" th:height="'400px'" th:class="'borderoff'"/>
+          <img th:src="@{/res/Your_banana_eye_is_like_a_grandfather_in_the_closet.png}" th:width="'450px'" th:height="'450px'" th:class="'borderoff'"/>
         </div>
       </div>
     </div>
