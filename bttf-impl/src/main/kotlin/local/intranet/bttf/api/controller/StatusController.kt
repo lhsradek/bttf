@@ -69,9 +69,7 @@ public class StatusController {
                 // + "target=\"_blank\">StatusController.getPlainStatus</a>",
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
-    public fun plainStatus(): String {
-        return "OK"
-    }
+    public fun plainStatus(): String = "OK"
 
     /**
      *
@@ -111,9 +109,7 @@ public class StatusController {
      *
      * @return ${bttf.app.stage}
      */
-    public fun stage(): String {
-        return stage
-    }
+    public fun stage(): String = stage
 
     /**
      *
@@ -121,9 +117,7 @@ public class StatusController {
      *
      * @return environment.getActiveProfiles()
      */
-    public fun activeProfiles(): String {
-        return environment.getActiveProfiles().joinToString(separator = " ")
-    }
+    public fun activeProfiles(): String = environment.getActiveProfiles().joinToString(separator = " ")
 
     /**
      *
@@ -131,9 +125,7 @@ public class StatusController {
      *
      * @return serverName (The second word) from {@link #getVirtualServerName()}
      */
-    public fun serverName(): String {
-        return virtualServerName().split("/").last()
-    }
+    public fun serverName(): String = virtualServerName().split("/").last()
 
     /**
      *
@@ -142,9 +134,7 @@ public class StatusController {
      * @return serverSoftware's name (The first word) without version from
      *         {@link #getServerInfo()}
      */
-    public fun serverSoftware(): String {
-        return serverInfo().split("/").first()
-    }
+    public fun serverSoftware(): String = serverInfo().split("/").first()
 
     /**
      *
@@ -152,9 +142,7 @@ public class StatusController {
      *
      * @return virtualServerName()
      */
-    protected fun virtualServerName(): String {
-        return servletContext.getVirtualServerName()
-    }
+    protected fun virtualServerName(): String = servletContext.getVirtualServerName()
 
     /**
      *
@@ -162,9 +150,7 @@ public class StatusController {
      *
      * @return servletContext.getServerInfo()
      */
-    protected fun serverInfo(): String {
-        return servletContext.getServerInfo()
-    }
+    protected fun serverInfo(): String = servletContext.getServerInfo()
     
     /**
      * 

@@ -25,7 +25,7 @@ import javax.validation.constraints.Size
  * @param isCredentialsNonExpired {@link Boolean}
  * @param isAccountNonExpired     {@link Boolean}
  * @param isAccountNonLocked      {@link Boolean}
- * @param authorities             {@link MutableSet&lt;{@link GrantedAuthority}&gt;}
+ * @param authorities             {@link List&lt;{@link GrantedAuthority}&gt;}
  */
 @JsonPropertyOrder(
     "username",
@@ -42,7 +42,22 @@ public data class UserInfo (
     private val isCredentialsNonExpired: Boolean,
     private val isAccountNonExpired: Boolean,
     private val isAccountNonLocked: Boolean,
-    private val authorities: MutableList<GrantedAuthority>) : UserDetails {
+    private val authorities: List<GrantedAuthority>) : UserDetails {
+
+    public companion object {
+
+        /**
+         *
+         * Build for {@link local.intranet.bttf.api.service.UserService#loadUserByUsername}
+         *
+         * @param user        {@link User}
+         * @param authorities {@link List}&lt;{@link GrantedAuthority}&gt;
+         * @return {@link UserInfo}
+         */
+        @JvmStatic
+        public fun build(user: User, authorities: List<GrantedAuthority>): UserInfo = UserInfo(
+            user.userName, user.password, true, true, true, true, authorities)
+    }
 
     /**
      *
@@ -112,15 +127,13 @@ public data class UserInfo (
      */
     @JsonIgnore
     @Size(min = 0)
-    public override fun getAuthorities(): MutableList<GrantedAuthority> = authorities
+    public override fun getAuthorities(): List<GrantedAuthority> = authorities
 
     /**
      *
-     * Returns a string representation of the object.
+     * Returns a string representation of the object with protected password
      */
-    public override fun toString(): String {
-        return "UserInfo [username=" + username + ", password=" + BttfConst.STATUS_PROTECTED +
-                ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
-    }
+    public override fun toString(): String = "UserInfo [username=" + username + ", password=" +
+    		BttfConst.STATUS_PROTECTED + ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
     
 }

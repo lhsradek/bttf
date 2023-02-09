@@ -81,9 +81,7 @@ public class RedisConfig {
      * @return {@link MessageListenerAdapter}
      */
     @Bean
-    public fun messageListener(): MessageListenerAdapter {
-        return MessageListenerAdapter(RedisMessageSubscriber())
-    }
+    public fun messageListener(): MessageListenerAdapter = MessageListenerAdapter(RedisMessageSubscriber())
 
     /**
      *
@@ -106,9 +104,7 @@ public class RedisConfig {
      * @return {@link MessagePublisher}
      */
     @Bean
-    public fun redisPublisher(): MessagePublisher {
-        return RedisMessagePublisher(redisTemplate(), topic())
-    }
+    public fun redisPublisher(): MessagePublisher = RedisMessagePublisher(redisTemplate(), topic())
 
     /**
      *
@@ -117,8 +113,6 @@ public class RedisConfig {
      * @return {@link ChannelTopic}
      */
     @Bean
-    public fun topic(): ChannelTopic {
-        return ChannelTopic("bttf:messageQueue")
-    }
+    public fun topic(): ChannelTopic = ChannelTopic("bttf:messageQueue")
 
 }

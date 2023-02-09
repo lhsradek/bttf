@@ -35,8 +35,6 @@ public class RedisMessagePublisher : MessagePublisher {
         this.topic = topic
     }
 
-    public override fun publish(message: String) {
-        redisTemplate.convertAndSend(topic.topic, message)
-    }
+    public override fun publish(message: String) = redisTemplate.convertAndSend(topic.topic, message)
 
 }

@@ -58,7 +58,7 @@ public class JobService : Countable, Invocationable, Statusable {
     public fun jobInfo(): CounterInfo {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
-            with (counter) {
+            with(counter) {
                 val (revisonNum, revisionType) = counterAudit(id)
                 CounterInfo(
                     cnt,
@@ -85,11 +85,11 @@ public class JobService : Countable, Invocationable, Statusable {
     public fun incrementCounter(): CounterInfo {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
-            with (counter) {
+            with(counter) {
             	cnt++
             	timestmp = System.currentTimeMillis()
             }
-            with (counterRepository.save(counter)) {
+            with(counterRepository.save(counter)) {
                 val (revisonNum, revisionType) = counterAudit(id)
                 CounterInfo(
                     cnt,
@@ -97,7 +97,7 @@ public class JobService : Countable, Invocationable, Statusable {
                     StatusType.valueOf(status), counterName, revisonNum, revisionType
                 )
             }
-        } ?: with (counterRepository.save(Counter(null, javaClass.simpleName, 1L, System.currentTimeMillis(),
+        } ?: with(counterRepository.save(Counter(null, javaClass.simpleName, 1L, System.currentTimeMillis(),
                 StatusType.UP.status))) {
                 CounterInfo(cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
@@ -118,7 +118,7 @@ public class JobService : Countable, Invocationable, Statusable {
     public override fun countValue(): Long {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
-            with (counter) { 
+            with(counter) { 
             	cnt
             }
         } ?: 0L

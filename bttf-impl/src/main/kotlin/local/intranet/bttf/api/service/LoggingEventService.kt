@@ -54,9 +54,7 @@ public class LoggingEventService {
      * @return {@link List}&lt;{@link LevelCount}&gt;
      */
     @Transactional(readOnly = true)
-    public fun countTotalLoggingEvents(): List<LevelCount> {
-        return loggingEventRepository.countTotalLoggingEvents()
-    }
+    public fun countTotalLoggingEvents(): List<LevelCount> = loggingEventRepository.countTotalLoggingEvents()
 
     /**
      *

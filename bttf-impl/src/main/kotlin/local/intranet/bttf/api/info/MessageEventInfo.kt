@@ -19,6 +19,7 @@ import org.hibernate.envers.RevisionType
  *
  * {@link MessageInfo} for
  * {@link local.intranet.core.api.controller.InfoController#messageInfo}
+ * implements {@link local.intranet.bttf.api.domain.Countable}
  *
  * @author Radek Kádner
  *
@@ -62,8 +63,6 @@ public data class MessageEventInfo (
     
     // @JsonProperty("count")
     // @Size(min = 0)
-    public override fun countValue(): Long {
-    	return count
-    }
+    public override fun countValue(): Long = count
     
 }

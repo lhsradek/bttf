@@ -28,12 +28,10 @@ public class RedisMessageSubscriber : MessageListener {
      * @param message {@link Message}
      * @param pattern {@link ByteArray?}
      */
-    public override fun onMessage(message: Message, pattern: ByteArray?) {
-        pattern?.let {
-            log.info(
-                "[message:{} redis.subscriber.uuid:'{}' pattern:'{}']", "${message}", UUID.randomUUID(), String(pattern))
-        } ?: log.info(
-            "[message:{} redis.subscriber.uuid:'{}']", "${message}", UUID.randomUUID()
-        )
-    }
+    public override fun onMessage(message: Message, pattern: ByteArray?) = pattern?.let {
+        log.info(
+            "[message:{} redis.subscriber.uuid:'{}' pattern:'{}']", "${message}", UUID.randomUUID(), String(pattern))
+    } ?: log.info(
+        "[message:{} redis.subscriber.uuid:'{}']", "${message}", UUID.randomUUID()
+    )
 }

@@ -112,10 +112,7 @@ public class SecurityConfig {
      * @return {@link PasswordEncoder}
      */
     @Bean
-    public fun passwordEncoder(): PasswordEncoder {
-        val ret: PasswordEncoder = BCryptPasswordEncoder()
-        return ret
-    }
+    public fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     /**
      *
@@ -125,9 +122,9 @@ public class SecurityConfig {
      * @throws {@link Exception}
      */
     @Throws(Exception::class)
-    public fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
-    }
+    public fun configure(auth: AuthenticationManagerBuilder) = auth
+        .userDetailsService(userService)
+        .passwordEncoder(passwordEncoder())
 
     /**
      *
@@ -171,5 +168,5 @@ public class SecurityConfig {
             .maximumSessions(1)
         return http.build()
     }
-
+    
 }

@@ -59,26 +59,17 @@ public class LoginAttemptService {
      * @param printBlocked {@link Boolean}
      * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
      */
-    public fun loginAttempts(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
-        // val ret = loginAttempt.getCache(printBlocked)
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        // return ret
-        return loginAttempt.getCache(printBlocked)
-    }
+    public fun loginAttempts(@NotNull printBlocked: Boolean):
+        List<Triple<String, Int, ZonedDateTime>> = loginAttempt.getCache(printBlocked)
 
     /**
      *
      * Find by id
      *
      * @param key {@link String}
-     * @return {@link Int}
+     * @return {@link Int?}
      */
-    public fun findById(@NotNull key: String): Int {
-        val ret: Int = loginAttempt.getById(key)?.let {
-            loginAttempt.getById(key)
-        } ?: 0
-        return ret
-    }
+    public fun findById(@NotNull key: String): Int? = loginAttempt.getById(key)
 
     /**
      *
@@ -86,9 +77,7 @@ public class LoginAttemptService {
      *
      * @param key {@link String}
      */
-    public fun loginSucceeded(@NotNull key: String) {
-        loginAttempt.invalidateKey(key)
-    }
+    public fun loginSucceeded(@NotNull key: String) = loginAttempt.invalidateKey(key)
 
     /**
      *
@@ -96,9 +85,7 @@ public class LoginAttemptService {
      *
      * @param key {@link String}
      */
-    public fun loginFailed(@NotNull key: String) {
-        loginAttempt.keyToCache(key)
-    }
+    public fun loginFailed(@NotNull key: String) = loginAttempt.keyToCache(key)
 
     /**
      *
@@ -107,16 +94,12 @@ public class LoginAttemptService {
      * @param key {@link String}
      * @return {@link Boolean}
      */
-    public fun isBlocked(@NotNull key: String): Boolean {
-        return loginAttempt.isBlocked(key)
-    }
+    public fun isBlocked(@NotNull key: String): Boolean = loginAttempt.isBlocked(key)
 
     /**
      *
      * for scheduler {@link local.intranet.bttf.api.scheduler.BttfJob}
      */
-    public fun flushCache() {
-        loginAttempt.removeExpiredKeys()
-    }
+    public fun flushCache() = loginAttempt.removeExpiredKeys()
 
 }

@@ -35,9 +35,7 @@ public class RoleService {
      * @return {@link UserInfo}
      */
     @Transactional(readOnly = true)
-    public fun roleInfo(): RoleInfo {
-        return RoleInfo(usersRoles())
-    }
+    public fun roleInfo(): RoleInfo = RoleInfo(usersRoles())
 
     /**
      *
@@ -50,7 +48,7 @@ public class RoleService {
         val ret = arrayListOf<RolePlain>()
         roleRepository.findAll().forEach {
             with(it) {
-                ret.add(RolePlain(id!!, roleName, enabled, user.map { it.userName } ))
+                ret.add(RolePlain(id!!, roleName, enabled, user.map { u -> u.userName } ))
             }
         }
         // if (dbg.toBoolean()) log.debug("UserRoles ret:{}", ret)

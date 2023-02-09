@@ -61,7 +61,7 @@ public class MessageService : Countable {
         val list = mutableListOf<MessageEventInfo>()
         val listPage = messageEventRepository.findByName(pageRequest, javaClass.simpleName)
         listPage.forEach {
-            with (it) {
+            with(it) {
                 val (revisonNum, revisionType) = messageAudit(id)
                 list.add(MessageEventInfo(
                         cnt, uuid, serviceName,
@@ -81,9 +81,7 @@ public class MessageService : Countable {
      * @return {@link CounterInfo}
      */
     @Transactional(readOnly = true)
-    public fun messageByUuid(uuid: String): MessageEvent {
-		return messageEventRepository.findByUuid(uuid)
-    }
+    public fun messageByUuid(uuid: String): MessageEvent = messageEventRepository.findByUuid(uuid)
     
     /**
      *
@@ -92,11 +90,10 @@ public class MessageService : Countable {
      * @return {@link StatusType}
      */
     @Transactional // write new message
-    public fun sendMessage(message: String): MessageEvent {
-        return messageEventRepository.save(MessageEvent(
+    public fun sendMessage(message: String): MessageEvent = messageEventRepository
+        .save(MessageEvent(
             null, UUID.randomUUID().toString(), javaClass.simpleName, 0, System.currentTimeMillis(), message
         ))
-    }
 
     /**
      *
@@ -105,15 +102,13 @@ public class MessageService : Countable {
      * @return number of invocations from count
      */
     @Transactional(readOnly = true)
-    public override fun countValue(): Long {
-        return messageEventRepository.findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
-    }
+    public override fun countValue(): Long = messageEventRepository
+        .findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
 
 
     @Transactional(readOnly = true)
-    public fun countTotalMessageEvents(): List<MessageCount> {
-        return messageEventRepository.countTotalMessageEvents()
-    }
+    public fun countTotalMessageEvents(): List<MessageCount> = messageEventRepository
+        .countTotalMessageEvents()
     
     /**
      *
@@ -169,13 +164,14 @@ public class MessageService : Countable {
                 cnt++
                 timestmp = System.currentTimeMillis()
             }
-            val newCnt = counterRepository.save(counter)
-            val (revisonNum, revisionType) = messageAudit(newCnt.id)
-            CounterInfo(
-                newCnt.cnt,
-                ZonedDateTime.ofInstant(Instant.ofEpochMilli(newCnt.timestmp), ZoneId.systemDefault()),
-                StatusType.valueOf(newCnt.status), newCnt.counterName, revisonNum, revisionType
-            )
+			with(counterRepository.save(counter)) {
+                val (revisonNum, revisionType) = counterAudit(id)
+                CounterInfo(
+                    cnt,
+                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
+                    StatusType.valueOf(status), counterName, revisonNum, revisionType
+                )
+            }
         } ?: with(
                 counterRepository.save(Counter(null, javaClass.simpleName, 1L, System.currentTimeMillis(),
                         StatusType.UP.status))) {
@@ -191,14 +187,14 @@ public class MessageService : Countable {
         */
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
-            with (counter) {
+            with(counter) {
                 val (revisonNum, revisionType) = messageAudit(id)
                 CounterInfo(
                     cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
                     StatusType.valueOf(status), counterName, revisonNum, revisionType)
             }
-        } ?: with (counterRepository.save(
+        } ?: with(counterRepository.save(
             Counter(null, javaClass.simpleName, 0, System.currentTimeMillis(),StatusType.UP.status))) {
             val (revisonNum, revisionType) = messageAudit(id)
             CounterInfo(

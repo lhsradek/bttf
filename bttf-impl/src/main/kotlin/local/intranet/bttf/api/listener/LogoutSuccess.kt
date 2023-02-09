@@ -32,10 +32,11 @@ public class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler
      * {@link local.intranet.bttf.api.controller.IndexController#signin}
      */
     public override fun onLogoutSuccess(
-        request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) {
+        request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication
+    ) = with(request) {
         try {
-            request.cookies?.let {
-                for (cookie in request.cookies) {
+            cookies?.let {
+                for (cookie in cookies) {
                     cookie?.let {
                         val cookieToDelete = Cookie(cookie.name, null)
                         cookieToDelete.setMaxAge(0)
@@ -44,11 +45,13 @@ public class LogoutSuccess : LogoutSuccessHandler, SimpleUrlLogoutSuccessHandler
                 }
             }
             if (authentication.principal != null && authentication.name != null) {
-                log.info("Logout username:'{}' refererUrl:'{}' sessionId:{}",
-                    authentication.name, request.getHeader("Referer"), request.session.getId())
+                log.info(
+                    "Logout username:'{}' refererUrl:'{}' sessionId:{}",
+                    authentication.name, getHeader("Referer"), session.getId()
+                )
             }
             super.onLogoutSuccess(request, response, authentication)
-            request.session.invalidate()
+            session.invalidate()
         } catch (e: Exception) {
             log.error(e.message, e)
         }

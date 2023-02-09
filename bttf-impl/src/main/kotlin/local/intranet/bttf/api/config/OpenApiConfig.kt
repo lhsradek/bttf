@@ -46,15 +46,12 @@ public class OpenApiConfig {
      * @return {@link GroupedOpenApi}
      */
     @Bean
-    public fun groupedOpenApi(): GroupedOpenApi {
-        val ret = GroupedOpenApi.builder()
+    public fun groupedOpenApi(): GroupedOpenApi = GroupedOpenApi
+        .builder()
             .pathsToMatch("/api/v1/**")
             .group("bttf")
             .displayName("BTTF API")
             .build()
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
-    }
 
     /**
      *
@@ -63,32 +60,28 @@ public class OpenApiConfig {
      * @return {@link OpenAPI}
      */
     @Bean
-    protected fun bttfOpenApi(): OpenAPI {
-        val ret = OpenAPI()
-            .info(
-                Info().title(API)
-                    .description("Back to the Future API")
-                    .version(statusController.implementationVersion())
-                    .termsOfService("/bttf")
-                    .contact(
-                        Contact()
-                            .name("Radek Kádner")
-                            .url("https://www.linkedin.com/in/radekkadner/")
-                            .email("radek.kadner@gmail.com")
-                    )
-                    .license(
-                        License()
-                            .name("The MIT License")
-                            .url("https://opensource.org/licenses/MIT")
-                    )
-            ) /*
+    protected fun bttfOpenApi(): OpenAPI = OpenAPI()
+        .info(
+            Info().title(API)
+                .description("Back to the Future API")
+                .version(statusController.implementationVersion())
+                .termsOfService("/bttf")
+                .contact(
+                    Contact()
+                        .name("Radek Kádner")
+                        .url("https://www.linkedin.com/in/radekkadner/")
+                        .email("radek.kadner@gmail.com")
+                )
+                .license(
+                    License()
+                        .name("The MIT License")
+                        .url("https://opensource.org/licenses/MIT")
+                )
+        ) /*
             .externalDocs(
                 ExternalDocumentation()
                     .description("Java Documentation")
                     .url("/bttf-javadoc/")
             ) */
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
-    }
 
 }

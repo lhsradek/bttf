@@ -56,13 +56,14 @@ public class BttfJob : Job {
         loginAttemptService.flushCache()
         
         val message = StringJoiner(BttfConst.BLANK_SPACE)
-        message.add("Fired:'${context.jobDetail.key.name}'")
-        message.add("message.count:${messageService.countValue()}")
-        val messageEvent = messageService.sendMessage("${message}")
-        jobService.incrementCounter()
-        message.add("counter.count:${messageService.countValue()}")
-        message.add("message.event.uuid:'${messageEvent.uuid}'")
-        
+        with(message) {
+            add("Fired:'${context.jobDetail.key.name}'")
+            add("message.count:${messageService.countValue()}")
+            val messageEvent = messageService.sendMessage("${message}")
+            jobService.incrementCounter()
+            add("counter.count:${messageService.countValue()}")
+            add("message.event.uuid:'${messageEvent.uuid}'")
+        }
         // Redis as a message broker
         if (isRedis.toBoolean()) {
         	redisMessagePublisher.publish("${message}")

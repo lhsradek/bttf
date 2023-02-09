@@ -55,12 +55,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @ConfigurationProperties(prefix = "spring.datasource")
     @ConditionalOnExpression("\${#strings.length(spring.datasource.url) > 0}")
-    public fun dataSource(): DataSource {
-        // val ret: DataSource = DataSourceBuilder.create().build()
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        // return ret
-        return DataSourceBuilder.create().build()
-    }
+    public fun dataSource(): DataSource = DataSourceBuilder.create().build()
 
     /**
      *
@@ -72,12 +67,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @ConfigurationProperties(prefix = "spring.secondaryDatasource")
     @ConditionalOnExpression("\${#strings.length(spring.secondaryDatasource.url) > 0}")
-    public fun secondaryDataSource(): DataSource {
-        // val ret: DataSource = DataSourceBuilder.create().build()
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        // return ret
-        return DataSourceBuilder.create().build()
-    }
+    public fun secondaryDataSource(): DataSource = DataSourceBuilder.create().build()
 
     /**
      *
@@ -87,12 +77,7 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      */
     @Bean
     @ConditionalOnExpression("\${bttf.envers.enabled}")
-    public fun auditorProvider(): AuditorAware<String> {
-        // val ret = AuditorAwareImpl()
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        // return ret
-        return AuditorAwareImpl()
-    }
+    public fun auditorProvider(): AuditorAware<String> = AuditorAwareImpl()
 
     /**
      *

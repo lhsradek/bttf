@@ -113,13 +113,15 @@ public class IndexController {
     @PreAuthorize("permitAll()")
     public fun getLicense(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
-        // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        request.requestedSessionId?.let {
-            log.info(
-                "GetLicense username:'{}' ip:'{}' session:{}", model.asMap().get("username"),
-                statusController.clientIP(), request.requestedSessionId
-            )
-        } ?: log.info("GetLicense username:'{}' ip:'{}'", model.asMap().get("username"), statusController.clientIP())
+        with(model) {
+            // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+            request.requestedSessionId?.let {
+                log.info(
+                    "GetLicense username:'{}' ip:'{}' session:{}", asMap().get("username"),
+                    statusController.clientIP(), request.requestedSessionId
+                )
+            } ?: log.info("GetLicense username:'{}' ip:'{}'", asMap().get("username"), statusController.clientIP())
+        }
         return "license"
     }
 
@@ -140,19 +142,21 @@ public class IndexController {
         request: HttpServletRequest, model: Model
     ): String {
         addModel(request, model)
-        model.addAttribute("springBootVersion", SpringBootVersion.getVersion())
-        model.addAttribute("springVersion", SpringVersion.getVersion())
-        model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
-        model.addAttribute("implementationVersion", statusController.implementationVersion())
-        // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        request.requestedSessionId?.let {
-            log.info(
-                "GetIndex username:'{}' ip:'{}' session:{}",
-                model.asMap().get("username"), statusController.clientIP(), request.requestedSessionId
+        with(model) {
+            addAttribute("springBootVersion", SpringBootVersion.getVersion())
+            addAttribute("springVersion", SpringVersion.getVersion())
+            addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+            addAttribute("implementationVersion", statusController.implementationVersion())
+            // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+            request.requestedSessionId?.let {
+                log.info(
+                    "GetIndex username:'{}' ip:'{}' session:{}",
+                    asMap().get("username"), statusController.clientIP(), request.requestedSessionId
+                )
+            } ?: log.info(
+                "GetIndex username:'{}' ip:'{}'", asMap().get("username"), statusController.clientIP()
             )
-        } ?: log.info(
-            "GetIndex username:'{}' ip:'{}'", model.asMap().get("username"), statusController.clientIP()
-        )
+        }
         return "index"
     }
 
@@ -170,37 +174,41 @@ public class IndexController {
     @PreAuthorize("permitAll()")
     public fun getPlay(request: HttpServletRequest, model: Model): String {
         try {
-            val time =
-                if (request.session != null && request.session.getAttribute(BttfConst.APPLICATION_YEAR) != null) {
-                    val z = ZonedDateTime.now(ZoneId.systemDefault())
-                    z.plusYears(request.session.getAttribute(BttfConst.APPLICATION_YEAR) as Long - z.year)
-                } else {
-                    ZonedDateTime.now(ZoneId.systemDefault())
+            with(request) {
+                val time =
+                    if (session != null && session.getAttribute(BttfConst.APPLICATION_YEAR) != null) {
+                        val z = ZonedDateTime.now(ZoneId.systemDefault())
+                        z.plusYears(session.getAttribute(BttfConst.APPLICATION_YEAR) as Long - z.year)
+                    } else {
+                        ZonedDateTime.now(ZoneId.systemDefault())
+                    }
+                addModel(request, model)
+                val iv = AESUtil.generateIv()
+                val salt = AESUtil.generateSalt()
+                val secretKey = AESUtil.getKeyFromPassword(key, salt)
+                with(model) {
+                    addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+                    addAttribute("implementationVersion", statusController.implementationVersion())
+                    addAttribute("now", ZonedDateTime.now(ZoneId.systemDefault()))
+                    addAttribute("time", time)
+                    addAttribute("secretIv", iv)
+                    addAttribute("secretKey", secretKey)
+                    // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+                    requestedSessionId?.let {
+                        session.setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
+                        session.setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
+                        log.info(
+                            "GetPlay username:'{}' ip:'{}' time:{} session:{}",
+                            asMap().get("username"), statusController.clientIP(),
+                            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), requestedSessionId
+                        )
+                    } ?: log.info(
+                        "GetPlay username:'{}' ip:'{}' time:{}",
+                        asMap().get("username"), statusController.clientIP(),
+                        time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+                    )
                 }
-            addModel(request, model)
-            val iv = AESUtil.generateIv()
-            val salt = AESUtil.generateSalt()
-            val secretKey = AESUtil.getKeyFromPassword(key, salt)
-            model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
-            model.addAttribute("implementationVersion", statusController.implementationVersion())
-            model.addAttribute("now", ZonedDateTime.now(ZoneId.systemDefault()))
-            model.addAttribute("time", time)
-            model.addAttribute("secretIv", iv)
-            model.addAttribute("secretKey", secretKey)
-            // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-            request.requestedSessionId?.let {
-                request.session.setAttribute(BttfConst.APPLICATION_SALT, AESUtil.setHex(salt))
-                request.session.setAttribute(BttfConst.APPLICATION_SECRET_IV, iv.getIV())
-                log.info(
-                    "GetPlay username:'{}' ip:'{}' time:{} session:{}",
-                    model.asMap().get("username"), statusController.clientIP(),
-                    time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), request.requestedSessionId
-                )
-            } ?: log.info(
-                "GetPlay username:'{}' ip:'{}' time:{}",
-                model.asMap().get("username"), statusController.clientIP(),
-                time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
-            )
+            }
         } catch (e: Exception) {
             when (e) {
                 is NoSuchPaddingException,
@@ -239,35 +247,37 @@ public class IndexController {
         @PathVariable(value = "year", required = false) cryptedYear: String?, request: HttpServletRequest
     ): String {
         try {
-            val time = if (request.session != null && cryptedYear != null &&
-                request.session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
-                request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
-            ) {
-                val salt = AESUtil.getHex(request.session.getAttribute(BttfConst.APPLICATION_SALT) as String)
-                val iv = IvParameterSpec(request.session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
-                val year =
-                    AESUtil.decrypt(AESUtil.getHex(cryptedYear), AESUtil.getKeyFromPassword(key, salt), iv)
-                        .toLong()
-                val z = ZonedDateTime.now(ZoneId.systemDefault())
-                z.plusYears(year - z.year)
-            } else {
-                ZonedDateTime.now(ZoneId.systemDefault())
-            }
-            if (request.session != null) {
-                request.session.setAttribute(BttfConst.APPLICATION_YEAR, time.year.toLong())
-            }
-            val username = userService.username()
-            // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-            request.requestedSessionId?.let {
-                log.info(
-                    "PostPlay username:'{}' ip:'{}' time:{} session:{}",
-                    username, statusController.clientIP(), request.requestedSessionId,
+            with(request) {
+                val time = if (session != null && cryptedYear != null &&
+                    session.getAttribute(BttfConst.APPLICATION_SALT) != null &&
+                    session.getAttribute(BttfConst.APPLICATION_SECRET_IV) != null
+                ) {
+                    val salt = AESUtil.getHex(session.getAttribute(BttfConst.APPLICATION_SALT) as String)
+                    val iv = IvParameterSpec(session.getAttribute(BttfConst.APPLICATION_SECRET_IV) as ByteArray)
+                    val year =
+                        AESUtil.decrypt(AESUtil.getHex(cryptedYear), AESUtil.getKeyFromPassword(key, salt), iv)
+                            .toLong()
+                    val z = ZonedDateTime.now(ZoneId.systemDefault())
+                    z.plusYears(year - z.year)
+                } else {
+                    ZonedDateTime.now(ZoneId.systemDefault())
+                }
+                if (session != null) {
+                    session.setAttribute(BttfConst.APPLICATION_YEAR, time.year.toLong())
+                }
+                val username = userService.username()
+                // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+                requestedSessionId?.let {
+                    log.info(
+                        "PostPlay username:'{}' ip:'{}' time:{} session:{}",
+                        username, statusController.clientIP(), requestedSessionId,
+                        time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+                    )
+                } ?: log.info(
+                    "PostPlay username:'{}' ip:'{}' time:{}", username, statusController.clientIP(),
                     time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
                 )
-            } ?: log.info(
-                "PostPlay username:'{}' ip:'{}' time:{}", username, statusController.clientIP(),
-                time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
-            )
+            }
         } catch (e: Exception) {
             when (e) {
                 is NoSuchPaddingException,
@@ -327,7 +337,7 @@ public class IndexController {
             fil = "0"
             ctle.forEach { levelString.add(it.level) }
         } else {
-            for (s: String in filter.split("\\+")) {
+            for (s: String in filter.split("+")) {
                 if (arrayOf("DEBUG", "ERROR", "INFO", "WARN").contains(s)) {
                     levelString.add(s)
                 } else {
@@ -357,24 +367,26 @@ public class IndexController {
         val order = logSortByParam(sort)
         val pageable = PageRequest.of(page.get(), logCnt.toInt(), Sort.by(order))
         var lg: Page<LoggingEventInfo> = loggingEventService.findPageByLevelString(pageable, levelString)
-        val cnt: Long = lg.totalElements
-        val max: Int = if (lg.totalPages > 0) (lg.totalPages - 1) else 0
+        val cnt= lg.totalElements
+        val max = if (lg.totalPages > 0) (lg.totalPages - 1) else 0
         val newPage = getPage(page.get(), max).get()
         if (newPage != page.get()) {
             page.set(newPage)
             lg = loggingEventService.findPageByLevelString(pageable, levelString)
         }
-        model.addAttribute("logsTotal", ctle)
-        model.addAttribute("logsTotalCounter", AtomicInteger())
-        model.addAttribute("bttfLogs", lg.content)
-        model.addAttribute("logsCnt", cnt)
-        model.addAttribute("logsMax", max)
-        model.addAttribute("logsPage", page)
-        model.addAttribute("logsSort", sort)
-        model.addAttribute("logsFilter", fil)
-        setPage(page, max, model)
-        // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
-        // if (dbg.toBoolean()) log.debug( "GetBttfLog '{}' page:{} session:{}", model.asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId )
+        with(model) {
+            addAttribute("logsTotal", ctle)
+            addAttribute("logsTotalCounter", AtomicInteger())
+            addAttribute("bttfLogs", lg.content)
+            addAttribute("logsCnt", cnt)
+            addAttribute("logsMax", max)
+            addAttribute("logsPage", page)
+            addAttribute("logsSort", sort)
+            addAttribute("logsFilter", fil)
+            setPage(page, max, model)
+            // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+            // if (dbg.toBoolean()) log.debug( "GetBttfLog '{}' page:{} session:{}", asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId )
+        }
         return "bttfLog"
     }
 
@@ -387,66 +399,68 @@ public class IndexController {
      */
     protected fun logSortByParam(srt: String): List<Order> {
         val ret = mutableListOf<Order>()
-        when (srt) {
-            "idU" -> ret.add(Order.asc("id"))
-            "idD" -> ret.add(Order.desc("id"))
-            "mU" -> {
-                ret.add(Order.asc("formattedMessage").ignoreCase())
-                ret.add(Order.asc("id"))
+        with(ret) {
+            when (srt) {
+                "idU" -> add(Order.asc("id"))
+                "idD" -> add(Order.desc("id"))
+                "mU" -> {
+                    add(Order.asc("formattedMessage").ignoreCase())
+                    add(Order.asc("id"))
+                }
+                "mD" -> {
+                    add(Order.desc("formattedMessage").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                "a0U" -> {
+                    add(Order.asc("arg0").ignoreCase())
+                    add(Order.asc("id"))
+                }
+                "a0D" -> {
+                    add(Order.desc("arg0").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                "a1U" -> {
+                    ret.add(Order.asc("arg1").ignoreCase())
+                    ret.add(Order.asc("id"))
+                }
+                "a1D" -> {
+                    add(Order.desc("arg1").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                "a2U" -> {
+                    ret.add(Order.asc("arg2").ignoreCase())
+                    ret.add(Order.asc("id"))
+                }
+                "a2D" -> {
+                    add(Order.desc("arg2").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                "a3U" -> {
+                    ret.add(Order.asc("arg3").ignoreCase())
+                    ret.add(Order.asc("id"))
+                }
+                "a3D" -> {
+                    add(Order.desc("arg3").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                "cU" -> {
+                    add(Order.asc("callerMethod").ignoreCase())
+                    add(Order.asc("id"))
+                }
+                "cD" -> {
+                    add(Order.desc("callerMethod").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                "lU" -> {
+                    add(Order.asc("levelString").ignoreCase())
+                    add(Order.asc("id"))
+                }
+                "lD" -> {
+                    add(Order.desc("levelString").ignoreCase())
+                    add(Order.desc("id"))
+                }
+                else -> add(Order.desc("id"))
             }
-            "mD" -> {
-                ret.add(Order.desc("formattedMessage").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            "a0U" -> {
-                ret.add(Order.asc("arg0").ignoreCase())
-                ret.add(Order.asc("id"))
-            }
-            "a0D" -> {
-                ret.add(Order.desc("arg0").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            "a1U" -> {
-                ret.add(Order.asc("arg1").ignoreCase())
-                ret.add(Order.asc("id"))
-            }
-            "a1D" -> {
-                ret.add(Order.desc("arg1").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            "a2U" -> {
-                ret.add(Order.asc("arg2").ignoreCase())
-                ret.add(Order.asc("id"))
-            }
-            "a2D" -> {
-                ret.add(Order.desc("arg2").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            "a3U" -> {
-                ret.add(Order.asc("arg3").ignoreCase())
-                ret.add(Order.asc("id"))
-            }
-            "a3D" -> {
-                ret.add(Order.desc("arg3").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            "cU" -> {
-                ret.add(Order.asc("callerMethod").ignoreCase())
-                ret.add(Order.asc("id"))
-            }
-            "cD" -> {
-                ret.add(Order.desc("callerMethod").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            "lU" -> {
-                ret.add(Order.asc("levelString").ignoreCase())
-                ret.add(Order.asc("id"))
-            }
-            "lD" -> {
-                ret.add(Order.desc("levelString").ignoreCase())
-                ret.add(Order.desc("id"))
-            }
-            else -> ret.add(Order.desc("id"))
         }
         return ret
     }
@@ -461,10 +475,12 @@ public class IndexController {
      */
     protected fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
-        pg?.let {
-            page.set(pg)
-            if (page.get() < 0 || page.get() > max) page.set(0)
-        } ?: page.set(0)
+        with(page) {
+            pg?.let {
+                set(pg)
+                if (get() < 0 || get() > max) set(0)
+            } ?: set(0)
+        }
         return page
     }
 
@@ -476,16 +492,16 @@ public class IndexController {
      * @param max   int
      * @param model {@link Model}
      */
-    protected fun setPage(page: AtomicInteger, max: Int, model: Model) {
+    protected fun setPage(page: AtomicInteger, max: Int, model: Model) = with(model) {
         if (page.get() > 0) {
-            model.addAttribute("prev", page.get() - 1)
+            addAttribute("prev", page.get() - 1)
         } else {
-            model.addAttribute("prev", page.get())
+            addAttribute("prev", page.get())
         }
         if (page.get() < max) {
-            model.addAttribute("next", page.get() + 1)
+            addAttribute("next", page.get() + 1)
         } else {
-            model.addAttribute("next", page.get())
+            addAttribute("next", page.get())
         }
     }
 
@@ -502,19 +518,25 @@ public class IndexController {
     @GetMapping(value = arrayOf("/login"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     public fun getLogin(request: HttpServletRequest, model: Model): String {
         val err = getErrorMessage(request, model)
-        if (request.session != null && err.equals("OK")) {
-            request.session.removeAttribute(BttfConst.LAST_EXCEPTION)
-        } else if (request.session != null) {
-            request.session.setAttribute(BttfConst.LAST_EXCEPTION, BttfException(err))
+        with(request) {
+            if (session != null && err.equals("OK")) {
+                session.removeAttribute(BttfConst.LAST_EXCEPTION)
+            } else if (session != null) {
+                session.setAttribute(BttfConst.LAST_EXCEPTION, BttfException(err))
+            }
         }
         addModel(request, model)
-        val isAuthenticated = model.getAttribute("isAuthenticated") as Boolean
-        if (request.getQueryString() != null && request.queryString.startsWith("error") && !isAuthenticated) {
-            log.warn("queryString:{} path:'{}'", request.getQueryString(), "")
+        with(model) {
+            val isAuthenticated = getAttribute("isAuthenticated") as Boolean
+            with(request) {
+                if (getQueryString() != null && queryString.startsWith("error") && !isAuthenticated) {
+                    log.warn("queryString:{} path:'{}'", getQueryString(), "")
+                }
+            }
+            addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+            addAttribute("invalidRole", "Invalid role for this page!")
+            // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         }
-        model.addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
-        model.addAttribute("invalidRole", "Invalid role for this page!")
-        // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         return "login"
     }
 
@@ -702,28 +724,28 @@ public class IndexController {
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
      */
-    protected fun addModel(request: HttpServletRequest, model: Model) {
-        model.addAttribute("headerSoftware", headerSoftware)
-        model.addAttribute("activeProfiles", statusController.activeProfiles())
-        model.addAttribute("stage", statusController.stage())
-        model.addAttribute("serverName", statusController.serverName())
-        model.addAttribute("serverSoftware", statusController.serverSoftware())
-        model.addAttribute("isAuthenticated", userService.isAuthenticated())
-        model.addAttribute("username", userService.username())
-        model.addAttribute("userRoles", userService.userRoles())
-        model.addAttribute("role", userService.authoritiesRoles().joinToString(separator = " "))
+    protected fun addModel(request: HttpServletRequest, model: Model) = with(model) {
+        addAttribute("headerSoftware", headerSoftware)
+        addAttribute("activeProfiles", statusController.activeProfiles())
+        addAttribute("stage", statusController.stage())
+        addAttribute("serverName", statusController.serverName())
+        addAttribute("serverSoftware", statusController.serverSoftware())
+        addAttribute("isAuthenticated", userService.isAuthenticated())
+        addAttribute("username", userService.username())
+        addAttribute("userRoles", userService.userRoles())
+        addAttribute("role", userService.authoritiesRoles().joinToString(separator = " "))
         val methodName = Thread.currentThread().stackTrace[2].methodName
         if (methodName.equals("getError")) {
             val err = getErrorMessage(request, model)
             if (!err.equals("OK")) {
                 log.warn(
-                    "AddModel error:'{}' message:'{}' code:{} path:'{}'", model.getAttribute("error"), err,
-                    model.getAttribute("status"),
+                    "AddModel error:'{}' message:'{}' code:{} path:'{}'", getAttribute("error"), err,
+                    getAttribute("status"),
                     request.getAttribute(BttfConst.FORWARD_URI)
                 )
             }
         }
-        // model.asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+        // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         // if (dbg.toBoolean()) log.debug("AddModel model:'{}'", request.toString())
     }
 

@@ -8,6 +8,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import org.jetbrains.annotations.NotNull
+import org.slf4j.LoggerFactory
 
 /**
  * inspired by
@@ -15,11 +16,33 @@ import org.jetbrains.annotations.NotNull
  */
 public class AttemptCache() : LoginCache {
 
+    private val log = LoggerFactory.getLogger(javaClass)
+    
     private val hashMap = ConcurrentHashMap<String, TimedEntry>()
     private var cacheTimeValidityInMillis: Long = 0
     private var printBlocked: Boolean = false
     private var maxAtempt: Int = 0
 
+    public companion object {
+
+        /**
+         *
+         * Init for {@link local.intranet.bttf.api.service.LoginAttemptService#init}
+         *
+         * @param duration      {@link Long}
+         * @param timeUnit      {@link TimeUnit}
+         * @param printBlocked  {@link Boolean}
+         * @param maxAtempt     {@link Int}
+         */
+        @JvmStatic
+        public fun init(duration: Long, timeUnit: TimeUnit, printBlocked: Boolean, maxAtempt: Int) =
+            AttemptCache().apply {
+                cacheTimeValidityInMillis = MILLISECONDS.convert(duration, timeUnit)
+                this.printBlocked = printBlocked
+                this.maxAtempt = maxAtempt
+            }
+    }
+    
     /**
      * It doesn't have to exist, if exist return number of attempts
      *
@@ -30,7 +53,7 @@ public class AttemptCache() : LoginCache {
     public override fun getById(@NotNull key: String): Int? {
         val timedEntry = hashMap[key]
         val ret: Int? = timedEntry?.let {
-            with (timedEntry) {
+            with(timedEntry) {
             	if (isExpired()) {
             		null
                 } else {
@@ -45,7 +68,7 @@ public class AttemptCache() : LoginCache {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             timedEntry?.let {
-                with (timedEntry) {
+                with(timedEntry) {
                 	value++
                 	creationTime = System.currentTimeMillis()
                 }
@@ -66,7 +89,7 @@ public class AttemptCache() : LoginCache {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             ret = timedEntry?.let {
-                with (timedEntry) {
+                with(timedEntry) {
                     if (isExpired()) {
                         invalidateKey(key)
                         false
@@ -102,25 +125,18 @@ public class AttemptCache() : LoginCache {
     }
 
     public fun removeExpiredKeys() {
+        var i = 0;
         for (item in hashMap) {
             val timedEntry = item.value
             if (timedEntry.isExpired()) {
+                i++
                 hashMap.remove(item.key)
             }
         }
+        if (i > 0) {
+        	log.info("RemoveExpiredKeys count:{}", i)
+        }
     }
 
-    public companion object {
-
-        @JvmStatic
-        public fun init(duration: Long, timeUnit: TimeUnit, printBlocked: Boolean, maxAtempt: Int) =
-            AttemptCache().apply {
-                cacheTimeValidityInMillis = MILLISECONDS.convert(duration, timeUnit)
-                this.printBlocked = printBlocked
-                this.maxAtempt = maxAtempt
-            }
-        
-    }
-    
 }
 

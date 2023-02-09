@@ -15,6 +15,7 @@ body {
 	color: #000;
 	font-size: 0.9em;
 	font-family: sans-serif, helvetica;
+	height:800px;
 	z-index: 1;
 }
 

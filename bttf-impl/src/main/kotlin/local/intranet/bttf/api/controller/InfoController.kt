@@ -150,9 +150,7 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    public fun roleInfo(): RoleInfo {
-        return roleService.roleInfo()
-    }
+    public fun roleInfo(): RoleInfo = roleService.roleInfo()
 
     /**
      *
@@ -180,9 +178,7 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    public fun jobInfo(): CounterInfo {
-        return jobService.jobInfo()
-    }
+    public fun jobInfo(): CounterInfo = jobService.jobInfo()
 
     /**
      *
@@ -216,9 +212,8 @@ public class InfoController {
         @PathVariable @Parameter(
             allowEmptyValue = true, example = "0", description = "Zero-based page index (0..N)") page :Int,
         @PathVariable @Parameter(
-            example = "20", description = "The size of the page to be returned") size: Int) : Page<MessageEventInfo> {
-    	return messageService.messageInfo(page, size)
-    }
+            example = "20", description = "The size of the page to be returned") size: Int):
+            Page<MessageEventInfo> = messageService.messageInfo(page, size)
     
     /**
      *
@@ -247,9 +242,7 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     public fun loginAttempts(@Parameter(allowEmptyValue = false, example = "true") @NotNull printBlocked: Boolean):
-            List<Triple<String, Int, ZonedDateTime>> {
-        return loginAttemptService.loginAttempts(printBlocked)
-    }
+    	List<Triple<String, Int, ZonedDateTime>> = loginAttemptService.loginAttempts(printBlocked)
 
     /**
      *
@@ -276,9 +269,7 @@ public class InfoController {
         tags = arrayOf(BttfConst.INFO_TAG)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    public fun countTotalLoggingEvents(): List<LevelCount> {
-        return loggingEventService.countTotalLoggingEvents()
-    }
+    public fun countTotalLoggingEvents(): List<LevelCount> = loggingEventService.countTotalLoggingEvents()
 
     /**
      *
@@ -306,8 +297,6 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    public fun countTotalMessageEvents(): List<MessageCount> {
-        return messageService.countTotalMessageEvents()
-    }
+    public fun countTotalMessageEvents(): List<MessageCount> = messageService.countTotalMessageEvents()
 
 }

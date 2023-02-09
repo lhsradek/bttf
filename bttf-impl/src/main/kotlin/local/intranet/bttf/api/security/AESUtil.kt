@@ -152,12 +152,11 @@ public class AESUtil {
          */
         @JvmStatic
         @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
-        public fun getKeyFromPassword(password: String, salt: String): SecretKey {
-            return SecretKeySpec(SecretKeyFactory
+        public fun getKeyFromPassword(password: String, salt: String): SecretKey =
+            SecretKeySpec(SecretKeyFactory
                 .getInstance("PBKDF2WithHmacSHA256")
                 .generateSecret(PBEKeySpec(password.toCharArray(),
                     salt.toByteArray(), 65536, 256)).encoded, "AES")
-        }
 
         /**
          *
@@ -180,9 +179,7 @@ public class AESUtil {
          * @return plain text
          */
         @JvmStatic
-        public fun getBase64(data: String): String {
-            return String(Base64.getDecoder().decode(data))
-        }
+        public fun getBase64(data: String): String = String(Base64.getDecoder().decode(data))
 
         /**
          *
@@ -192,9 +189,8 @@ public class AESUtil {
          * @return base64
          */
         @JvmStatic
-        public fun setBase64(data: String): String {
-            return String(Base64.getEncoder().encode(data.toByteArray(Charset.forName("UTF-8"))))
-        }
+        public fun setBase64(data: String): String = String(Base64.getEncoder()
+            .encode(data.toByteArray(Charset.forName("UTF-8"))))
 
         /**
          *
@@ -204,9 +200,7 @@ public class AESUtil {
          * @return plain text
          */
         @JvmStatic
-        public fun getHex(data: String): String {
-            return String(Hex.decode(data))
-        }
+        public fun getHex(data: String): String = String(Hex.decode(data))
 
         /**
          *
@@ -216,9 +210,7 @@ public class AESUtil {
          * @return hex
          */
         @JvmStatic
-        public fun setHex(data: String): String {
-            return String(Hex.encode(data.toByteArray(Charset.forName("UTF-8"))))
-        }
+        public fun setHex(data: String): String = String(Hex.encode(data.toByteArray(Charset.forName("UTF-8"))))
 
     }
 }

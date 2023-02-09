@@ -59,20 +59,14 @@ public data class CounterInfo (
     
     // @JsonProperty("count")
     // @Size(min = 0)
-    public override fun countValue(): Long {
-    	return count
-    }
+    public override fun countValue(): Long = count
     
     // @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
     // @JsonInclude(JsonInclude.Include.NON_NULL)
-    public override fun lastInvocation(): ZonedDateTime {
-        return date
-    }
+    public override fun lastInvocation(): ZonedDateTime = date
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public override fun getStatus(): StatusType {
-        return statusType
-    }
+    public override fun getStatus(): StatusType = statusType
 
 }

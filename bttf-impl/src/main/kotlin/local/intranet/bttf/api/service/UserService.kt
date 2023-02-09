@@ -67,9 +67,7 @@ public class UserService : UserDetailsService {
      * @return {@link LogoutSuccess}
      */
     @Bean
-    public fun logoutSuccess(): LogoutSuccessHandler {
-        return LogoutSuccess()
-    }
+    public fun logoutSuccess(): LogoutSuccessHandler = LogoutSuccess()
 
     /**
      *
@@ -87,12 +85,7 @@ public class UserService : UserDetailsService {
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
     )
-    public fun userInfo(): UserInfo {
-        // val ret = loadUserByUsername(getUsername())
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        // return ret
-        return loadUserByUsername(username())
-    }
+    public fun userInfo(): UserInfo = loadUserByUsername(username())
 
     /**
      *
@@ -125,10 +118,7 @@ public class UserService : UserDetailsService {
                     role.forEach {
                         authorities.add(SimpleGrantedAuthority(BttfConst.ROLE_PREFIX + it.roleName))
                     }
-                    // val ret = UserInfo(user.userName, user.password, true, true, true, true, authorities)
-                    // if (dbg.toBoolean()) log.debug("'{}'", ret)
-                    // return ret
-                    return UserInfo(userName, password, true, true, true, true, authorities)
+                    return UserInfo.build(user, authorities)
 
                 } else {
                     if (!credentialsNonExpired) {
@@ -139,7 +129,7 @@ public class UserService : UserDetailsService {
                     throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
                 }
             }
-        } ?: with (loginAttemptService) {
+        } ?: with(loginAttemptService) {
             loginFailed(ip)
             throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
         }
