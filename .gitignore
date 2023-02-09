@@ -3,5 +3,6 @@ bttf-app/target/
 bttf-aggregator/bttf.war
 certs/
 extras/elastic-agent/elastic-apm-agent-1.36.0.jar
+extras/usr/local/tomcat/webapps/bttf/WEB-INF/lib/
 logs
 
