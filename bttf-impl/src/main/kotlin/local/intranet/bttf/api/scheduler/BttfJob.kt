@@ -33,7 +33,7 @@ public class BttfJob : Job {
 
     @Value("\${bttf.app.redis.message}")
     private lateinit var isRedis: String // toBoolean
-    
+
     @Autowired
     private lateinit var jobService: JobService
 
@@ -42,10 +42,10 @@ public class BttfJob : Job {
 
     @Autowired
     private lateinit var messageService: MessageService
-    
+
     @Autowired
     private lateinit var redisMessagePublisher: RedisMessagePublisher
-    
+
     /**
      *
      * @param context {@link JobExecutionContext}
@@ -54,7 +54,7 @@ public class BttfJob : Job {
     @Throws(JobExecutionException::class)
     public override fun execute(context: JobExecutionContext) {
         loginAttemptService.flushCache()
-        
+
         val message = StringJoiner(BttfConst.BLANK_SPACE)
         with(message) {
             add("Fired:'${context.jobDetail.key.name}'")
@@ -66,7 +66,7 @@ public class BttfJob : Job {
         }
         // Redis as a message broker
         if (isRedis.toBoolean()) {
-        	redisMessagePublisher.publish("${message}")
+            redisMessagePublisher.publish("${message}")
         } else {
             log.info("${message}")
         }
