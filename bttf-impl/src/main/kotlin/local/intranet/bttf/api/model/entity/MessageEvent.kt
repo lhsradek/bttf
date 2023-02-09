@@ -54,6 +54,6 @@ public data class MessageEvent(
 
     @NotNull
     @Column(name = "message", nullable = false)
-    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     public val message: String
 )

@@ -30,8 +30,8 @@ public data class RoleInfo (
      *
      * @return {@link String} 
      */
-    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("service")
     public fun serviceName(): String = RoleService::class.java.getSimpleName()
 

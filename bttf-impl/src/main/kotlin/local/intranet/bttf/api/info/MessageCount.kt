@@ -21,8 +21,8 @@ import javax.validation.constraints.Size
 @JsonPropertyOrder("serviceName", "total")
 public data class MessageCount (
     
-    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val serviceName: String,
     
     @Size(min = 0)

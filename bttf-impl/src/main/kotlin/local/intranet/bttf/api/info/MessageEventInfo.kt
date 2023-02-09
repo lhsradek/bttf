@@ -9,6 +9,7 @@ import local.intranet.bttf.api.domain.Invocationable
 import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.model.repository.CounterRepository
 import local.intranet.bttf.api.service.JobService
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
@@ -25,44 +26,53 @@ import org.hibernate.envers.RevisionType
  *
  * @constructor with parameters
  *
- * @param service        {@link String}
+ * @param id             {@link Long}
+ * @param uuid           {@link String}
  * @param name           {@link String}
  * @param date           {@link ZonedDateTime}
  * @param count          {@link Long}
+ * @param message        {@link String}
  * @param revisionNum    {@Int}
  * @param revisionType   {@RevisionType}
  */
-@JsonPropertyOrder("id", "uuid", "name", "count", "date", "uuid", "revisionNum", "revisionType")
+@JsonPropertyOrder("id", "uuid", "name", "count", "date", "message", "revisionNum", "revisionType")
 public data class MessageEventInfo (
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val id: Long,
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val uuid: String,
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val name: String,
 
+    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val date: ZonedDateTime,
 
+    @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val count: Long,
 
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    public val message: String,
+
     @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val revisionNum: Int,
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val revisionType: RevisionType
 
 )  : Countable {
-    
-    @JsonProperty("count")
-    @Size(min = 0)
+        
+    @JsonIgnore
     public override fun countValue(): Long = count
     
 }

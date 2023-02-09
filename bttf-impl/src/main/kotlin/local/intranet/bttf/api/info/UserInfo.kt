@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.info
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import local.intranet.bttf.api.domain.BttfConst
@@ -29,7 +30,6 @@ import javax.validation.constraints.Size
  */
 @JsonPropertyOrder(
     "username",
-    "password",
     "isEnabled",
     "isCredentialsNonExpired",
     "isAccountNonExpired",
@@ -67,6 +67,7 @@ public data class UserInfo (
      * @return the username (never <code>null</code>)
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public override fun getUsername(): String = username
 
     /**
@@ -87,6 +88,7 @@ public data class UserInfo (
      * @return <code>true</code> if the user is enabled, <code>false</code>
      *         otherwise
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public override fun isEnabled(): Boolean = isEnabled
 
     /**
@@ -97,6 +99,7 @@ public data class UserInfo (
      * @return <code>true</code> if the user's credentials are valid (ie
      *         non-expired), <code>false</code> if no longer valid (ie expired)
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public override fun isCredentialsNonExpired(): Boolean = isCredentialsNonExpired
 
     /**
@@ -107,6 +110,7 @@ public data class UserInfo (
      * @return <code>true</code> if the user's credentials are valid (ie
      *         non-expired), <code>false</code> if no longer valid (ie expired)
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public override fun isAccountNonExpired(): Boolean = isAccountNonExpired
 
     /**
@@ -117,6 +121,7 @@ public data class UserInfo (
      * @return <code>true</code> if the user is not locked, <code>false</code>
      *         otherwise
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public override fun isAccountNonLocked(): Boolean = isAccountNonLocked
 
     /**
@@ -125,8 +130,8 @@ public data class UserInfo (
      *
      * @return the authorities, sorted by natural key (never <code>null</code>)
      */
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_ENUMARATION)
     @JsonIgnore
-    @Size(min = 0)
     public override fun getAuthorities(): List<GrantedAuthority> = authorities
 
     /**

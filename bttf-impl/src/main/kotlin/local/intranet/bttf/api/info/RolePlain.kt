@@ -23,11 +23,17 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths;
 @JsonPropertyOrder("id", "roleName", "enabled", "users")
 public data class RolePlain (
     
+    @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val id: Long,
     
-    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val roleName: String,
     
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val enabled: Boolean,
     
+    @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val users: List<String>)

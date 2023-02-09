@@ -1,6 +1,10 @@
 package local.intranet.bttf.api.info
 
 import java.time.ZonedDateTime
+import javax.validation.constraints.Size
+import local.intranet.bttf.api.domain.DefaultFieldLengths
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonInclude
 
 /**
  *
@@ -22,14 +26,34 @@ import java.time.ZonedDateTime
  * @param arg3             {@link String}
  * @param date             {@link ZonedDateTime}
  */
-public data class LoggingEventInfo (
+public data class LoggingEventInfo(
+
+    @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val id: Long,
+    
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val formattedMessage: String,
+    
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val levelString: String,
+    
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val callerClass: String,
+
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val callerMethod: String,
+    
     public val arg0: String,
     public val arg1: String,
     public val arg2: String,
     public val arg3: String,
-    public val date: ZonedDateTime )
+
+    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public val date: ZonedDateTime
+)

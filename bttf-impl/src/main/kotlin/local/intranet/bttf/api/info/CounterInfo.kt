@@ -10,6 +10,7 @@ import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.model.repository.CounterRepository
 import local.intranet.bttf.api.service.JobService
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -38,38 +39,40 @@ import org.hibernate.envers.RevisionType
 @JsonPropertyOrder("name", "count", "date", "status", "revisionNum", "revisionType")
 public data class CounterInfo (
 
+    @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val count: Long,
 
+    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val date: ZonedDateTime,
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonProperty("status")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val statusType: StatusType,
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val name: String,
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val revisionNum: Int,
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Size(min = 0)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val revisionType: RevisionType
 
 )  : Countable, Invocationable, Statusable {
     
-    @JsonProperty("count")
-    @Size(min = 0)
+    @JsonIgnore
     public override fun countValue(): Long = count
     
-    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnore
     public override fun lastInvocation(): ZonedDateTime = date
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnore
     public override fun getStatus(): StatusType = statusType
 
 }

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
 public class AttemptCache() : LoginCache {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    
+
     private val hashMap = ConcurrentHashMap<String, TimedEntry>()
     private var cacheTimeValidityInMillis: Long = 0
     private var printBlocked: Boolean = false
@@ -42,7 +42,7 @@ public class AttemptCache() : LoginCache {
                 this.maxAtempt = maxAtempt
             }
     }
-    
+
     /**
      * It doesn't have to exist, if exist return number of attempts
      *
@@ -54,8 +54,8 @@ public class AttemptCache() : LoginCache {
         val timedEntry = hashMap[key]
         val ret: Int? = timedEntry?.let {
             with(timedEntry) {
-            	if (isExpired()) {
-            		null
+                if (isExpired()) {
+                    null
                 } else {
                     value
                 }
@@ -69,8 +69,8 @@ public class AttemptCache() : LoginCache {
             val timedEntry = hashMap[key]
             timedEntry?.let {
                 with(timedEntry) {
-                	value++
-                	creationTime = System.currentTimeMillis()
+                    value++
+                    creationTime = System.currentTimeMillis()
                 }
             }
         } else {
@@ -111,14 +111,26 @@ public class AttemptCache() : LoginCache {
         if (printBlocked) {
             hashMap.filter { b -> isBlocked(b.key) == true }.forEach {
                 val timedEntry = it.value
-                ret.add(Triple(it.key, timedEntry.value, ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timedEntry.creationTime), ZoneId.systemDefault())))
+                ret.add(
+                    Triple(
+                        it.key, timedEntry.value,
+                        ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(timedEntry.creationTime), ZoneId.systemDefault()
+                        )
+                    )
+                )
             }
         } else {
             hashMap.filter { b -> isBlocked(b.key) == false }.forEach {
                 val timedEntry = it.value
-                ret.add(Triple(it.key, timedEntry.value, ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timedEntry.creationTime), ZoneId.systemDefault())))
+                ret.add(
+                    Triple(
+                        it.key, timedEntry.value,
+                        ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(timedEntry.creationTime), ZoneId.systemDefault()
+                        )
+                    )
+                )
             }
         }
         return ret
@@ -134,7 +146,7 @@ public class AttemptCache() : LoginCache {
             }
         }
         if (i > 0) {
-        	log.info("RemoveExpiredKeys count:{}", i)
+            log.info("RemoveExpiredKeys count:{}", i)
         }
     }
 

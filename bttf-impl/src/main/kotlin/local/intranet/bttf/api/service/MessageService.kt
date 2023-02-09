@@ -64,9 +64,9 @@ public class MessageService : Countable {
             with(it) {
                 val (revisonNum, revisionType) = messageAudit(id)
                 list.add(MessageEventInfo(
-                        cnt, uuid, serviceName,
-                        ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                        0L, revisonNum, revisionType)
+                    id!!, uuid, serviceName,
+                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
+                    cnt, message, revisonNum, revisionType)
                 )
             }
         }
@@ -143,7 +143,7 @@ public class MessageService : Countable {
         }
         
         // If RevisionType it's DEL, it wasn't in the for cycle
-        log.debug("MessageAudit messageId:{} ret:{}", messageId, ret)
+        // log.debug("MessageAudit messageId:{} ret:{}", messageId, ret)
         return ret
     }
 
