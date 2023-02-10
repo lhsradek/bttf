@@ -34,8 +34,7 @@ public class AuditorAwareImpl : AuditorAware<String> {
         } else {
             ret = Optional.empty()
         }
-        
-        if (dbg.toBoolean()) log.debug("{}", ret)
+        // if (dbg.toBoolean()) log.debug("{}", ret.get())
         return ret
     }
 }

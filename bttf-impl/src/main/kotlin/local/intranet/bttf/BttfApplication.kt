@@ -8,6 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
+import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.WebApplicationInitializer
 
 /**
@@ -43,6 +44,7 @@ import org.springframework.web.WebApplicationInitializer
  */
 @SpringBootApplication
 @EnableAutoConfiguration
+@EnableScheduling
 @EnableJpaRepositories
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 120, cleanupCron = "0 */5 * * * *", redisNamespace = "spring:session:bttf")
 public class BttfApplication : WebApplicationInitializer, SpringBootServletInitializer() {

@@ -63,13 +63,13 @@ public class JobService : Countable, Invocationable, Statusable {
                 CounterInfo(
                     cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    StatusType.valueOf(status), counterName, revisonNum, revisionType
+                    counterName, StatusType.valueOf(status), revisonNum, revisionType
                 )
             }
         } ?: CounterInfo(
             0L,
             ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()),
-            StatusType.NONE, javaClass.simpleName, 0, RevisionType.DEL // If it's DEL, it wasn't in getCounterAudit 
+            javaClass.simpleName, StatusType.NONE, 0, RevisionType.DEL // If it's DEL, it wasn't in getCounterAudit 
         )
         return ret
     }
@@ -94,14 +94,14 @@ public class JobService : Countable, Invocationable, Statusable {
                 CounterInfo(
                     cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    StatusType.valueOf(status), counterName, revisonNum, revisionType
+                    counterName, StatusType.valueOf(status), revisonNum, revisionType
                 )
             }
         } ?: with(counterRepository.save(Counter(null, javaClass.simpleName, 1L, System.currentTimeMillis(),
                 StatusType.UP.status))) {
                 CounterInfo(cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    StatusType.valueOf(status), counterName, 0,
+                    counterName, StatusType.valueOf(status), 0,
                     RevisionType.DEL // If it's DEL, it wasn't in getCounterAudit
                 )
         }

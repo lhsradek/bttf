@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.info.content
 
 import local.intranet.bttf.api.domain.DefaultFieldLengths
+import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.TimedEntry
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.ZonedDateTime
@@ -58,12 +59,11 @@ public interface LoginCache {
     /** 
      * key, number of attempts, creation timestamp of all
      * 
-     * @param printBlocked {@link Boolean}
+     * @param printBlocked {@link Boolean?} as filter if not null
      *
-     * @return {@link List}&lt; {@link Triple}&lt;{@link String},{@link Int},{@link ZonedDateTime}&gt;&gt;
+     * @return {@link List}&lt;{@link AttemptInfo}&gt;
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>>
+    public fun getCache(printBlocked: Boolean?): List<AttemptInfo>
     
 }

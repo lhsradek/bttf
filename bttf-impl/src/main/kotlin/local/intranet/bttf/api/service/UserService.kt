@@ -105,8 +105,13 @@ public class UserService : UserDetailsService {
         AccountExpiredException::class
     )
     public override fun loadUserByUsername(username: String): UserInfo {
-        val ip: String = statusController.clientIP()
-        if (loginAttemptService.isBlocked(ip)) {
+        var ip: String
+        try {
+            ip = statusController.clientIP()
+        } catch (e: Exception) {
+            ip = ""
+        }
+        if (ip.length > 0 && loginAttemptService.isBlocked(ip)) {
             throw LockedException(BttfConst.ERROR_USERNAME_IS_LOCKED)
         }
         val user: User? = userRepository.findByName(username)
@@ -130,7 +135,9 @@ public class UserService : UserDetailsService {
                 }
             }
         } ?: with(loginAttemptService) {
-            loginFailed(ip)
+            if (ip.length > 0) {
+            	loginFailed(ip)
+            }
             throw UsernameNotFoundException(BttfConst.ERROR_USERNAME_NOT_FOUND)
         }
     }

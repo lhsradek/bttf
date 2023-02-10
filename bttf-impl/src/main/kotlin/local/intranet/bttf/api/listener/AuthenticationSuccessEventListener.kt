@@ -6,6 +6,7 @@ import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.service.LoginAttemptService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationListener
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent
 import org.springframework.stereotype.Component
@@ -37,7 +38,6 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
      */
     public override fun onApplicationEvent(e: AuthenticationSuccessEvent) {
         val ip = statusController.clientIP()
-        loginAttemptService.loginSucceeded(ip)
         val arr = mutableListOf<String>()
         e.authentication?.let {
             e.authentication.authorities.forEach {
@@ -45,9 +45,15 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
             }
         }
         arr.sort()
-        log.info(
-            "Login username:'{}' authorities:'{}' '{}' attempt:{}",
-            e.getAuthentication().getName(), arr, ip, loginAttemptService.findById(ip)
+        val id: Int? = loginAttemptService.findById(ip)
+        loginAttemptService.loginSucceeded(ip)
+        id?.let {
+            log.info(
+                "Login username:'{}' authorities:'{}' '{}' attempt:{}",
+                e.getAuthentication().getName(), arr, ip, id)
+        } ?: log.info(
+            "Login username:'{}' authorities:'{}' '{}'",
+            e.getAuthentication().getName(), arr, ip
         )
     }
 }

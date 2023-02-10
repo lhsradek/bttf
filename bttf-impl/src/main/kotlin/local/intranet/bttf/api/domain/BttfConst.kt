@@ -12,40 +12,22 @@ public object BttfConst {
 
     /**
      *
+     * INFO_TAG = "info-controller"
+     */
+    public const val INFO_TAG = "info-controller"
+
+    /**
+     *
      * STATUS_TAG = "status-controller"
      */
     public const val STATUS_TAG = "status-controller"
 
     /**
      *
-     * INFO_TAG = "status-controller"
+     * PROVIDER_TAG = "provider-controller"
      */
-    public const val INFO_TAG = "info-controller"
-
-    /**
-     *
-     * API = "/api"
-     */
-    public const val API = "/api"
-
-    /**
-     *
-     * INFO_VERSION_PATH = "/v1"
-     */
-    public const val INFO_VERSION_PATH = "/v1"
-
-    /**
-     *
-     * INFO_BASE_INFO = "/info"
-     */
-    public const val INFO_BASE_INFO = "/info"
-
-    /**
-     *
-     * STATUS_BASE_INFO = "/status"
-     */
-    public const val STATUS_BASE_INFO = "/status"
-
+    public const val PROVIDER_TAG = "provider-controller"
+    
     /**
      *
      * BLANK_SPACE = " "

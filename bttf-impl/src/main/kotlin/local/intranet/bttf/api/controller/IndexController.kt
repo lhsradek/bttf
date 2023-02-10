@@ -473,7 +473,7 @@ public class IndexController {
      * @param max   {@link Int}
      * @return      {@link AtomicInteger}
      */
-    protected fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
+    public fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
         with(page) {
             pg?.let {

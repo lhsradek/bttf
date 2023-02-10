@@ -56,7 +56,7 @@ public class SchedulerConfig {
     public fun springBeanJobFactory(): SpringBeanJobFactory {
         val ret = JobFactory()
         ret.setApplicationContext(applicationContext)
-        log.info("Configuring Job factory:'{}'", ret::class.java.simpleName)
+        log.info("Configuring Job factory:'{}'", StringUtils.uncapitalize(ret.javaClass.simpleName))
         return ret;
     }
 
@@ -70,7 +70,7 @@ public class SchedulerConfig {
     public fun jobDetail(): JobDetailFactoryBean {
         val ret = JobDetailFactoryBean()
         ret.setJobClass(BttfJob::class.java)
-        val name = StringUtils.uncapitalize(BttfJob::class.java.simpleName)
+        val name = StringUtils.uncapitalize(ret.javaClass.simpleName)
         ret.setName(name)
         ret.setDescription("Invoke Job Service...")
         ret.setDurability(true)

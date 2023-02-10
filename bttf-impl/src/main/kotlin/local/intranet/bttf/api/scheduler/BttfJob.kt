@@ -1,11 +1,14 @@
 package local.intranet.bttf.api.scheduler
 
 import java.util.StringJoiner
+import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.redis.RedisMessagePublisher
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.MessageService
+import local.intranet.bttf.api.service.UserService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
@@ -14,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 
 /**
@@ -26,7 +31,7 @@ import org.springframework.stereotype.Component
  */
 @Component
 @ConditionalOnExpression("\${scheduler.enabled}")
-@AutoConfigureAfter(LoginAttemptService::class, RedisMessagePublisher::class)
+@AutoConfigureAfter(LoginAttemptService::class, RedisMessagePublisher::class, UserService::class)
 public class BttfJob : Job {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -34,6 +39,9 @@ public class BttfJob : Job {
     @Value("\${bttf.app.redis.message}")
     private lateinit var isRedis: String // toBoolean
 
+    @Value("\${bttf.sec.name}")
+    private lateinit var name: String
+    
     @Autowired
     private lateinit var jobService: JobService
 
@@ -42,6 +50,9 @@ public class BttfJob : Job {
 
     @Autowired
     private lateinit var messageService: MessageService
+
+    @Autowired
+    private lateinit var userService: UserService
 
     @Autowired
     private lateinit var redisMessagePublisher: RedisMessagePublisher
@@ -53,6 +64,11 @@ public class BttfJob : Job {
      */
     @Throws(JobExecutionException::class)
     public override fun execute(context: JobExecutionContext) {
+        
+        val user: UserInfo = userService.loadUserByUsername(name)
+        SecurityContextHolder.getContext().setAuthentication(UsernamePasswordAuthenticationToken(
+            user.getUsername(), user.getPassword(), user.getAuthorities()))
+        
         loginAttemptService.flushCache()
 
         val message = StringJoiner(BttfConst.BLANK_SPACE)
@@ -64,6 +80,7 @@ public class BttfJob : Job {
             add("counter.count:${messageService.countValue()}")
             add("message.event.uuid:'${messageEvent.uuid}'")
         }
+
         // Redis as a message broker
         if (isRedis.toBoolean()) {
             redisMessagePublisher.publish("${message}")
@@ -71,5 +88,17 @@ public class BttfJob : Job {
             log.info("${message}")
         }
     }
+
+    /*
+     *
+     * import javax.annotation.PostConstruct
+     *  
+     * Init be executed after injecting this service.
+     *
+    @PostConstruct
+    public fun init() {
+        log.info("start {}", javaClass.simpleName)
+    }
+     */
 
 }

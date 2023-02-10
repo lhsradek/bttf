@@ -52,8 +52,8 @@ public object DefaultFieldLengths {
 
     /**
      *
-     * DEFAULT_ENUMARATION = 45
+     * DEFAULT_ENUMERATION = 45
      */
-    public const val DEFAULT_ENUMARATION = 45
+    public const val DEFAULT_ENUMERATION = 45
 
 }

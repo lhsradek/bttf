@@ -1,8 +1,12 @@
 package local.intranet.bttf.test
 
 import javax.crypto.spec.IvParameterSpec
+import local.intranet.bttf.api.domain.type.StatusType
+import local.intranet.bttf.api.controller.IndexController
 import local.intranet.bttf.api.controller.InfoController
+import local.intranet.bttf.api.controller.ProviderController
 import local.intranet.bttf.api.controller.StatusController
+import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.BttfService
 import local.intranet.bttf.api.service.JobService
@@ -18,7 +22,10 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.junit4.SpringRunner
 
 /**
@@ -36,18 +43,33 @@ public class bttfTest {
     @Value("\${bttf.sec.key}")
     private lateinit var key: String
 
+    @Value("\${bttf.sec.name}")
+    private lateinit var name: String
+    
+    @Autowired
+    private lateinit var indexController: IndexController
+
     @Autowired
     private lateinit var infoController: InfoController
-
+    
     @Autowired
     private lateinit var statusController: StatusController
 
     @Autowired
+    private lateinit var providerController: ProviderController
+    
+    @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
     
     @Autowired
-    private lateinit var roleService: RoleService
+    private lateinit var jobService: JobService
 
+    @Autowired
+    private lateinit var messageService: MessageService
+    
+    @Autowired
+    private lateinit var roleService: RoleService
+    
     @Autowired
     private lateinit var userService: UserService
     
@@ -58,26 +80,41 @@ public class bttfTest {
      */
     @Test
     public fun givenTest() {
+        assertThat(userService).isNotNull
+        assertThat(userService.username()).isNotNull
+        assertThat(userService.isAuthenticated()).isNotNull
+        assertThat(userService.authoritiesRoles()).isNotNull
+        assertThat(userService.userRoles().count() > 0)
+        assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
+        val user: UserInfo = userService.loadUserByUsername(name)
+        val auth: Authentication = UsernamePasswordAuthenticationToken(
+            user.getUsername(), user.getPassword(), user.getAuthorities())
+        SecurityContextHolder.getContext().setAuthentication(auth)
+        
+        assertThat(roleService.roleInfo()).isNotNull
+        assertThat(jobService.countValue()).isNotNull
+        assertThat(jobService.lastInvocation()).isNotNull
+        assertThat(jobService.getStatus().equals(StatusType.UP))
+        assertThat(messageService.countValue()).isNotNull
+        assertThat(loginAttemptService).isNotNull
+        assertThat(loginAttemptService.loginAttempts(null)).isNotNull
+        assertThat(loginAttemptService.loginAttempts(true)).isNotNull
+        assertThat(loginAttemptService.loginAttempts(false)).isNotNull
+        
+        assertThat(providerController).isNotNull
+        assertThat(providerController.getInstanceName()).isNotBlank
+        assertThat(indexController).isNotNull
+        assertThat(indexController.getPage(0, 5)).isNotNull
+        assertThat(infoController).isNotNull
+        assertThat(infoController.roleInfo()).isNotNull
+        assertThat(infoController.countTotalLoggingEvents()).isNotNull
+        assertThat(infoController.countTotalMessageEvents()).isNotNull
         assertThat(statusController).isNotNull
         assertThat(statusController.plainStatus()).isNotBlank
         assertThat(statusController.implementationVersion()).isNotBlank
         assertThat(statusController.stage()).isNotBlank
         assertThat(statusController.activeProfiles()).isNotBlank
         assertThat(statusController.serverSoftware()).isNotBlank
-
-        assertThat(infoController).isNotNull
-
-        assertThat(loginAttemptService).isNotNull
-        assertThat(loginAttemptService.loginAttempts(true)).isNotNull
-        assertThat(loginAttemptService.loginAttempts(false)).isNotNull
-
-        assertThat(userService).isNotNull
-        assertThat(userService.username()).isNotNull
-        assertThat(userService.isAuthenticated()).isNotNull
-        assertThat(userService.authoritiesRoles()).isNotNull
-        assertThat(userService.userRoles().count() > 0)
-        assertThat(userService.loadUserByUsername("lhs")).isNotNull
-        assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
 
         val year1 = 2023L
         val salt = AESUtil.generateSalt()

@@ -130,7 +130,7 @@ public data class UserInfo (
      *
      * @return the authorities, sorted by natural key (never <code>null</code>)
      */
-    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_ENUMARATION)
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_ENUMERATION)
     @JsonIgnore
     public override fun getAuthorities(): List<GrantedAuthority> = authorities
 

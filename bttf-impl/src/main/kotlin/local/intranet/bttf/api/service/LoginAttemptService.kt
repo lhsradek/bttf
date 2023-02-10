@@ -4,6 +4,7 @@ import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.SECONDS
 import javax.annotation.PostConstruct
 import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.content.AttemptCache
 import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
@@ -29,17 +30,14 @@ public class LoginAttemptService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
-
     @Value("\${bttf.app.login.maxAttemt}")
     private lateinit var maxAttempt: String // toInt()
 
     @Value("\${bttf.app.login.waitSec}")
     private lateinit var waitSec: String // toLong()
-
-    @Value("\${bttf.app.login.printBlocked:false}")
-    private lateinit var printBlocked: String // toBoolean()
+    
+    @Value("\${bttf.app.attempts.invalidateKey:true}")
+    private lateinit var invalidateKey: String // toBoolean()
 
     private lateinit var loginAttempt: AttemptCache
 
@@ -49,18 +47,19 @@ public class LoginAttemptService {
      */
     @PostConstruct
     public fun init() {
-        loginAttempt = AttemptCache.init(waitSec.toLong(), SECONDS, printBlocked.toBoolean(), maxAttempt.toInt())
+        loginAttempt = AttemptCache.init(
+            waitSec.toLong(), SECONDS, maxAttempt.toInt(), invalidateKey.toBoolean())
     }
 
     /**
      *
      * Get attempts for {@link local.intranet.bttf.api.controller.InfoController#loginAttempts}
      *
-     * @param printBlocked {@link Boolean}
-     * @return {@link List}&lt;{@link Triple}&lt;{@link String},{@link Int},{@link Long}&gt;&gt;
+     * @param printBlocked {@link Boolean?} as filter if not null
+     * @return {@link List}&lt;{@link AttemptInfo}&gt;
      */
-    public fun loginAttempts(@NotNull printBlocked: Boolean):
-        List<Triple<String, Int, ZonedDateTime>> = loginAttempt.getCache(printBlocked)
+    public fun loginAttempts(printBlocked: Boolean?):
+        List<AttemptInfo> = loginAttempt.getCache(printBlocked)
 
     /**
      *

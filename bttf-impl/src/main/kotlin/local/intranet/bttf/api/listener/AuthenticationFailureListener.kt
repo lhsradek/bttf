@@ -44,9 +44,11 @@ public class AuthenticationFailureListener : ApplicationListener<AuthenticationF
             }
         }
         arr.sort()
-        log.warn(
-            "Failed username:'{}' authorities:'{}' attempt:{}",
-            e.authentication.name, arr, ip, loginAttemptService.findById(ip)
-        )
+        val id: Int? = loginAttemptService.findById(ip)
+        id?.let {
+            log.warn("Failed username:'{}' authorities:'{}' attempt:{}",
+                e.authentication.name, arr, ip, id)
+        } ?: log.warn("Failed username:'{}' authorities:'{}'",
+            e.authentication.name, arr, ip)
     }
 }

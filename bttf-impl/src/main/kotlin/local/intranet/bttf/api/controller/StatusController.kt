@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
  *
  */
 @RestController
-@RequestMapping(BttfConst.API + BttfConst.INFO_VERSION_PATH + BttfConst.STATUS_BASE_INFO)
+@RequestMapping("/api/v1/status")
 @Tag(name = BttfConst.STATUS_TAG)
 public class StatusController {
 
@@ -162,7 +162,7 @@ public class StatusController {
         val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
         val ret = xfHeader?.let {
             xfHeader.split(",").first()
-        }?: httpServletRequest.remoteAddr
+        } ?: httpServletRequest.remoteAddr
         return ret
     }
 

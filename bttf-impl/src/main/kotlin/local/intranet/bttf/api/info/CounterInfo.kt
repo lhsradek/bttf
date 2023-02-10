@@ -43,18 +43,18 @@ public data class CounterInfo (
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val count: Long,
 
-    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
     public val date: ZonedDateTime,
+
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public val name: String,
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
     @JsonProperty("status")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val statusType: StatusType,
-
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public val name: String,
 
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

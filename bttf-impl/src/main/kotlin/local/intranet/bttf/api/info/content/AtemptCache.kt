@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.info.content
 
+import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.TimedEntry
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -21,8 +22,8 @@ public class AttemptCache() : LoginCache {
 
     private val hashMap = ConcurrentHashMap<String, TimedEntry>()
     private var cacheTimeValidityInMillis: Long = 0
-    private var printBlocked: Boolean = false
     private var maxAtempt: Int = 0
+    private var isInvalidateKey: Boolean = true
 
     public companion object {
 
@@ -30,22 +31,24 @@ public class AttemptCache() : LoginCache {
          *
          * Init for {@link local.intranet.bttf.api.service.LoginAttemptService#init}
          *
-         * @param duration      {@link Long}
-         * @param timeUnit      {@link TimeUnit}
-         * @param printBlocked  {@link Boolean}
-         * @param maxAtempt     {@link Int}
+         * @param duration        {@link Long}
+         * @param timeUnit        {@link TimeUnit}
+         * @param maxAtempt       {@link Int}
+         * @param isInvalidateKey {@link Boolean}
          */
         @JvmStatic
-        public fun init(duration: Long, timeUnit: TimeUnit, printBlocked: Boolean, maxAtempt: Int) =
+        public fun init(duration: Long, timeUnit: TimeUnit, maxAtempt: Int, isInvalidateKey: Boolean) =
             AttemptCache().apply {
                 cacheTimeValidityInMillis = MILLISECONDS.convert(duration, timeUnit)
-                this.printBlocked = printBlocked
                 this.maxAtempt = maxAtempt
+                this.isInvalidateKey = isInvalidateKey
             }
     }
 
     /**
      * It doesn't have to exist, if exist return number of attempts
+     *
+     * implements {@link LoginCache#getById}
      *
      * @param key {@link String}
      *
@@ -65,6 +68,11 @@ public class AttemptCache() : LoginCache {
         return ret
     }
 
+    /**
+     *
+     * implements {@link LoginCache#keyToCache}
+     *
+     */
     public override fun keyToCache(@NotNull key: String) {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
@@ -72,19 +80,35 @@ public class AttemptCache() : LoginCache {
                 with(timedEntry) {
                     value++
                     creationTime = System.currentTimeMillis()
+                    log.debug("KeyToCache key:'{}' value:{}", key, value)
                 }
             }
         } else {
             hashMap.put(key, TimedEntry(key, 1, cacheTimeValidityInMillis))
+            log.debug("KeyToCache key:'{}'", key)
         }
     }
 
+    /**
+     *
+     * implements {@link LoginCache#invalidateKey}
+     *
+     * Scheduler invalidates all keys by {@link #removeExpiredKeys} if isInvalidateKey == false
+     */
     public override fun invalidateKey(@NotNull key: String) {
-        if (hashMap.containsKey(key)) {
-            hashMap.remove(key)
+        if (isInvalidateKey) {
+        	if (hashMap.containsKey(key)) {
+        		hashMap.remove(key)
+                log.debug("InvalidateKey key:'{}'", key)
+            }
         }
     }
 
+    /**
+     *
+     * implements {@link LoginCache#isBlocked}
+     *
+     */
     public override fun isBlocked(@NotNull key: String): Boolean {
         val ret: Boolean
         if (hashMap.containsKey(key)) {
@@ -95,7 +119,10 @@ public class AttemptCache() : LoginCache {
                         invalidateKey(key)
                         false
                     } else if (value >= maxAtempt) {
+                        
+                    	log.debug("IsBlocked key:'{}'", key)
                         true  // is blocked !!!
+                        
                     } else {
                         false
                     }
@@ -107,26 +134,25 @@ public class AttemptCache() : LoginCache {
         return ret
     }
 
-    public override fun getCache(@NotNull printBlocked: Boolean): List<Triple<String, Int, ZonedDateTime>> {
-        val ret = mutableListOf<Triple<String, Int, ZonedDateTime>>()
-        if (printBlocked) {
-            hashMap.filter { b -> isBlocked(b.key) == true }.forEach {
+    /**
+     *
+     * Get Cache implements {@link LoginCache#getCache}
+     *
+     * @param printBlocked {@link Boolean?} as filter if not null
+     * @return {@link List}&lt;{@link AttemptInfo}&gt;
+     */
+    public override fun getCache(printBlocked: Boolean?): List<AttemptInfo> {
+        val ret = mutableListOf<AttemptInfo>()
+        with (printBlocked?.let {
+            hashMap.filter { isBlocked(it.key) == printBlocked }
+        } ?: hashMap
+        ) {
+            forEach {
                 val timedEntry = it.value
                 ret.add(
-                    Triple(
-                        it.key, timedEntry.value,
-                        ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(timedEntry.creationTime), ZoneId.systemDefault()
-                        )
-                    )
-                )
-            }
-        } else {
-            hashMap.filter { b -> isBlocked(b.key) == false }.forEach {
-                val timedEntry = it.value
-                ret.add(
-                    Triple(
-                        it.key, timedEntry.value,
+                    AttemptInfo(
+                        timedEntry.key,
+                        timedEntry.value,
                         ZonedDateTime.ofInstant(
                             Instant.ofEpochMilli(timedEntry.creationTime), ZoneId.systemDefault()
                         )
@@ -147,7 +173,7 @@ public class AttemptCache() : LoginCache {
             }
         }
         if (i.get() > 0) {
-            log.info("RemoveExpiredKeys count:{}", i.get())
+            log.debug("RemoveExpiredKeys count:{}", i.get())
         }
     }
 

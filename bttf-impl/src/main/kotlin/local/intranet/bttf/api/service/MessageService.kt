@@ -192,7 +192,7 @@ public class MessageService : Countable {
                 CounterInfo(
                     cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    StatusType.valueOf(status), counterName, revisonNum, revisionType)
+                    counterName, StatusType.valueOf(status), revisonNum, revisionType)
             }
         } ?: with(counterRepository.save(
             Counter(null, javaClass.simpleName, 0, System.currentTimeMillis(),StatusType.UP.status))) {
@@ -200,7 +200,7 @@ public class MessageService : Countable {
             CounterInfo(
                 cnt,
                 ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-        		StatusType.valueOf(status), counterName, revisonNum, revisionType)
+        		counterName, StatusType.valueOf(status), revisonNum, revisionType)
         }
         // log.debug("GetCounter ret:{}",  ret)
         return ret

@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.service
 
+import local.intranet.bttf.api.domain.type.RoleType
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.RolePlain
 import local.intranet.bttf.api.model.repository.RoleRepository
