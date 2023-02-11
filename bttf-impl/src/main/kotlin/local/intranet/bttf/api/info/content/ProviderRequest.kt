@@ -69,6 +69,7 @@ public abstract class ProviderRequest : Request {
     /**
      *
      * Returns a string representation of the object
+     *
      * @return {@String}
      */
     public override fun toString(): String = MessageFormat.format(

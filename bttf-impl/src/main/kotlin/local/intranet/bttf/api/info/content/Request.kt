@@ -39,6 +39,7 @@ public abstract class Request : Token {
     /**
      *
      * Returns a string representation of the object
+     *
      * @return {@String}
      */
     public override fun toString(): String = MessageFormat.format("Request({0})", super.toString())

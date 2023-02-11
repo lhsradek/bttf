@@ -14,6 +14,11 @@ public data class TimedEntry(val key: String, var value: Int, val maxDurationInM
     
     public var creationTime: Long = now()
 
+    /**
+     * Is Expired
+     *
+     * @return {@link Boolean}
+     */
     public fun isExpired() = (now() - creationTime) > maxDurationInMillis
         
     private fun now() = System.currentTimeMillis()

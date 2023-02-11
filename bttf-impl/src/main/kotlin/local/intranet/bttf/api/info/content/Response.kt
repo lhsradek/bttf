@@ -60,6 +60,7 @@ public abstract class Response : Token {
     /**
      *
      * Returns a string representation of the object
+     *
      * @return {@String}
      */
     public override fun toString(): String = MessageFormat.format("Response(code={0}, {1})", code, super.toString())

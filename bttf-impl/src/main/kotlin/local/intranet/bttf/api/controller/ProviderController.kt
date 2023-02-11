@@ -1,7 +1,6 @@
 package local.intranet.bttf.api.controller
 
 import java.util.Random
-import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.domain.type.ResponseCodeType
 import local.intranet.bttf.api.info.content.ProviderResponse
 import local.intranet.bttf.api.info.content.ProviderRequest
@@ -22,15 +21,25 @@ public class ProviderController: ServiceProvider<ProviderRequest, ProviderRespon
     private var margin: Long = 10L
     private var divider: Long = 2L
     
-    // @Autowired
-    // private lateinit var loginAttemptService: LoginAttemptService
-    
     @Autowired
     private lateinit var tokenFactory: TokenFactory
 
+    /**
+     *
+     * Get Data
+     *
+     * @param return {@link Map}&lt;{@link String}, {@link Long}&gt;
+     */
     @ReadOperation
     public fun getData(): Map<String, Long> = mutableMapOf("margin" to margin, "divider" to divider)
 
+    /**
+     *
+     * Post Data
+     *
+     * @param name  {@String}
+     * @param value {@Long}
+     */
     @WriteOperation
     public fun postData(name: String, value: Long) {
         if (name.equals("margin")) {
@@ -40,17 +49,30 @@ public class ProviderController: ServiceProvider<ProviderRequest, ProviderRespon
         }
     }
 
-    public override fun getInstanceName(): String = "Provider ${javaClass.simpleName}"
-
+    /**
+     *
+     * Perform
+     *
+     * @param {@ProviderRequest}
+     * @return {@ProviderResponse}
+     */
     public override fun perform(request: ProviderRequest): ProviderResponse {
         val response = tokenFactory
             .tokenInstance(
                 request.getTid(),
                 ProviderResponse::class.java) as ProviderResponse
         response.setCode(ResponseCodeType.OK)
-        val value: Long = Random().nextLong(
-            Math.max(Math.min(request.getValue() / divider, margin), 1)) 
+        val value: Long = Random().nextLong(Math.max(Math.min(request.getValue() / divider, margin), 1)) 
         response.setResult(value)
         return response;
     }
+
+    /**
+     *
+     * Get Instance Name
+     *
+     * @return {@String}
+     */
+    public override fun getInstanceName(): String = "Provider ${javaClass.simpleName}"
+
 }

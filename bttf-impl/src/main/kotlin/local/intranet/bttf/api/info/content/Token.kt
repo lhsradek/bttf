@@ -75,6 +75,7 @@ public abstract class Token : Serializable {
     /**
      *
      * Get Nid
+     *
      * @return {@URI}
      */
     public fun getNid(): URI = nid
@@ -82,6 +83,7 @@ public abstract class Token : Serializable {
     /**
      *
      * Get Name
+     *
      * @return {@String}
      */
     public fun getName(): String = name
@@ -89,6 +91,7 @@ public abstract class Token : Serializable {
     /**
      *
      * Get Tid
+     *
      * @return {@URI}
      */
     public fun getTid(): URI = tid
@@ -96,6 +99,7 @@ public abstract class Token : Serializable {
     /**
      *
      * Get Ts
+     *
      * @return {@ZonedDateTime}
      */
     public fun getTs(): ZonedDateTime = ts
@@ -103,6 +107,7 @@ public abstract class Token : Serializable {
     /**
      *
      * Returns a string representation of the object
+     *
      * @return {@String}
      */
     public override fun toString(): String =

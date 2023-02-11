@@ -46,6 +46,7 @@ public abstract class ProviderResponse : Response {
     /**
      *
      * Get Result
+     *
      * @return {@Long}
      */
     public fun getResult(): Long = result
@@ -53,6 +54,7 @@ public abstract class ProviderResponse : Response {
     /**
      *
      * Set Result
+     *
      * @param result {@Long}
      */
     public fun setResult(result: Long) {
@@ -62,6 +64,7 @@ public abstract class ProviderResponse : Response {
     /**
      *
      * Get Audit Event
+     *
      * @return {@String}
      */
     public fun auditEvent(): String = "applicant.${ProviderResponse::class.simpleName}"
@@ -69,6 +72,7 @@ public abstract class ProviderResponse : Response {
     /**
      *
      * Returns a string representation of the object
+     *
      * @return {@String}
      */
     public override fun toString(): String = MessageFormat.format(
