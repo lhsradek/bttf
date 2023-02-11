@@ -50,7 +50,7 @@ public class OpenApiConfig {
         .builder()
             .pathsToMatch("/api/v1/**")
             .group("bttf")
-            .displayName("BTTF API")
+            .displayName(API)
             .build()
 
     /**

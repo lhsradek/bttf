@@ -579,9 +579,7 @@ public class IndexController {
             SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
             log.info(
                 "Login username:'{}' redirect:'{}' sessionId:'{}'",
-                username,
-                redirect,
-                request.requestedSessionId
+                username, redirect, request.requestedSessionId
             )
         } catch (e: Exception) {
             when (e) {
