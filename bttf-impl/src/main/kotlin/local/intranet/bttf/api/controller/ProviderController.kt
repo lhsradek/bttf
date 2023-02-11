@@ -28,7 +28,7 @@ public class ProviderController: ServiceProvider<ProviderRequest, ProviderRespon
      *
      * Get Data
      *
-     * @param return {@link Map}&lt;{@link String}, {@link Long}&gt;
+     * @return {@link Map}&lt;{@link String}, {@link Long}&gt;
      */
     @ReadOperation
     public fun getData(): Map<String, Long> = mutableMapOf("margin" to margin, "divider" to divider)
