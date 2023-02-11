@@ -75,7 +75,7 @@ public class StatusController {
      *
      * Implementation version
      *
-     * @return version {@link String}
+     * @return {@link String}
      */
     public fun implementationVersion(): String {
         // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
@@ -91,7 +91,7 @@ public class StatusController {
      * 
      * Session id
      *
-     * @return version {@link String}
+     * @return {@link String}
      */
     public fun sessionId(): String {
         val session = httpServletRequest.getSession(false)
@@ -107,7 +107,7 @@ public class StatusController {
      *
      * Stage
      *
-     * @return ${bttf.app.stage}
+     * @return {@link String}
      */
     public fun stage(): String = stage
 
@@ -115,7 +115,7 @@ public class StatusController {
      *
      * Active profiles
      *
-     * @return environment.getActiveProfiles()
+     * @return {@link String}
      */
     public fun activeProfiles(): String = environment.getActiveProfiles().joinToString(separator = " ")
 
@@ -123,7 +123,7 @@ public class StatusController {
      *
      * Server name
      *
-     * @return serverName (The second word) from {@link #getVirtualServerName()}
+     * @return {@link String}
      */
     public fun serverName(): String = virtualServerName().split("/").last()
 
@@ -131,8 +131,7 @@ public class StatusController {
      *
      * Server software
      *
-     * @return serverSoftware's name (The first word) without version from
-     *         {@link #getServerInfo()}
+     * @return {@link String}
      */
     public fun serverSoftware(): String = serverInfo().split("/").first()
 
@@ -140,7 +139,7 @@ public class StatusController {
      *
      * Get virtualServerName from ServletContext.getVirtualServerName()
      *
-     * @return virtualServerName()
+     * @return {@link String}
      */
     protected fun virtualServerName(): String = servletContext.getVirtualServerName()
 
@@ -148,7 +147,7 @@ public class StatusController {
      *
      * Server info from ServletContext.getServerInfo()
      *
-     * @return servletContext.getServerInfo()
+     * @return {@link String}
      */
     protected fun serverInfo(): String = servletContext.getServerInfo()
     
@@ -156,7 +155,7 @@ public class StatusController {
      * 
      * client IP
      * 
-     * @return {@link String} as ip
+     * @return {@link String}
      */
     public fun clientIP(): String {
         val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
