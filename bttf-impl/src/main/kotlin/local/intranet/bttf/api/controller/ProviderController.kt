@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 public class ProviderController: ServiceProvider<ProviderRequest, ProviderResponse> {
 
     private var margin: Long = 10L
-    private var divider: Long = 2
+    private var divider: Long = 2L
     
     // @Autowired
     // private lateinit var loginAttemptService: LoginAttemptService

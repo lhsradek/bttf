@@ -35,7 +35,6 @@ import org.springframework.test.context.junit4.SpringRunner
  * @author Radek Kadner
  *
  */
-
 @RunWith(SpringRunner::class)
 @SpringBootTest
 public class bttfTest {
@@ -76,7 +75,6 @@ public class bttfTest {
     /**
      *
      * givenTest
-     *
      */
     @Test
     public fun givenTest() {

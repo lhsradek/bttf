@@ -22,10 +22,25 @@ public class TokenFactory {
     @Value("\${bttf.app.node.name}")
     private lateinit var nodeName: String
 
+    /**
+     *
+     * Token Instance
+     *
+     * @param cl {@Class}&lt;*&gt
+     * @return {@Any}
+     */
     public fun tokenInstance(cl: Class<*>): Any = cl
         .getDeclaredConstructor(URI::class.java, String::class.java)
         .newInstance(URI(nodeId), nodeName)
 
+    /**
+     *
+     * Token Instance
+     *
+     * @param tid {@URI}
+     * @param cl  {@Class}&lt;*&gt
+     * @return {@Any}
+     */
     public fun tokenInstance(tid: URI, cl: Class<*>): Any = cl
         .getDeclaredConstructor(URI::class.java, String::class.java, URI::class.java)
         .newInstance(URI(nodeId), nodeName, tid)

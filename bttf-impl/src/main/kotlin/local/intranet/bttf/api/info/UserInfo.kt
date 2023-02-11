@@ -137,6 +137,7 @@ public data class UserInfo (
     /**
      *
      * Returns a string representation of the object with protected password
+     * @return {@String}
      */
     public override fun toString(): String = "UserInfo [username=" + username + ", password=" +
     		BttfConst.STATUS_PROTECTED + ", enabled=" + isEnabled + ", authorities=" + authorities + "]"

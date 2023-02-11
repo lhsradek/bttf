@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull
 public interface LoginCache {
 
     /**
+     *
      * It doesn't have to exist, if exist return number of attempts
      * 
      * @param key {@link String}
-     *
      * @return {@link Int?}
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
@@ -26,6 +26,7 @@ public interface LoginCache {
     public fun getById(@NotNull key: String): Int?
     
     /**
+     *
      * Put new key or increment number of attempts
      *
      * @param key {@link String}
@@ -49,18 +50,17 @@ public interface LoginCache {
      * Is blocked? Key doesn't have to exist
      *
      * @param key {@link String}
-     *
      * @return {@link Boolean?}
      */ 
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public fun isBlocked(@NotNull key: String): Boolean
     
-    /** 
+    /**
+     *
      * key, number of attempts, creation timestamp of all
      * 
      * @param printBlocked {@link Boolean?} as filter if not null
-     *
      * @return {@link List}&lt;{@link AttemptInfo}&gt;
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)

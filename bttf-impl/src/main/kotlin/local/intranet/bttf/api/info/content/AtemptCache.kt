@@ -46,12 +46,12 @@ public class AttemptCache() : LoginCache {
     }
 
     /**
+     *
      * It doesn't have to exist, if exist return number of attempts
      *
      * implements {@link LoginCache#getById}
      *
      * @param key {@link String}
-     *
      * @return {@link Int?}
      */
     public override fun getById(@NotNull key: String): Int? {
@@ -71,7 +71,6 @@ public class AttemptCache() : LoginCache {
     /**
      *
      * implements {@link LoginCache#keyToCache}
-     *
      */
     public override fun keyToCache(@NotNull key: String) {
         if (hashMap.containsKey(key)) {
@@ -107,7 +106,6 @@ public class AttemptCache() : LoginCache {
     /**
      *
      * implements {@link LoginCache#isBlocked}
-     *
      */
     public override fun isBlocked(@NotNull key: String): Boolean {
         val ret: Boolean
@@ -163,6 +161,10 @@ public class AttemptCache() : LoginCache {
         return ret
     }
 
+    /**
+     *
+     * Remove Expired Keys
+     */
     public fun removeExpiredKeys() {
         val i = AtomicInteger()
         for (item in hashMap) {
