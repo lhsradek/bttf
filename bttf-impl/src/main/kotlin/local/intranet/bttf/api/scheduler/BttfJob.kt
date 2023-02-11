@@ -1,7 +1,6 @@
 package local.intranet.bttf.api.scheduler
 
 import java.util.StringJoiner
-import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.redis.RedisMessagePublisher
