@@ -17,24 +17,20 @@ public abstract class Token : Serializable {
     
     private val log = LoggerFactory.getLogger(javaClass)
     
-    public var nid: URI
-    public var name: String
-    public var tid: URI
-    public var ts: ZonedDateTime
-
-    private val DEFAULT_TID_SCHEMA: String = "uuid"
+    private val nid: URI
+    private val name: String
+    private val tid: URI
+    private val ts: ZonedDateTime
 
     public constructor(nid: URI, name: String) {
     	this.nid = nid
     	this.name = name
-        var tid: URI
         try {
-            tid = URI(DEFAULT_TID_SCHEMA, UUID.randomUUID().toString(), null)
+            this.tid = URI("uuid", UUID.randomUUID().toString(), null)
         } catch (e: URISyntaxException) {
             log.error("Cannot created Transaction ID!", e)
             throw e
         }
-    	this.tid = tid
 		this.ts = ZonedDateTime.now(ZoneId.systemDefault())
     }
 
@@ -51,6 +47,14 @@ public abstract class Token : Serializable {
         this.tid = tid
         this.ts = ts
     }
+    
+    public fun getNid(): URI = nid
+    
+    public fun getName(): String = name
+
+    public fun getTid(): URI = tid
+            
+    public fun getTs(): ZonedDateTime = ts
     
     public override fun toString(): String =
         MessageFormat.format("Token(nid={0}, name={1}, tid={2}, ts={3,time,long})", nid, name, tid, ts)

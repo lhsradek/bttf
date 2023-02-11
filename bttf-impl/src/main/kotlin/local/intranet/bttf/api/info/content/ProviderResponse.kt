@@ -9,15 +9,19 @@ import java.text.MessageFormat
  *
  * https://blog.root.cz/trpaslikuv-blog/spring-boot-actuator-sledovani-stavu-aplikace/
  */
-public class ProviderResponse : Response {
+public abstract class ProviderResponse : Response {
     
-    public var result: Long = 0
+    private var result: Long = 0L
     
     public constructor(nid: URI, name: String): super(nid, name)
         
     public constructor(nid: URI, name: String, tid: URI) : super(nid, name, tid)
     
     public constructor(nid: URI, name: String, tid: URI, ts: ZonedDateTime) : super(nid, name, tid, ts)
+    
+    public fun getResult(): Long = result
+    
+    public fun setResult(result: Long) { this.result = result }
     
     public fun auditEvent(): String = "applicant.${ProviderResponse::class.simpleName}"
     

@@ -22,24 +22,12 @@ public class TokenFactory {
     @Value("\${bttf.app.node.name}")
     private lateinit var nodeName: String
 
-    public fun tokenInstance(cl: Class<*>): Any {
-        try {
-            return cl.getDeclaredConstructor(URI::class.java, String::class.java)
-                .newInstance(URI(nodeId), nodeName)
-        } catch (e: Exception) {
-            log.error("Token instance creation failed!", e)
-            throw e
-        }
-    }
+    public fun tokenInstance(cl: Class<*>): Any = cl
+        .getDeclaredConstructor(URI::class.java, String::class.java)
+        .newInstance(URI(nodeId), nodeName)
 
-    public fun tokenInstance(tid: URI, cl: Class<*>): Any {
-        try {
-            return cl.getDeclaredConstructor(URI::class.java, String::class.java, URI::class.java)
-                .newInstance(URI(nodeId), nodeName, tid)
-        } catch (e: Exception) {
-            log.error("Token instance creation failed!", e)
-            throw e
-        }
-    }
+    public fun tokenInstance(tid: URI, cl: Class<*>): Any = cl
+        .getDeclaredConstructor(URI::class.java, String::class.java, URI::class.java)
+        .newInstance(URI(nodeId), nodeName, tid)
 
 }

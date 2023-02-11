@@ -45,12 +45,12 @@ public class ProviderController: ServiceProvider<ProviderRequest, ProviderRespon
     public override fun perform(request: ProviderRequest): ProviderResponse {
         val response = tokenFactory
             .tokenInstance(
-                request.tid,
+                request.getTid(),
                 ProviderResponse::class.java) as ProviderResponse
-        response.code = ResponseCodeType.OK
+        response.setCode(ResponseCodeType.OK)
         val value: Long = Random().nextLong(
-            Math.max(Math.min(request.value / divider, margin), 1))
-        response.result = value
+            Math.max(Math.min(request.getValue() / divider, margin), 1)) 
+        response.setResult(value)
         return response;
     }
 }
