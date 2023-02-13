@@ -4,9 +4,8 @@ import javax.crypto.spec.IvParameterSpec
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.controller.IndexController
 import local.intranet.bttf.api.controller.InfoController
-import local.intranet.bttf.api.controller.ProviderController
+// import local.intranet.bttf.api.controller.ProviderController
 import local.intranet.bttf.api.controller.StatusController
-import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.BttfService
 import local.intranet.bttf.api.service.JobService
@@ -54,8 +53,8 @@ public class bttfTest {
     @Autowired
     private lateinit var statusController: StatusController
 
-    @Autowired
-    private lateinit var providerController: ProviderController
+    // @Autowired
+    // private lateinit var providerController: ProviderController
     
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
@@ -84,7 +83,7 @@ public class bttfTest {
         assertThat(userService.authoritiesRoles()).isNotNull
         assertThat(userService.userRoles().count() > 0)
         assertThrows<UsernameNotFoundException> { userService.loadUserByUsername("coco") }
-        val user: UserInfo = userService.loadUserByUsername(name)
+        val user = userService.loadUserByUsername(name)
         val auth: Authentication = UsernamePasswordAuthenticationToken(
             user.getUsername(), user.getPassword(), user.getAuthorities())
         SecurityContextHolder.getContext().setAuthentication(auth)
@@ -99,14 +98,15 @@ public class bttfTest {
         assertThat(loginAttemptService.loginAttempts(true)).isNotNull
         assertThat(loginAttemptService.loginAttempts(false)).isNotNull
         
-        assertThat(providerController).isNotNull
-        assertThat(providerController.getInstanceName()).isNotBlank
+        // assertThat(providerController).isNotNull
+        // assertThat(providerController.getInstanceName()).isNotBlank
         assertThat(indexController).isNotNull
-        assertThat(indexController.getPage(0, 5)).isNotNull
         assertThat(infoController).isNotNull
         assertThat(infoController.roleInfo()).isNotNull
         assertThat(infoController.countTotalLoggingEvents()).isNotNull
         assertThat(infoController.countTotalMessageEvents()).isNotNull
+        // assertThat(infoController.beanInfo()).isNotNull
+        // assertThat(statusController.bttfAPIBean()).isNotNull
         assertThat(statusController).isNotNull
         assertThat(statusController.plainStatus()).isNotBlank
         assertThat(statusController.implementationVersion()).isNotBlank

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 /**
  *
  * {@link RoleService} for
- * {@link local.intranet.bttf.api.controller.InfoController#getRoleInfo}
+ * {@link local.intranet.bttf.api.controller.InfoController#roleInfo}
  *
  * @author Radek Kádner
  *

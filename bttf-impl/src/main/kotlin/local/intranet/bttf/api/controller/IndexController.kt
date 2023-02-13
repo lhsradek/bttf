@@ -9,6 +9,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.AbstractMap.SimpleEntry
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
@@ -22,7 +23,6 @@ import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
-import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.BttfService
@@ -158,6 +158,44 @@ public class IndexController {
             )
         }
         return "index"
+    }
+
+    /**
+     * 
+     * HTML Properties
+     * <p>
+     * The method getProperties for /properties
+     * <p>
+     * Accessible to the
+     * {@link local.intranet.tombola.api.domain.type.RoleType#ADMIN_ROLE}.
+     * 
+     * @param request {@link HttpServletRequest}
+     * @param model   {@link Model}
+     * @return "properties" for thymeleaf properties.html {@link String}
+     */
+    @GetMapping(value = arrayOf("/properties"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
+    @PreAuthorize("hasRole('ROLE_adminRole')")
+    public fun getProperties(request: HttpServletRequest, model: Model): String {
+        addModel(request, model)
+        with(model) {
+            addAttribute("bttfBeans", statusController.propertiesAPIBean())
+            addAttribute("hostName", statusController.hostName())
+            addAttribute("serverPort", 8080)
+            addAttribute("bttfProperties", statusController.bttfProperties())
+            addAttribute("bttfHttpServletRequest", statusController.bttfHttpServletRequest())
+            addAttribute("bttfServletContext", statusController.bttfServletContext())
+            addAttribute("bttfEnvironment", statusController.bttfEnvironment())
+            // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
+            request.requestedSessionId?.let {
+                log.info(
+                    "GetProperties username:'{}' ip:'{}' session:{}",
+                    asMap().get("username"), statusController.clientIP(), request.requestedSessionId
+                )
+            } ?: log.info(
+                "GetProperties username:'{}' ip:'{}'", asMap().get("username"), statusController.clientIP()
+            )
+        }
+        return "properties"
     }
 
     /**
@@ -473,7 +511,7 @@ public class IndexController {
      * @param max   {@link Int}
      * @return      {@link AtomicInteger}
      */
-    public fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
+    protected fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
         with(page) {
             pg?.let {
@@ -574,7 +612,7 @@ public class IndexController {
         }
 
         try {
-            val user: UserInfo = userService.loadUserByUsername(username)
+            val user = userService.loadUserByUsername(username)
             val token = UsernamePasswordAuthenticationToken(user, password, user.authorities)
             SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(token))
             log.info(
@@ -588,11 +626,10 @@ public class IndexController {
                 is AccountExpiredException,
                 is AuthenticationCredentialsNotFoundException,
                 is BadCredentialsException -> {
-                    val ret = "/bttf/login" + provider.queryProvider(
-                        listOf(
-                            Pair("error", "true"), Pair("exception", e::class.java.simpleName)
-                        )
-                    )
+                    val ret = "/bttf/login" + provider.queryProvider(listOf(
+                        	SimpleEntry<String, String>("error", "true"),
+                        	SimpleEntry<String, String>("exception", e::class.java.simpleName)
+                    ))
                     val attempt = loginAttemptService.findById(statusController.clientIP())
                     log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
                     // log.error(e::class.java.simpleName, e)

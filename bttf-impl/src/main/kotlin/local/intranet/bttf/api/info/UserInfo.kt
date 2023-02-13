@@ -141,6 +141,6 @@ public data class UserInfo (
      * @return {@String}
      */
     public override fun toString(): String = "UserInfo [username=" + username + ", password=" +
-    		BttfConst.STATUS_PROTECTED + ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
+    		BttfConst.PROTECTED + ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
     
 }

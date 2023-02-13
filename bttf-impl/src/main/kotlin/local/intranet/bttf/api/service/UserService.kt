@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
@@ -30,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional
 /**
  *
  * {@link UserService} for
- * {@link local.intranet.bttf.api.controller.InfoController#getUserInfo}
+ * {@link local.intranet.bttf.api.controller.InfoController#userInfo}
  *
  * @author Radek Kádner
  *
@@ -85,7 +86,7 @@ public class UserService : UserDetailsService {
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
     )
-    public fun userInfo(): UserInfo = loadUserByUsername(username())
+    public fun userInfo(): UserDetails = loadUserByUsername(username())
 
     /**
      *
@@ -104,7 +105,7 @@ public class UserService : UserDetailsService {
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
     )
-    public override fun loadUserByUsername(username: String): UserInfo {
+    public override fun loadUserByUsername(username: String): UserDetails {
         var ip: String
         try {
             ip = statusController.clientIP()

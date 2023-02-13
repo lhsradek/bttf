@@ -32,13 +32,19 @@ public object BttfConst {
      *
      * BLANK_SPACE = " "
      */
-    public const val BLANK_SPACE = " "
-
+    public const val BLANK_SPACE: String = " "
+    
     /**
      *
-     * STATUS_PROTECTED = "[PROTECTED]"
+     * PIPE_LINE = "|"
      */
-    public const val STATUS_PROTECTED: String = "[PROTECTED]"
+    public const val PIPE_LINE: String = "|"
+    
+    /**
+     *
+     * PROTECTED = "[PROTECTED]"
+     */
+    public const val PROTECTED: String = "[PROTECTED]"
 
     /**
      *

@@ -2,7 +2,6 @@ package local.intranet.bttf.api.scheduler
 
 import java.util.StringJoiner
 import local.intranet.bttf.api.domain.BttfConst
-import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.redis.RedisMessagePublisher
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
@@ -64,7 +63,7 @@ public class BttfJob : Job {
     @Throws(JobExecutionException::class)
     public override fun execute(context: JobExecutionContext) {
         
-        val user: UserInfo = userService.loadUserByUsername(name)
+        val user = userService.loadUserByUsername(name)
         SecurityContextHolder.getContext().setAuthentication(UsernamePasswordAuthenticationToken(
             user.getUsername(), user.getPassword(), user.getAuthorities()))
         

@@ -37,6 +37,7 @@
           <ul>
             <li><a th:href="@{license}" th:text="'License'"/></li><div th:if="${isAuthenticated}">
             <li><a th:href="@{/}" th:text="'Go Home'"/></li>
+            <li th:if="${userRoles.get('adminRole')}"><a th:href="@{/properties/}" th:text="'Properties'"/></li>
             <li th:if="${userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:target="_blank" th:text="'Swagger'"/></li>
             <li><a th:href="@{/logout}" th:text="'Log out'"/></li></div>
           </ul>

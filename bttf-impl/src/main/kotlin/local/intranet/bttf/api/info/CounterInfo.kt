@@ -28,11 +28,10 @@ import org.hibernate.envers.RevisionType
  *
  * @constructor with parameters
  *
- * @param cnt            {@link Long}
+ * @param count          {@link Long}
  * @param date           {@link ZonedDateTime}
+ * @param name           {@link String}
  * @param status         {@link StatusType}
- * @param name           {@link String}
- * @param name           {@link String}
  * @param revisionNum    {@Int}
  * @param revisionType   {@RevisionType}
  */
@@ -40,7 +39,6 @@ import org.hibernate.envers.RevisionType
 public data class CounterInfo (
 
     @Size(min = 0)
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public val count: Long,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -66,7 +64,8 @@ public data class CounterInfo (
 
 )  : Countable, Invocationable, Statusable {
     
-    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("count")
     public override fun countValue(): Long = count
     
     @JsonIgnore

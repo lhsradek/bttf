@@ -8,12 +8,14 @@ import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.exception.BttfException
 import local.intranet.bttf.api.info.AttemptInfo
+import local.intranet.bttf.api.info.BeanInfo
 import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.MessageCount
 import local.intranet.bttf.api.info.MessageEventInfo
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
+import local.intranet.bttf.api.service.BeanService
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
@@ -28,6 +30,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.http.MediaType
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AccountExpiredException
@@ -67,11 +70,36 @@ public class InfoController {
     private lateinit var messageService: MessageService
 
     @Autowired
+    private lateinit var beanService: BeanService
+    
+    @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
     
     @Autowired
     private lateinit var loggingEventService: LoggingEventService
 
+    /**
+     * 
+     * Bean informations
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.BeanService#beanInfo}.
+     * <p>
+     * 
+     * @see <a href="/bttf/swagger-ui/#/info-controller/beanInfo" target=
+     *      "_blank">swagger-ui/#/info-controller/beanInfo</a>
+     * @return {@link BeanInfo}
+     */
+     @Operation(
+         operationId = "beanInfo",
+         summary = "Bean Info",
+         description = "Get Bean Info\n\n" + "This method is calling BeanService.beanInfo\n\n",
+                 // "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#" +
+                 // "beanInfo()\" target=\"_blank\">InfoController.beanInfo</a>",
+         tags = arrayOf(BttfConst.INFO_TAG))
+    @PreAuthorize("hasRole('ROLE_userRole')")
+    @GetMapping(value = arrayOf("/bean"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    public fun beanInfo(): BeanInfo = beanService.beanInfo()
+    
     /**
      *
      * User informations
@@ -93,6 +121,7 @@ public class InfoController {
      * @throws AccountExpiredException   if an authentication request is rejected because the account has expired.
      *                                   Makes no assertion as to whether or not the credentials were valid.
      *
+     * @return {@link UserDetails}
      */
     @GetMapping(value = arrayOf("/user"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -106,7 +135,7 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @Throws(UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class)
-    public fun getUserInfo(): UserInfo {
+    public fun userInfo(): UserDetails {
         try {
             return userService.userInfo()
         } catch (e: Exception) {

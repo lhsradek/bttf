@@ -35,21 +35,19 @@ public class Provider {
      * Get queryProvider for
      * {@link local.intranet.bttf.api.controller.IndexController#signin}
      *
-     * @param params {@link List}&lt;{@link Pair}&lt;{@link String},
+     * @param params {@link List}&lt;{@link Map.Entry}&lt;{@link String},
      *               {@link String}&gt;&gt;
      * @return {@link String}
      */
-    public fun queryProvider(params: List<Pair<String, String>>): String {
+    public fun queryProvider(params: List<Map.Entry<String, String>>): String {
         val query = StringBuffer()
         params.forEach {
-            // val (a, b) = it
             if (query.length > 0) {
                 query.append("&")
             } else {
                 query.append("?")
             }
-            // query.append("${a}=${b}")
-            query.append("${it.first}=${it.second}")
+            query.append("${it.key}=${it.value}")
         }
         return "${query}"
     }
