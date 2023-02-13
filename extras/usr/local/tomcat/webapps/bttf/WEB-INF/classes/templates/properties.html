@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="head">
+</head>
+<body>
+  <h1><span>
+    <th:block th:if="${headerSoftware}" th:text="${serverSoftware}"/>
+    <strong th:text="${T(org.thymeleaf.util.StringUtils).capitalize(serverName)}"/>
+    <a th:href="'/'"><img th:src="@{/res/kotlin.png}" th:width="'31px'" th:height="'31px'" th:class="'borderoff'"/></a></span></h1>
+  <div th:class="'content'">
+    <button th:type="'button'" th:class="'topBtn'" th:id="'topBtn'">Top</button><script th:src="@{/res/button.js}"></script>
+    <div th:class="'content-middle'">
+      <div th:class="'top'">
+        <h2><span>
+          <th:block th:utext="'BTTF\'s Properties'"/>
+          <small th:utext="'\'' + ${stage} + '\' on '"/>
+          <small th:utext="${serverSoftware} + ' - \'' + ${activeProfiles} + '\''"/>
+        </span></h2>
+        <h5><span>
+          <a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/> <small><th:block th:text="' - You are logged as '"/>
+          <a th:if="${isAuthenticated}" th:href="@{/login?logout}" th:utext="'\'' + ${username} + '\''"/>
+          <th:block th:utext="' with \'' + ${role} + '\''"/></small>
+          <small><a th:href="@{/}" th:text="'Introduction'"/></small>
+          <small><a th:href="@{/play}" th:text="'Play'"/></small>
+          <small><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
+          <small th:if="${userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
+        </span></h5>
+        <h5 th:text="'Selected Beans'"/>
+        <code><span th:each="k : ${bttfBeans}">
+<big><strong th:utext="${k.key}"/></big><th:block th:utext="${k.value} + ' '"/>
+        </span><br/>
+<a th:href="@{/swagger-ui/#/info-controller/beanInfo}" th:target="'_blank'">
+<img th:src="@{/res/swagger.png}" th:width="'16px'" th:height="'16px'" th:class="'borderoff'"
+	th:alt="'Try beans info from a Swagger'"/></a></code>
+        <h5 th:text="'Properties'"/>
+        <code><span th:class="'wrapon'" th:each="k : ${bttfProperties}">
+<th:block th:utext="${k.key} + ':'"/><strong th:class="'data'" th:utext="${k.value} + ' '"/>
+        </span><br/>
+<a th:href="@{/swagger-ui/#/status-controller/bttfProperties}" th:target="'_blank'">
+<img th:src="@{/res/swagger.png}" th:width="'16px'" th:height="'16px'" th:class="'borderoff'"
+	th:alt="'Try properties info from a Swagger'"/></a></code>
+        <h5 th:text="'HttpServletRequest'"/>
+          <code><span th:class="'wrapon'" th:each="k : ${bttfHttpServletRequest}">
+<th:block th:utext="${k.key} + ':'"/><strong th:class="'data'" th:utext="${k.value} + ' '"/>
+          </span><br/>
+<a th:href="@{/swagger-ui/#/status-controller/bttfHttpServletRequest}" th:target="'_blank'">
+<img th:src="@{/res/swagger.png}" th:width="'16px'" th:height="'16px'" th:class="'borderoff'"
+	th:alt="'Try request info from a Swagger'"/></a></code>
+        <h5 th:text="'ServletContext'"/>
+        <code><span th:class="'wrapon'" th:each="k : ${bttfServletContext}">
+<th:block th:utext="${k.key} + ':'"/><strong th:class="'data'" th:utext="${k.value} + ' '"/>
+          </span><br/>
+<a th:href="@{/swagger-ui/#/status-controller/bttfServletContext}" th:target="'_blank'">
+<img th:src="@{/res/swagger.png}" th:width="'16px'" th:height="'16px'" th:class="'borderoff'"
+	th:alt="'Try context info from a Swagger'"/></a></code>
+        <h5 th:text="'Environment'"/>
+        <code><span th:class="'wrapon'" th:each="k : ${bttfEnvironment}">
+<th:block th:utext="${k.key} + ':'"/><strong th:class="'data'" th:utext="${k.value} + ' '"/>
+        </span><br/>
+<a th:href="@{/swagger-ui/#/status-controller/bttfEnvironment}" th:target="'_blank'">
+<img th:src="@{/res/swagger.png}" th:width="'16px'" th:height="'16px'" th:class="'borderoff'"
+	th:alt="'Try environment info from a Swagger'"/></a></code>
+        <h5 th:text="'Testing'"/>
+        <code>
+<strong th:text="'[root@' + ${hostName} + ' ~]#'"/>
+<th:block th:utext="'curl -u user:password -k -H &quot;Accept: text/plain&quot; -X GET https://' + ${#strings.toLowerCase(serverName)}"/><th:block th:if="${serverPort} > 0" th:text="':' + ${serverPort}"/><th:block th:text="'/bttf/api/v1/info/status'"/><strong th:text="'&lt;&crarr;Enter&gt;'"/><br/>
+<strong class="data" th:text="'OK'"/><strong th:text="'[root@' + ${hostName} + ' ~]#'"/>
+        <br/>
+<a th:href="@{/swagger-ui/#/status-controller/plainStatus}" th:target="'_blank'">
+<img th:src="@{/res/swagger.png}" th:width="'16px'" th:height="'16px'" th:class="'borderoff'"
+	th:alt="'Try it from a Swagger'"/></a></code>
+        </code>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
