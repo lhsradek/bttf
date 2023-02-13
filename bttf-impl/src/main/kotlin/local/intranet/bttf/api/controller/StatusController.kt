@@ -374,14 +374,15 @@ public class StatusController {
                 cl = cl.superclass
             }
             if (isBeanSuitable(cl)) {
-                var set = mutableListOf<String>()
+                var set = mutableSetOf<String>()
                 cl.declaredMethods.filter {
                     Modifier.isPublic(it.modifiers) && !Modifier.isStatic(it.modifiers)
                 }.forEach {
                     set.addAll(makeAPIBeans(it, bean, true))
                 }
                 val href = "[${name}]"
-                val setStr = set.joinToString(separator = BttfConst.BLANK_SPACE)
+                val setStr = set.toSortedSet(java.lang.String.CASE_INSENSITIVE_ORDER)
+                    .joinToString(separator = BttfConst.BLANK_SPACE)
                 if (setStr.length > 0) {
                     map[name] = "${href}|${setStr}"
                 } else {
@@ -423,14 +424,14 @@ public class StatusController {
                 cl = cl.superclass
             }
             if (isBeanSuitable(cl)) {
-                var set = mutableListOf<String>()
+                var set = mutableSetOf<String>()
                 cl.declaredMethods.filter {
                     Modifier.isPublic(it.modifiers) && !Modifier.isStatic(it.modifiers)
                 }.forEach {
                     set.addAll(makeAPIBeans(it, bean, false))
                 }
                 val str = StringJoiner(BttfConst.PIPE_LINE)
-                set.filter {
+                set.toSortedSet(java.lang.String.CASE_INSENSITIVE_ORDER).filter {
                     it.length > 0
                 }.forEach {
                     str.add(it)
@@ -814,7 +815,7 @@ public class StatusController {
                             ret.add(name)
                         }
                     }
-
+                    
                     // {@link LoggingEventService}
                     "countTotalLoggingEvents" -> {
                         when (bean) {
