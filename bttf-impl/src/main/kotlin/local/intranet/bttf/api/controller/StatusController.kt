@@ -82,7 +82,7 @@ public class StatusController {
 
     @Autowired
     private lateinit var httpServletRequest: HttpServletRequest
-    
+
     private val STATUS_BRACKET: String = "_"
     private val STATUS_BRACKETS: String = "__"
     private val STATUS_BTTF_SEC: String = "bttf.sec"
@@ -100,7 +100,7 @@ public class StatusController {
     private val STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_DISPATCHERSERVLET_OUTPUT_FLASH_MAP: String =
         "org.springframework.web.servlet.DispatcherServlet.OUTPUT_FLASH_MAP"
     private val STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_BESTMATCHINGHANDLER: String =
-    	"org.springframework.web.servlet.HandlerMapping.bestMatchingHandler"
+        "org.springframework.web.servlet.HandlerMapping.bestMatchingHandler"
     private val STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_PATHWITHINHANDLERMAPPING: String =
         "org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping"
     private val STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_URITEMPLATEVARIABLES: String =
@@ -126,8 +126,8 @@ public class StatusController {
         operationId = "plainStatus",
         summary = "Plain Status",
         description = "Get OK if BTTF API is running\n\n",
-                // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getPlainStatus()\" "
-                // + "target=\"_blank\">StatusController.getPlainStatus</a>",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#getPlainStatus()\" "
+        // + "target=\"_blank\">StatusController.getPlainStatus</a>",
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
     public fun plainStatus(): String = "OK"
@@ -142,7 +142,7 @@ public class StatusController {
      * @see <a href="/bttf/swagger-ui/#/status-controller/bttfEnvironment"
      *      target=
      *      "_blank">bttf/swagger-ui/#/status-controller/bttfEnvironment</a>
-     * 
+     *
      * @return {@link List}&lt;{@link Map}&lt;{@link String},{@link String}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/environment"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
@@ -150,17 +150,18 @@ public class StatusController {
         operationId = "bttfEnvironment",
         summary = "Environment",
         description = "Get Environment\n\n",
-            // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
-            // + "bttfEnvironment()\" "
-            // + "target=\"_blank\">StatusController.bttfEnvironment</a>",
-        tags = arrayOf(BttfConst.STATUS_TAG))
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
+        // + "bttfEnvironment()\" "
+        // + "target=\"_blank\">StatusController.bttfEnvironment</a>",
+        tags = arrayOf(BttfConst.STATUS_TAG)
+    )
     @PreAuthorize("hasRole('ROLE_adminRole')")
-    public fun bttfEnvironment() : List<Map.Entry<String, String>> {
+    public fun bttfEnvironment(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         System.getenv().filter {
-        	(emptyParams.toBoolean() || it.value.length > 0) and !it.key.equals(STATUS_BRACKET) // nelíbí
+            (emptyParams.toBoolean() || it.value.length > 0) and !it.key.equals(STATUS_BRACKET) // nelíbí
         }.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER).forEach {
-        	ret.add(SimpleEntry<String, String>(it.key, it.value))
+            ret.add(SimpleEntry<String, String>(it.key, it.value))
         }
         return ret
     }
@@ -175,7 +176,7 @@ public class StatusController {
      * @see <a href="/bttf/swagger-ui/#/status-controller/bttfProperties"
      *      target=
      *      "_blank">bttf/swagger-ui/#/status-controller/bttfProperties</a>
-     * 
+     *
      * @return {@link List}&lt;{@link Map}&lt;{@link String},{@link String}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/properties"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
@@ -183,10 +184,11 @@ public class StatusController {
         operationId = "bttfProperties",
         summary = "Properties",
         description = "Get Properties\n\n",
-            // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
-            // + "bttfProperties()\" "
-            // + "target=\"_blank\">StatusController.bttfProperties</a>",
-        tags = arrayOf(BttfConst.STATUS_TAG))
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
+        // + "bttfProperties()\" "
+        // + "target=\"_blank\">StatusController.bttfProperties</a>",
+        tags = arrayOf(BttfConst.STATUS_TAG)
+    )
     @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun bttfProperties(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
@@ -194,20 +196,28 @@ public class StatusController {
         val map = mutableMapOf<String, String>()
         mutableListOf<PropertySource<*>?>(
             mps.get(STATUS_APPLICATION_CONFIG_PROPERTIES),
-            mps.get(String.format(STATUS_APPLICATION_CONFIG_PROFILE_PROPERTIES,
-                environment.activeProfiles.first()))).forEach {
-        	it?.let {
-        		@Suppress("UNCHECKED_CAST")
-        		for ((key, any) in it.source as Map<String, *>) {
-                	val value = any.toString()
-                	if ((emptyParams.toBoolean() || value.length > 0) and !key.equals(STATUS_BRACKET)) {
-                		if (key.startsWith(STATUS_BTTF_SEC) || key.contains(STATUS_PASSWORD) || key.contains(STATUS_SECRET) ||
-                			key.contains(STATUS_USER_NAME) || key.contains(STATUS_SECURITY_USER_NAME)) { // nelíbí
-                			map[key] = BttfConst.PROTECTED
-                		} else {
+            mps.get(
+                String.format(
+                    STATUS_APPLICATION_CONFIG_PROFILE_PROPERTIES,
+                    environment.activeProfiles.first()
+                )
+            )
+        ).forEach {
+            it?.let {
+                @Suppress("UNCHECKED_CAST")
+                for ((key, any) in it.source as Map<String, *>) {
+                    val value = any.toString()
+                    if ((emptyParams.toBoolean() || value.length > 0) and !key.equals(STATUS_BRACKET)) {
+                        if (key.startsWith(STATUS_BTTF_SEC) || key.contains(STATUS_PASSWORD) || key.contains(
+                                STATUS_SECRET
+                            ) ||
+                            key.contains(STATUS_USER_NAME) || key.contains(STATUS_SECURITY_USER_NAME)
+                        ) { // nelíbí
+                            map[key] = BttfConst.PROTECTED
+                        } else {
                             map[key] = value
-                		}
-    				}
+                        }
+                    }
                 }
             }
         }
@@ -216,7 +226,7 @@ public class StatusController {
         }
         return ret
     }
-    
+
     /**
      *
      * Info of Http servlet request
@@ -236,10 +246,11 @@ public class StatusController {
         operationId = "bttfHttpServletRequest",
         summary = "HttpServletRequest",
         description = "Get HttpServletRequest\n\n",
-            // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
-            // + "bttfHttpServletRequest()\" "
-            // + "target=\"_blank\">StatusController.bttfHttpServletRequest</a>",
-        tags = arrayOf(BttfConst.STATUS_TAG))
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
+        // + "bttfHttpServletRequest()\" "
+        // + "target=\"_blank\">StatusController.bttfHttpServletRequest</a>",
+        tags = arrayOf(BttfConst.STATUS_TAG)
+    )
     @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun bttfHttpServletRequest(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
@@ -248,43 +259,43 @@ public class StatusController {
             val value = httpServletRequest.getAttribute(key).toString()
             if ((value.length > 0 || emptyParams.toBoolean()) && !(key.startsWith(STATUS_BRACKET) ||
                 key.contains("@") || value.contains("@") ||
-              /*
-               * __spring_security_filterSecurityInterceptor_filterApplied:true
-               * __spring_security_scpf_applied:true
-               * __spring_security_session_mgmt_filter_applied:true
-               */
+                /*
+                 * __spring_security_filterSecurityInterceptor_filterApplied:true
+                 * __spring_security_scpf_applied:true
+                 * __spring_security_session_mgmt_filter_applied:true
+                     */
                 key.equals(STATUS_ORG_APACHE_TOMCAT_UTIL_NET_SECURE_REQUESTED_CIPHERS) ||
-              /*
-               * org.springframework.web.servlet.DispatcherServlet.OUTPUT_FLASH_MAP: FlashMap
-               * [attributes={}, targetRequestPath=null, targetRequestParams={}]
-               */
+                /*
+                 * org.springframework.web.servlet.DispatcherServlet.OUTPUT_FLASH_MAP: FlashMap
+                 * [attributes={}, targetRequestPath=null, targetRequestParams={}]
+                 */
                 key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_DISPATCHERSERVLET_OUTPUT_FLASH_MAP) ||
-              /*
-               * org.springframework.web.servlet.HandlerMapping.bestMatchingHandler:
-               */
+                /*
+                 * org.springframework.web.servlet.HandlerMapping.bestMatchingHandler:
+                 */
                 key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_BESTMATCHINGHANDLER) ||
-              /*
-               * duplicity /status in
-               * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping
-               * org.springframework.web.servlet.HandlerMapping.bestMatchingPattern:/status
-               * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping:/
-               * status:/status
-               */
+                /*
+                 * duplicity /status in
+                 * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping
+                 * org.springframework.web.servlet.HandlerMapping.bestMatchingPattern:/status
+                 * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping:/
+                 * status:/status
+                 */
                 key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_PATHWITHINHANDLERMAPPING) ||
-              /*
-               * empty {}
-               * org.springframework.web.servlet.HandlerMapping.uriTemplateVariables:{}
-               */
+                /*
+                 * empty {}
+                 * org.springframework.web.servlet.HandlerMapping.uriTemplateVariables:{}
+                 */
                 key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_URITEMPLATEVARIABLES) ||
-              /*
-               * duplicity /status in
-               * org.apache.tomcat.util.net.secure_protocol_version:TLSv1.3
-               * org.apache.tomcat.util.net.secure_requested_protocol_versions:Unknown(0x9a9a)
-               * ,TLSv1.3,TLSv1.2
-               */
+                /*
+                 * duplicity /status in
+                 * org.apache.tomcat.util.net.secure_protocol_version:TLSv1.3
+                 * org.apache.tomcat.util.net.secure_requested_protocol_versions:Unknown(0x9a9a)
+                 * ,TLSv1.3,TLSv1.2
+                 */
                 key.equals(STATUS_ORG_APACHE_TOMCAT_UTIL_NET_SECURE_REQUESTED_PROTOCOL_VERSIONS) ||
                 key.equals(STATUS_JAVAX_SERVLET_REQUEST_SSL_SESSION_ID))) { // nelíbí
-                    map[key] = value
+                map[key] = value
             }
         }
         map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER).forEach {
@@ -292,7 +303,7 @@ public class StatusController {
         }
         return ret
     }
-    
+
     /**
      *
      * Info of Http servlet request
@@ -310,37 +321,38 @@ public class StatusController {
     @GetMapping(value = arrayOf("/servletContext"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
         operationId = "bttfServletContext",
-    	summary = "ServletContext",
+        summary = "ServletContext",
         description = "Get ServletContext\n\n",
-    	// + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
-    	// + "bttfServletContext()\" "
-    	// + "target=\"_blank\">StatusController.bttfServletContext</a>",
-    	tags = arrayOf(BttfConst.STATUS_TAG))
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/StatusController.html#"
+        // + "bttfServletContext()\" "
+        // + "target=\"_blank\">StatusController.bttfServletContext</a>",
+        tags = arrayOf(BttfConst.STATUS_TAG)
+    )
     @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun bttfServletContext(): List<Map.Entry<String, String>> {
-    	val ret = mutableListOf<Map.Entry<String, String>>()
+        val ret = mutableListOf<Map.Entry<String, String>>()
         val map = mutableMapOf<String, String>()
         for (key in servletContext.attributeNames.toList()) {
             val value = servletContext.getAttribute(key).toString()
             if ((value.length > 0 || emptyParams.toBoolean()) && !(key.startsWith(STATUS_BRACKET) ||
-            	key.equals(STATUS_ORG_APACHE_CATALINA_JSP_CLASSPATH)) ||
-            		/*
-            		 * duplicity org.springframework.boot.web.servlet.context.
-            		 * AnnotationConfigServletWebServerApplicationContext in
-            		 * org.springframework.web.servlet.FrameworkServlet.CONTEXT.dispatcherServlet
-            		 * org.springframework.web.context.WebApplicationContext.ROOT:
-            		 * org.springframework.boot.web.servlet.context.
-            		 * AnnotationConfigServletWebServerApplicationContext, started on Tue Jan 18
-            		 * 11:45:22 CET 2022
-            		 * org.springframework.web.servlet.FrameworkServlet.CONTEXT.dispatcherServlet:
-            		 * org.springframework.boot.web.servlet.context.
-            		 * AnnotationConfigServletWebServerApplicationContext, started on Tue Jan 18
-            		 * 11:45:22 CET 2022
-            		 */
-            		key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_FRAMEWORK_SERVLET_CONTEXT_DISPATCHER_SERVLET)
+                        key.equals(STATUS_ORG_APACHE_CATALINA_JSP_CLASSPATH)) ||
+                /*
+                 * duplicity org.springframework.boot.web.servlet.context.
+                 * AnnotationConfigServletWebServerApplicationContext in
+                 * org.springframework.web.servlet.FrameworkServlet.CONTEXT.dispatcherServlet
+                 * org.springframework.web.context.WebApplicationContext.ROOT:
+                 * org.springframework.boot.web.servlet.context.
+                 * AnnotationConfigServletWebServerApplicationContext, started on Tue Jan 18
+                 * 11:45:22 CET 2022
+                 * org.springframework.web.servlet.FrameworkServlet.CONTEXT.dispatcherServlet:
+                 * org.springframework.boot.web.servlet.context.
+                 * AnnotationConfigServletWebServerApplicationContext, started on Tue Jan 18
+                 * 11:45:22 CET 2022
+                 */
+                key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_FRAMEWORK_SERVLET_CONTEXT_DISPATCHER_SERVLET)
             // || value.length() > 0
             ) { // nelíbí
-                map.put(key, value.replaceFirst(STATUS_SERVLET_CONTEXT, ""));
+                map[key] = value.replaceFirst(STATUS_SERVLET_CONTEXT, "")
             }
         }
         map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER).forEach {
@@ -348,7 +360,7 @@ public class StatusController {
         }
         return ret
     }
-    
+
     @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun propertiesAPIBean(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
@@ -371,9 +383,9 @@ public class StatusController {
                 val href = "[${name}]"
                 val setStr = set.joinToString(separator = BttfConst.BLANK_SPACE)
                 if (setStr.length > 0) {
-                    map.put(name, "${href}|${setStr}")
+                    map[name] = "${href}|${setStr}"
                 } else {
-                    map.put(name , "${href}|")
+                    map[name] = "${href}|"
                 }
             }
         }
@@ -390,7 +402,7 @@ public class StatusController {
         // log.debug("propertiesAPIBean {}", ret)
         return ret
     }
-    
+
     /**
      *
      * Info of BTTF API beans
@@ -456,9 +468,9 @@ public class StatusController {
                             map[s] = ""
                         }
                     }
-                    ret.put(name, map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER))
+                    ret[name] = map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER)
                 } else {
-                	ret.put(name, "")
+                    ret[name] = ""
                 }
             }
         }
@@ -473,10 +485,10 @@ public class StatusController {
      */
     public fun implementationVersion(): String =
         Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse("unknown")
-        // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
-        // val keyFirstElement: String = list.keys.first()
-        // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
-        // return Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse("unknown")
+    // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
+    // val keyFirstElement: String = list.keys.first()
+    // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
+    // return Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse("unknown")
 
     /**
      *
@@ -497,7 +509,7 @@ public class StatusController {
     }
 
     /**
-     * 
+     *
      * Session id
      *
      * @return {@link String}
@@ -559,7 +571,7 @@ public class StatusController {
      * @return {@link String}
      */
     protected fun serverInfo(): String = servletContext.serverInfo
-    
+
     /**
      *
      * Get host name
@@ -580,7 +592,8 @@ public class StatusController {
             implementationVersion()
         }
         return ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(applicationContext.getStartupDate()), ZoneId.systemDefault())
+            Instant.ofEpochMilli(applicationContext.getStartupDate()), ZoneId.systemDefault()
+        )
     }
 
     /**
@@ -589,12 +602,12 @@ public class StatusController {
      *
      * @return {@link TimeZone#getDefault()}.getID() with {@link TimeZone#getID()}
      */
-    public fun timeZone():String = ZoneId.systemDefault().id
+    public fun timeZone(): String = ZoneId.systemDefault().id
 
     /**
-     * 
+     *
      * client IP
-     * 
+     *
      * @return {@link String}
      */
     public fun clientIP(): String {
@@ -705,7 +718,7 @@ public class StatusController {
 
         /**
          *
-         * For {@link #bttfAPIBean} and {@link #propertiesAPIBean} 
+         * For {@link #bttfAPIBean} and {@link #propertiesAPIBean}
          * <p>
          * Used {@link StatusController}, {@link ApplicationConfig}
          * {@link UserService}
@@ -743,6 +756,7 @@ public class StatusController {
                     "isFlyway",
                     // {@link UserService}
                     "isAuthenticated" -> ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
+
                     "username",
                     "sessionId" -> {
                         val str = cl.getMethod(name).invoke(bean) as String
@@ -789,7 +803,6 @@ public class StatusController {
 
                     "operatingSystem" -> {
                         val events = mutableListOf<Map.Entry<String, String>>()
-
                         @Suppress("UNCHECKED_CAST")
                         val list = cl.getMethod(name).invoke(bean) as List<Map.Entry<String, String>>
                         list.forEach {
@@ -807,7 +820,6 @@ public class StatusController {
                         when (bean) {
                             is LoggingEventService -> {
                                 val events = mutableListOf<Map.Entry<String, Long>>()
-
                                 @Suppress("UNCHECKED_CAST")
                                 val list = cl.getMethod(name).invoke(bean) as List<LevelCount>
                                 list.forEach {
