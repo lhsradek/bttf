@@ -10,8 +10,7 @@ import javax.validation.constraints.Size
  *
  * {@link LevelCount} for
  * {@link local.intranet.bttf.api.model.repository.MessageEventRepository},
- * {@link local.intranet.bttf.api.service.MessageEventService#countTotalMessageEvents} and
- * {@link local.intranet.core.api.controller.InfoController#loggingEvent}
+ * {@link local.intranet.bttf.api.service.MessageEventService#countTotalMessageEvents}
  *
  * @constructor with parameters
  *

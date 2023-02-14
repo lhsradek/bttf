@@ -20,6 +20,9 @@
           <a th:if="${isAuthenticated}" th:href="@{/logout}" th:text="'Log out'"/>
           <small><a th:href="@{/}" th:text="'Introduction'"/></small>
           <small><a th:href="@{/play}" th:text="'Play'"/></small>
+          <small><a th:href="@{/bttfLog}" th:text="'Log'"/></small>
+          <small><a th:href="@{/properties/}" th:text="'Properties'"/></small>
+          <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <h5><span><th:block th:text="'The MIT License'"/>
           <small><a th:href="'https://opensource.org/licenses/MIT'" th:target="_blank" th:text="'(MIT)'"/></small>

@@ -5,6 +5,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import local.intranet.bttf.api.domain.Countable
+import local.intranet.bttf.api.domain.Invocationable
+import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.model.entity.Counter
 import local.intranet.bttf.api.model.entity.MessageEvent
@@ -21,6 +23,7 @@ import org.hibernate.envers.query.AuditEntity
 import org.hibernate.envers.query.AuditQuery
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -36,10 +39,13 @@ import org.springframework.data.domain.PageImpl
  */
 @Service
 @ConditionalOnExpression("\${scheduler.enabled}")
-public class MessageService : Countable {
+public class MessageService : Countable, Invocationable, Statusable {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    @Value("\${scheduler.enabled}")
+    private lateinit var scheduler: String
+    
     @Autowired
     private lateinit var counterRepository: CounterRepository
     
@@ -105,11 +111,52 @@ public class MessageService : Countable {
     public override fun countValue(): Long = messageEventRepository
         .findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
 
+    /**
+     *
+     * Time of last invocation
+     *
+     * @return lastInvocation
+     */
+    @Transactional(readOnly = true)
+    public override fun lastInvocation(): ZonedDateTime {
+        var ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault())
+        val find = messageEventRepository.findByName(PageRequest.of(0, 1), javaClass.simpleName)
+        if (find.totalElements > 0) {
+            // ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault())
+            val reader: AuditReader = provider.auditReader()
+            val query: AuditQuery = reader.createQuery()
+            	.forRevisionsOfEntity(MessageEvent::class.java, true, true)
+                .setFirstResult(0)
+                .setMaxResults(1)
+                .addProjection(AuditEntity.property("timestmp"))
+            	.addProjection(AuditEntity.selectEntity(false))
+            	.addOrder(AuditEntity.revisionNumber().desc())
+            	.addOrder(AuditEntity.id().desc())
+            for (row in query.getResultList()) {
+            	val arr = row as Array<*>
+            	val timestmp = arr[0] as Long
+            	ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault())
+            	break // the first is last
+            }
+        }
+        return ret
+    }
 
     @Transactional(readOnly = true)
-    public fun countTotalMessageEvents(): List<MessageCount> = messageEventRepository
-        .countTotalMessageEvents()
+    public fun countTotalMessageEvents(): List<MessageCount> {
+    	val ret = messageEventRepository.countTotalMessageEvents()
+        // log.debug("CountTotalMessageEvents ret:'{}'", ret)
+        return ret
+    }
     
+   /**
+     *
+     * Get status
+     *
+     * @return {@link StatusType}
+     */
+    public override fun getStatus(): StatusType = if (scheduler.toBoolean()) StatusType.UP else StatusType.DOWN
+
     /**
      *
      * MessageEvent audit
@@ -124,6 +171,8 @@ public class MessageService : Countable {
         val reader: AuditReader = provider.auditReader()
         val query: AuditQuery = reader.createQuery()
             .forRevisionsOfEntity(MessageEvent::class.java, true, true)
+            .setFirstResult(0)
+            .setMaxResults(1)
             .addProjection(AuditEntity.revisionNumber())
             .addProjection(AuditEntity.selectEntity(false))
             .add(AuditEntity.id().eq(messageId))

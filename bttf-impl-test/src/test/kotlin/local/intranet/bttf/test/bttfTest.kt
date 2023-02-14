@@ -9,6 +9,7 @@ import local.intranet.bttf.api.controller.StatusController
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.BttfService
 import local.intranet.bttf.api.service.JobService
+import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.MessageService
 import local.intranet.bttf.api.service.RoleService
@@ -57,6 +58,9 @@ public class bttfTest {
     // private lateinit var providerController: ProviderController
     
     @Autowired
+    private lateinit var loggingEventService: LoggingEventService
+    
+    @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
     
     @Autowired
@@ -92,11 +96,18 @@ public class bttfTest {
         assertThat(jobService.countValue()).isNotNull
         assertThat(jobService.lastInvocation()).isNotNull
         assertThat(jobService.getStatus().equals(StatusType.UP))
+        assertThat(loggingEventService).isNotNull
+        assertThat(loggingEventService.countTotalLoggingEvents()).isNotEmpty
         assertThat(messageService.countValue()).isNotNull
+        assertThat(messageService.countTotalMessageEvents()).isNotEmpty
+        
+        val ip = statusController.getIpv4HostAddress()
         assertThat(loginAttemptService).isNotNull
+        assertThat(loginAttemptService.loginFailed(ip)).isNotNull
         assertThat(loginAttemptService.loginAttempts(null)).isNotNull
         assertThat(loginAttemptService.loginAttempts(true)).isNotNull
         assertThat(loginAttemptService.loginAttempts(false)).isNotNull
+        assertThat(loginAttemptService.isBlocked(ip)).isNotNull
         
         // assertThat(providerController).isNotNull
         // assertThat(providerController.getInstanceName()).isNotBlank
@@ -107,12 +118,15 @@ public class bttfTest {
         assertThat(infoController.countTotalMessageEvents()).isNotNull
         // assertThat(infoController.beanInfo()).isNotNull
         // assertThat(statusController.bttfAPIBean()).isNotNull
+        // assertThat(statusController.propertiesAPIBean()).isNotNull
         assertThat(statusController).isNotNull
+        assertThat(statusController.clientIP() == ip)
         assertThat(statusController.plainStatus()).isNotBlank
         assertThat(statusController.implementationVersion()).isNotBlank
         assertThat(statusController.stage()).isNotBlank
         assertThat(statusController.activeProfiles()).isNotBlank
         assertThat(statusController.serverSoftware()).isNotBlank
+        assertThat(statusController.isNiceBeanName("init") == false)
 
         val year1 = 2023L
         val salt = AESUtil.generateSalt()

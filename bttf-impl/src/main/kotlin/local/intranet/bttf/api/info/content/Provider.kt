@@ -67,7 +67,7 @@ public class Provider {
             ret = r
         } else {
             ret = AuditReaderFactory.get(entityManagerFactory.createEntityManager())
-            log.warn("AuditReader create EntityManager!")
+            // log.warn("AuditReader create EntityManager!")
         }
         return ret
     }

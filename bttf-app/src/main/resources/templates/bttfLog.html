@@ -23,8 +23,8 @@
           <th:block th:utext="' with \'' + ${role} + '\''"/></small>
           <small><a th:href="@{/}" th:text="'Introduction'"/></small>
           <small><a th:href="@{/play}" th:text="'Play'"/></small>
-          <small th:if="${userRoles.get('adminRole')}"><a th:href="@{/properties/}" th:text="'Properties'"/></small>
-          <small th:if="${userRoles.get('adminRole')}"><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
+          <small><a th:href="@{/properties/}" th:text="'Properties'"/></small>
+          <small><a th:href="@{/swagger-ui/}" th:text="'Swagger'"/></small>
         </span></h5>
         <code th:if="${logsTotal.size() > 0}"><span>
         <table th:class="'data-table'">

@@ -3,11 +3,16 @@ package local.intranet.bttf.api.controller
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
 import java.lang.management.ManagementFactory
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import java.util.Optional
 import java.util.StringJoiner
 import java.util.AbstractMap.SimpleEntry
-import java.lang.reflect.Method
+import java.util.Locale
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -17,10 +22,14 @@ import javax.servlet.ServletContext
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.config.AuditorAwareImpl
 import local.intranet.bttf.api.config.OpenApiConfig
-import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.controller.IndexController
 import local.intranet.bttf.api.domain.Contented
+import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.domain.Statusable
+import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.info.BeanInfo
 import local.intranet.bttf.api.info.LevelCount
+import local.intranet.bttf.api.info.MessageCount
 import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.listener.AuthenticationSuccessEventListener
 import local.intranet.bttf.api.listener.AuthenticationFailureListener
@@ -29,9 +38,12 @@ import local.intranet.bttf.api.redis.RedisConfig
 import local.intranet.bttf.api.redis.RedisMessagePublisher
 import local.intranet.bttf.api.redis.RedisMessageSubscriber
 import local.intranet.bttf.api.security.SecurityConfig
-import local.intranet.bttf.api.service.MessageService
+import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoggingEventService
+import local.intranet.bttf.api.service.MessageService
+import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.scheduler.JobFactory
+import local.intranet.bttf.api.scheduler.SchedulerConfig
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -58,7 +70,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 @RestController
 @RequestMapping("/api/v1/status")
 @Tag(name = BttfConst.STATUS_TAG)
-public class StatusController {
+public class StatusController : Statusable {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -77,6 +89,9 @@ public class StatusController {
     @Autowired
     private lateinit var applicationContext: ApplicationContext
 
+    @Autowired
+    private lateinit var schedulerConfig: SchedulerConfig
+    
     @Autowired
     private lateinit var environment: Environment
 
@@ -111,6 +126,16 @@ public class StatusController {
     private val STATUS_APPLICATION_CONFIG_PROFILE_PROPERTIES: String =
         "Config resource 'class path resource [application-%s.properties]' via location 'optional:classpath:/'"
     private val STATUS_SERVLET_CONTEXT: String = "@\\w+"
+    private val STATUS_BEAN: String = "%s:%s"
+    private val STATUS_FORMAT_BEAN: String = "%s:<strong class=\"data\">%s</strong>"
+
+   /**
+     *
+     * Get status
+     *
+     * @return {@link StatusType}
+     */
+    public override fun getStatus(): StatusType = StatusType.UP
 
     /**
      *
@@ -196,12 +221,7 @@ public class StatusController {
         val map = mutableMapOf<String, String>()
         mutableListOf<PropertySource<*>?>(
             mps.get(STATUS_APPLICATION_CONFIG_PROPERTIES),
-            mps.get(
-                String.format(
-                    STATUS_APPLICATION_CONFIG_PROFILE_PROPERTIES,
-                    environment.activeProfiles.first()
-                )
-            )
+            mps.get(String.format(STATUS_APPLICATION_CONFIG_PROFILE_PROPERTIES, environment.activeProfiles.first()))
         ).forEach {
             it?.let {
                 @Suppress("UNCHECKED_CAST")
@@ -214,9 +234,7 @@ public class StatusController {
                             key.contains(STATUS_USER_NAME) || key.contains(STATUS_SECURITY_USER_NAME)
                         ) { // nelíbí
                             map[key] = BttfConst.PROTECTED
-                        } else {
-                            map[key] = value
-                        }
+                        } else map[key] = value
                     }
                 }
             }
@@ -385,9 +403,7 @@ public class StatusController {
                     .joinToString(separator = BttfConst.BLANK_SPACE)
                 if (setStr.length > 0) {
                     map[name] = "${href}|${setStr}"
-                } else {
-                    map[name] = "${href}|"
-                }
+                } else map[name] = "${href}|"
             }
         }
         map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER).forEach {
@@ -462,17 +478,11 @@ public class StatusController {
                                     }
                                 }
                                 map[l.first()] = m
-                            } else {
-                                map[l.first()] = exp
-                            }
-                        } else {
-                            map[s] = ""
-                        }
+                            } else map[l.first()] = exp
+                        } else map[s] = ""
                     }
                     ret[name] = map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER)
-                } else {
-                    ret[name] = ""
-                }
+                } else ret[name] = ""
             }
         }
         return BeanInfo(ret.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER))
@@ -502,7 +512,8 @@ public class StatusController {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val system = ManagementFactory.getOperatingSystemMXBean()
         ret.add(SimpleEntry<String, String>("name", "${system.name}"))
-        ret.add(SimpleEntry<String, String>("loadAverage", "${system.systemLoadAverage}"))
+        ret.add(SimpleEntry<String, String>("loadAverage",
+            DecimalFormat("#.##", DecimalFormatSymbols(Locale.US)).format(system.systemLoadAverage)))
         // ret.add(SimpleEntry<String, String>("arch", "${system.arch}"))
         // ret.add(SimpleEntry<String, String>("processors", "${system.availableProcessors}"))
         // ret.add(SimpleEntry<String, String>("version", "${system.version}"))
@@ -527,7 +538,7 @@ public class StatusController {
 
     /**
      *
-     * Stage
+    * Stage from ${bttf.app.stage}
      *
      * @return {@link String}
      */
@@ -592,9 +603,8 @@ public class StatusController {
         if (applicationContext.getStartupDate() == 0L) {
             implementationVersion()
         }
-        return ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(applicationContext.getStartupDate()), ZoneId.systemDefault()
-        )
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(
+            applicationContext.getStartupDate()), ZoneId.systemDefault())
     }
 
     /**
@@ -612,236 +622,298 @@ public class StatusController {
      * @return {@link String}
      */
     public fun clientIP(): String {
-        val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
-        val ret = xfHeader?.let {
-            xfHeader.split(",").first()
-        } ?: httpServletRequest.remoteAddr
+        try {
+            val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
+            val ret = xfHeader?.let {
+                xfHeader.split(",").first()
+            } ?: httpServletRequest.remoteAddr
+            return ret
+        } catch (e: Exception) {
+            return getIpv4HostAddress()
+        }
+    }
+    
+    /**
+     *
+     * https://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device-from-code
+     */
+    public fun getIpv4HostAddress(): String {
+        NetworkInterface.getNetworkInterfaces()?.toList()?.map { networkInterface ->
+            networkInterface.inetAddresses?.toList()?.find {
+                !it.isLoopbackAddress && it is Inet4Address
+            }?.let {
+                return it.hostAddress
+            }
+        }
+        return ""
+    }
+
+    /**
+     *
+     * For {@link #bttfAPIBean} and {@link #propertiesAPIBean}
+     * <p>
+     * Used {@link StatusController}, {@link ApplicationConfig}
+     * {@link UserService}
+     * ... all in
+     * {@link local.intranet.bttf.api.service}
+     * <p>
+     *
+     * @param method   {@link Method}
+     * @param bean     {@link Object}
+     * @param isFormat {@link Boolean}
+     * @return       {@link Set}&lt;{@link String}&gt;
+     */
+    public fun makeAPIBeans(method: Method, bean: Any, isFormat: Boolean): Set<String> {
+        val ret = mutableSetOf<String>()
+        var cl = bean.javaClass.superclass
+        if (cl.simpleName.equals("Object")) {
+            cl = bean.javaClass
+        }
+        val name = method.name
+        val strFormat = if (isFormat) STATUS_FORMAT_BEAN else STATUS_BEAN
+        if (isNiceBeanName(name)) {
+            when (name) {
+                // {@link StatusController}
+                "timeZone",
+                "activeProfiles",
+                "implementationVersion",
+                "hostName",
+                "serverName",
+                "serverSoftware",
+                "stage",
+                "plainStatus",
+                "clientIP",
+                "getIpv4HostAddress",
+                // {@link ApplicationConfig}
+                "isFlyway",
+                // {@link UserService}
+                "isAuthenticated" -> {
+                    ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
+                }
+
+                "springBeanJobFactory" -> {
+                    val any = cl.getMethod(name).invoke(bean) as Any
+                    ret.add(String.format(strFormat, name, "${any.javaClass.simpleName}"))
+                }
+
+                "jobDetail" -> {
+                	val any = cl.getMethod(name).invoke(bean) as Any
+        			ret.add(String.format(strFormat, name, "${any.javaClass.superclass.simpleName}"))
+                }
+                
+                "username",
+                "sessionId" -> {
+                    val str = cl.getMethod(name).invoke(bean) as String
+                    if (str.length > 0) {
+                        ret.add(String.format(strFormat, name, str))
+                    }
+                }
+
+                "countValue" -> {
+                    val long = cl.getMethod(name).invoke(bean) as Long
+                    if (long > 0) {
+                        ret.add(String.format(strFormat, name, "${long}"))
+                    }
+                }
+
+                "lastInvocation",
+                "startupDate" -> {
+                    val zoneDateTime = cl.getMethod(name).invoke(bean) as ZonedDateTime
+                    ret.add(String.format(
+                        strFormat, name,
+                        zoneDateTime.format(DateTimeFormatter.ofPattern(
+                            if (isFormat) {
+                                Contented.CONTENT_DATE_FORMAT
+                            } else Contented.CONTENT_DATE_REST_FORMAT)))
+                    )
+                }
+                
+                "bttfEnvironment",
+                "bttfHttpServletRequest",
+                "bttfServletContext",
+                "bttfProperties",
+                "countTotalCounterName" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val list = cl.getMethod(name).invoke(bean) as List<Map.Entry<String, String>>
+                    ret.add(String.format(strFormat, name, list.size))
+                }
+
+                // {@link UserService}
+                "authoritiesRoles" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val list = cl.getMethod(name).invoke(bean) as List<String>
+                    ret.add(String.format(strFormat, name, "${list}"))
+                }
+
+                "operatingSystem" -> {
+                    val events = mutableListOf<Map.Entry<String, String>>()
+                    @Suppress("UNCHECKED_CAST")
+                    val list = cl.getMethod(name).invoke(bean) as List<Map.Entry<String, String>>
+                    list.forEach {
+                        events.add(SimpleEntry<String, String>(it.key, it.value))
+                    }
+                    if (events.size > 0) {
+                        ret.add(String.format(strFormat, name, "${events}"))
+                    } else ret.add(name)
+                }
+
+                // {@link MessageService}
+                // {@link JobService}
+                "getStatus" -> {
+                    when (bean) {
+                        is IndexController,
+                        is StatusController,
+                        is JobService,
+                        is MessageService -> {
+                            val status = cl.getMethod(name).invoke(bean) as StatusType
+                            ret.add(String.format(strFormat, name, "${status}"))
+                        }
+                        else -> ret.add(name)
+                    }
+                }
+
+                // {@link LoggingEventService}
+                "countTotalLoggingEvents" -> {
+                    when (bean) {
+                        is LoggingEventService -> {
+                            val event = mutableListOf<Map.Entry<String, Long>>()
+                            @Suppress("UNCHECKED_CAST")
+                            val list = cl.getMethod(name).invoke(bean) as List<LevelCount>
+                            list.forEach {
+                                event.add(SimpleEntry<String, Long>(it.level, it.total))
+                            }
+                            if (event.size > 0) {
+                                // log.debug("MakeApiBeans::countTotalLoggingEvents {}", event)
+                                ret.add(String.format(strFormat, name, "${event}"))
+                            } else ret.add(name)
+                        }
+                        else -> ret.add(name)
+                    }
+                }
+
+                // log.debug("MakeApiBeans {}", ret)
+                // {@link MessageService}
+                "countTotalMessageEvents" -> { // is disabled by isNiceBeanName for duplicity info
+                    when (bean) {
+                        is MessageService -> {
+                            val event = mutableListOf<Map.Entry<String, Long>>()
+
+                            @Suppress("UNCHECKED_CAST")
+                            val list = cl.getMethod(name).invoke(bean) as List<MessageCount>
+                            list.forEach {
+                                event.add(SimpleEntry<String, Long>(it.serviceName, it.total))
+                            }
+                            if (event.size > 0) {
+                                log.debug("MakeApiBeans::countTotalMessageEvents {}", event)
+                                ret.add(String.format(strFormat, name, "${event}"))
+                            } else ret.add(name)
+                        }
+                        else -> ret.add(name)
+                    }
+                }
+                else -> ret.add(name)
+            }
+            // log.debug("MakeApiBeans {}", ret)
+        }
         return ret
     }
 
-    public companion object {
-
-        private val STATUS_BEAN: String = "%s:%s"
-        private val STATUS_FORMAT_BEAN: String = "%s:<strong class=\"data\">%s</strong>"
-
-        /**
-         *
-         * Get true if nice
-         *
-         * @param name          {@String}
-         * @return boolean if nice
-         */
-        @JvmStatic
-        public fun isNiceBeanName(name: String): Boolean {
-            val ret: Boolean
-            when (name) {
-                "jedisConnectionFactory",
-                "faviconHandlerMapping",
-                "setBeanFactory",
-                "sessionEventPublisher",
-                "localeResolver",
-                "localeChangeInterceptor",
-                "auditorProvider",
-                "userRoles",
-                "roleBean",
-                "countTotalMessageEvents",
-                "toString",
-                "toProxyConfigString",
-                "addAdvice",
-                "addAdvisor",
-                "equals",
-                "getAdvisors",
-                "getAdvisorCount",
-                "getCallback",
-                "getCallbacks",
-                "getProxiedInterfaces",
-                "getTargetClass",
-                "getTargetSource",
-                "hashCode",
-                "indexOf",
-                "init",
-                "onLogoutSuccess",
-                "isExposeProxy",
-                "isFrozen",
-                "isInterfaceProxied",
-                "isPreFiltered",
-                "isProxyTargetClass",
-                "newInstance",
-                "removeAdvice",
-                "removeAdvisor",
-                "replaceAdvisor",
-                "setCallback",
-                "setCallbacks",
-                "setExposeProxy",
-                "setPreFiltered",
-                "setTargetSource",
-                "getPassword",
-                "bttfAPIBean" -> ret = false
-                else -> ret = true
-            }
-            return ret
+    /**
+     *
+     * Get true if nice
+     *
+     * @param name          {@String}
+     * @return boolean if nice
+     */
+    public fun isNiceBeanName(name: String): Boolean {
+        val ret: Boolean
+        when (name) {
+            "init",
+            "jedisConnectionFactory",
+            "faviconHandlerMapping",
+            "setBeanFactory",
+            "sessionEventPublisher",
+            "localeResolver",
+            "localeChangeInterceptor",
+            "auditorProvider",
+            "userRoles",
+            "toString",
+            "toProxyConfigString",
+            "addAdvice",
+            "addAdvisor",
+            "equals",
+            "getAdvisors",
+            "getAdvisorCount",
+            "getCallback",
+            "getCallbacks",
+            "getProxiedInterfaces",
+            "getTargetClass",
+            "getTargetSource",
+            "hashCode",
+            "indexOf",
+            "onLogoutSuccess",
+            "isExposeProxy",
+            "isFrozen",
+            "isInterfaceProxied",
+            "isPreFiltered",
+            "isProxyTargetClass",
+            "newInstance",
+            "removeAdvice",
+            "removeAdvisor",
+            "replaceAdvisor",
+            "setCallback",
+            "setCallbacks",
+            "setExposeProxy",
+            "setPreFiltered",
+            "setTargetSource",
+            "getPassword",
+            "isBlocked",
+            "isNiceBeanName",
+            "isBeanSuitable",
+            "logoutSuccess",
+            "loadUserByUsername",
+            "countTotalMessageEvents",  // for duplicity info
+            "makeAPIBeans",
+            "propertiesAPIBean",
+            "bttfAPIBean" -> ret = false
+            else -> ret = true
         }
+        // println("IsNiceBeanName ${ret}")
+        return ret
+    }
 
-        /**
-         *
-         * Is Bean suitable?
-         *
-         * @param cl {@link Class}&lt;? extends {@link Any}&gt;
-         * @return boolean
-         */
-        @JvmStatic
-        public fun isBeanSuitable(cl: Class<Any>): Boolean {
-            val ret: Boolean
-            with(cl.simpleName) {
-                if (cl.name.startsWith(BttfApplication::class.java.`package`.name)
+    /**
+     *
+     * Is Bean suitable?
+     *
+     * @param cl {@link Class}&lt;? extends {@link Any}&gt;
+     * @return boolean
+     */
+    public fun isBeanSuitable(cl: Class<Any>): Boolean {
+        val ret: Boolean
+        val arr = arrayOf<String>(
+            AuditorAwareImpl::class.java.simpleName,
+            AuthenticationFailureListener::class.java.simpleName,
+            AuthenticationSuccessEventListener::class.java.simpleName,
+            JobFactory::class.java.simpleName,
+            LogoutSuccess::class.java.simpleName,
+            RedisMessagePublisher::class.java.simpleName,
+            RedisMessageSubscriber::class.java.simpleName
+        )
+        with(cl.simpleName) {
+            if (cl.name.startsWith(BttfApplication::class.java.`package`.name)
+            		&& !(arr.contains(cl.simpleName))
                     && !(startsWith(BttfApplication::class.java.simpleName) ||
-                            startsWith(AuditorAwareImpl::class.java.simpleName) ||
-                            startsWith(AuthenticationSuccessEventListener::class.java.simpleName) ||
-                            startsWith(AuthenticationFailureListener::class.java.simpleName) ||
-                            startsWith(JobFactory::class.java.simpleName) ||
-                            startsWith(LogoutSuccess::class.java.simpleName) ||
-                            startsWith(MessageService::class.java.simpleName) ||
-                            startsWith(OpenApiConfig::class.java.simpleName) ||
-                            startsWith(Provider::class.java.simpleName) ||
-                            startsWith(RedisConfig::class.java.simpleName) ||
-                            startsWith(RedisMessagePublisher::class.java.simpleName) ||
-                            startsWith(RedisMessageSubscriber::class.java.simpleName) ||
-                            startsWith(SecurityConfig::class.java.simpleName))
-                ) {
-                    // log.debug("{} {}", BttfApplication::class.java.`package`.name, cl.superclass.simpleName)
-                    ret = true
-                } else {
-                    ret = false
-                }
-            }
-            return ret
+                    	startsWith(OpenApiConfig::class.java.simpleName) ||            
+                        startsWith(RedisConfig::class.java.simpleName) ||
+                        startsWith(SecurityConfig::class.java.simpleName) ||
+                        startsWith(RoleService::class.java.simpleName))
+            ) {
+                // log.debug("{} {}", BttfApplication::class.java.`package`.name, cl.superclass.simpleName)
+                ret = true
+            } else ret = false
         }
-
-        /**
-         *
-         * For {@link #bttfAPIBean} and {@link #propertiesAPIBean}
-         * <p>
-         * Used {@link StatusController}, {@link ApplicationConfig}
-         * {@link UserService}
-         * ... all in
-         * {@link local.intranet.bttf.api.service}
-         * <p>
-         *
-         * @param method {@link Method}
-         * @param bean   {@link Object}
-         * @param format boolean
-         * @return       {@link Set}&lt;{@link String}&gt;
-         */
-        @JvmStatic
-        public fun makeAPIBeans(method: Method, bean: Any, format: Boolean): Set<String> {
-            val ret = mutableSetOf<String>()
-            var cl = bean.javaClass.superclass
-            if (cl.simpleName.equals("Object")) {
-                cl = bean.javaClass
-            }
-            val name = method.name
-            val strFormat = if (format) STATUS_FORMAT_BEAN else STATUS_BEAN
-            if (isNiceBeanName(name)) {
-                when (name) {
-                    // {@link StatusController}
-                    "timeZone",
-                    "activeProfiles",
-                    "implementationVersion",
-                    "hostName",
-                    "serverName",
-                    "serverSoftware",
-                    "stage",
-                    "plainStatus",
-                    "clientIP",
-                    // {@link ApplicationConfig}
-                    "isFlyway",
-                    // {@link UserService}
-                    "isAuthenticated" -> ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
-
-                    "username",
-                    "sessionId" -> {
-                        val str = cl.getMethod(name).invoke(bean) as String
-                        if (str.length > 0) {
-                            ret.add(String.format(strFormat, name, str))
-                        }
-                    }
-
-                    "countValue" -> {
-                        val long = cl.getMethod(name).invoke(bean) as Long
-                        if (long > 0) {
-                            ret.add(String.format(strFormat, name, "${long}"))
-                        }
-                    }
-
-                    "lastInvocation",
-                    "startupDate" -> {
-                        val zoneDateTime = cl.getMethod(name).invoke(bean) as ZonedDateTime
-                        ret.add(
-                            String.format(
-                                strFormat, name,
-                                zoneDateTime.format(
-                                    DateTimeFormatter.ofPattern(Contented.CONTENT_DATE_REST_FORMAT)
-                                )
-                            )
-                        )
-                    }
-
-                    "bttfEnvironment",
-                    "bttfHttpServletRequest",
-                    "bttfServletContext",
-                    "bttfProperties" -> {
-                        @Suppress("UNCHECKED_CAST")
-                        val list = cl.getMethod(name).invoke(bean) as List<Map.Entry<String, String>>
-                        ret.add(String.format(strFormat, name, list.size))
-                    }
-
-                    // {@link UserService}
-                    "authoritiesRoles" -> {
-                        @Suppress("UNCHECKED_CAST")
-                        val list = cl.getMethod(name).invoke(bean) as List<String>
-                        ret.add(String.format(strFormat, name, "${list}"))
-                    }
-
-                    "operatingSystem" -> {
-                        val events = mutableListOf<Map.Entry<String, String>>()
-                        @Suppress("UNCHECKED_CAST")
-                        val list = cl.getMethod(name).invoke(bean) as List<Map.Entry<String, String>>
-                        list.forEach {
-                            events.add(SimpleEntry<String, String>(it.key, it.value))
-                        }
-                        if (events.size > 0) {
-                            ret.add(String.format(strFormat, name, "${events}"))
-                        } else {
-                            ret.add(name)
-                        }
-                    }
-                    
-                    // {@link LoggingEventService}
-                    "countTotalLoggingEvents" -> {
-                        when (bean) {
-                            is LoggingEventService -> {
-                                val events = mutableListOf<Map.Entry<String, Long>>()
-                                @Suppress("UNCHECKED_CAST")
-                                val list = cl.getMethod(name).invoke(bean) as List<LevelCount>
-                                list.forEach {
-                                    events.add(SimpleEntry<String, Long>(it.level, it.total))
-                                }
-                                if (events.size > 0) {
-                                    ret.add(String.format(strFormat, name, "${events}"))
-                                } else {
-                                    ret.add(name)
-                                }
-                            }
-                            else -> ret.add(name)
-                        }
-                    }
-                    else -> ret.add(name)
-                }
-                // log.debug("MakeApiBeans {}", ret)
-            }
-            return ret
-        }
-
+        return ret
     }
 
 }

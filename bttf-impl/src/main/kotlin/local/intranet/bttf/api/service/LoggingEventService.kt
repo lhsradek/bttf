@@ -54,7 +54,12 @@ public class LoggingEventService {
      * @return {@link List}&lt;{@link LevelCount}&gt;
      */
     @Transactional(readOnly = true)
-    public fun countTotalLoggingEvents(): List<LevelCount> = loggingEventRepository.countTotalLoggingEvents()
+    public fun countTotalLoggingEvents(): List<LevelCount> {
+        val ret = loggingEventRepository.countTotalLoggingEvents()
+        // log.debug("CountTotalLoggingEvents ret:'{}'", ret)
+        return ret
+    }
+
 
     /**
      *

@@ -19,11 +19,16 @@ import javax.servlet.RequestDispatcher
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import local.intranet.bttf.BttfApplication
+import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.domain.Countable
+import local.intranet.bttf.api.domain.Invocationable
+import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.exception.BttfException
+import local.intranet.bttf.api.info.content.BttfCounter
+import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
-import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.security.AESUtil
 import local.intranet.bttf.api.service.BttfService
 import local.intranet.bttf.api.service.LoginAttemptService
@@ -54,7 +59,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.savedrequest.DefaultSavedRequest
 import org.springframework.stereotype.Controller
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -65,7 +69,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.client.HttpServerErrorException.InternalServerError
 
 @Controller
-public class IndexController {
+public class IndexController : Countable, Invocationable, Statusable, BttfCounter() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -103,7 +107,7 @@ public class IndexController {
      *
      * HTML License info
      * <p>
-     * The method getLicense for /license
+     * The method get License for /license
      *
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
@@ -111,8 +115,9 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/license"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    public fun getLicense(request: HttpServletRequest, model: Model): String {
+    public fun license(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
+        incrementCounter()
         with(model) {
             // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
             request.requestedSessionId?.let {
@@ -138,10 +143,11 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    public fun getIndex(
+    public fun index(
         request: HttpServletRequest, model: Model
     ): String {
         addModel(request, model)
+        incrementCounter()
         with(model) {
             addAttribute("springBootVersion", SpringBootVersion.getVersion())
             addAttribute("springVersion", SpringVersion.getVersion())
@@ -164,7 +170,7 @@ public class IndexController {
      * 
      * HTML Properties
      * <p>
-     * The method getProperties for /properties
+     * The method get Properties for /properties
      * <p>
      * Accessible to the
      * {@link local.intranet.tombola.api.domain.type.RoleType#ADMIN_ROLE}.
@@ -175,7 +181,7 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/properties"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("hasRole('ROLE_adminRole')")
-    public fun getProperties(request: HttpServletRequest, model: Model): String {
+    public fun properties(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
         with(model) {
             addAttribute("bttfBeans", statusController.propertiesAPIBean())
@@ -202,7 +208,7 @@ public class IndexController {
      *
      * HTML Play
      * <p>
-     * The method getIndex for play
+     * The method get Play for play
      *
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
@@ -210,7 +216,7 @@ public class IndexController {
      */
     @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
-    public fun getPlay(request: HttpServletRequest, model: Model): String {
+    public fun play(request: HttpServletRequest, model: Model): String {
         try {
             with(request) {
                 val time =
@@ -221,6 +227,7 @@ public class IndexController {
                         ZonedDateTime.now(ZoneId.systemDefault())
                     }
                 addModel(request, model)
+                incrementCounter()
                 val iv = AESUtil.generateIv()
                 val salt = AESUtil.generateSalt()
                 val secretKey = AESUtil.getKeyFromPassword(key, salt)
@@ -361,7 +368,7 @@ public class IndexController {
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
-    public fun getBttfLog(
+    public fun bttfLog(
         @PathVariable(value = "page", required = false) pg: Int?,
         @PathVariable(value = "sort", required = false) srt: String?,
         @PathVariable(required = false) filter: String?,
@@ -400,14 +407,15 @@ public class IndexController {
         } else {
             sort = srt
         }
-        val page: AtomicInteger = getPage(pg, Integer.MAX_VALUE)
+        val page: AtomicInteger = loadPage(pg, Integer.MAX_VALUE)
         addModel(request, model)
+        incrementCounter()
         val order = logSortByParam(sort)
         val pageable = PageRequest.of(page.get(), logCnt.toInt(), Sort.by(order))
         var lg: Page<LoggingEventInfo> = loggingEventService.findPageByLevelString(pageable, levelString)
         val cnt= lg.totalElements
         val max = if (lg.totalPages > 0) (lg.totalPages - 1) else 0
-        val newPage = getPage(page.get(), max).get()
+        val newPage = loadPage(page.get(), max).get()
         if (newPage != page.get()) {
             page.set(newPage)
             lg = loggingEventService.findPageByLevelString(pageable, levelString)
@@ -421,7 +429,7 @@ public class IndexController {
             addAttribute("logsPage", page)
             addAttribute("logsSort", sort)
             addAttribute("logsFilter", fil)
-            setPage(page, max, model)
+            savePage(page, max, model)
             // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
             // if (dbg.toBoolean()) log.debug( "GetBttfLog '{}' page:{} session:{}", asMap().get(INDEX_USERNAME), page.get(), request.requestedSessionId )
         }
@@ -511,7 +519,7 @@ public class IndexController {
      * @param max   {@link Int}
      * @return      {@link AtomicInteger}
      */
-    protected fun getPage(@Nullable pg: Int?, max: Int): AtomicInteger {
+    protected fun loadPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
         with(page) {
             pg?.let {
@@ -530,7 +538,7 @@ public class IndexController {
      * @param max   int
      * @param model {@link Model}
      */
-    protected fun setPage(page: AtomicInteger, max: Int, model: Model) = with(model) {
+    protected fun savePage(page: AtomicInteger, max: Int, model: Model) = with(model) {
         if (page.get() > 0) {
             addAttribute("prev", page.get() - 1)
         } else {
@@ -554,8 +562,8 @@ public class IndexController {
      * @return "login" for thymeleaf login.html {@link String}
      */
     @GetMapping(value = arrayOf("/login"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
-    public fun getLogin(request: HttpServletRequest, model: Model): String {
-        val err = getErrorMessage(request, model)
+    public fun login(request: HttpServletRequest, model: Model): String {
+        val err = errorMessage(request, model)
         with(request) {
             if (session != null && err.equals("OK")) {
                 session.removeAttribute(BttfConst.LAST_EXCEPTION)
@@ -564,6 +572,7 @@ public class IndexController {
             }
         }
         addModel(request, model)
+        incrementCounter()
         with(model) {
             val isAuthenticated = getAttribute("isAuthenticated") as Boolean
             with(request) {
@@ -660,7 +669,7 @@ public class IndexController {
         method = arrayOf(RequestMethod.GET, RequestMethod.POST),
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
-    public fun getError(request: HttpServletRequest, model: Model): String {
+    public fun error(request: HttpServletRequest, model: Model): String {
         try {
             val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
             val statusCode = status?.let {
@@ -711,7 +720,7 @@ public class IndexController {
      * @param model   {@link Model}
      * @return error message {@link String}
      */
-    protected fun getErrorMessage(request: HttpServletRequest, model: Model): String {
+    protected fun errorMessage(request: HttpServletRequest, model: Model): String {
         var ret = "OK"
         val ex: Any? = request.session.getAttribute(BttfConst.LAST_EXCEPTION)
         if (ex != null && ex is Exception) {
@@ -771,7 +780,7 @@ public class IndexController {
         addAttribute("role", userService.authoritiesRoles().joinToString(separator = " "))
         val methodName = Thread.currentThread().stackTrace[2].methodName
         if (methodName.equals("getError")) {
-            val err = getErrorMessage(request, model)
+            val err = errorMessage(request, model)
             if (!err.equals("OK")) {
                 log.warn(
                     "AddModel error:'{}' message:'{}' code:{} path:'{}'", getAttribute("error"), err,
@@ -783,5 +792,13 @@ public class IndexController {
         // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         // if (dbg.toBoolean()) log.debug("AddModel model:'{}'", request.toString())
     }
+
+   /**
+     *
+     * Get status
+     *
+     * @return {@link StatusType}
+     */
+    public override fun getStatus(): StatusType = StatusType.UP
 
 }

@@ -16,6 +16,7 @@ import local.intranet.bttf.api.info.MessageEventInfo
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.service.BeanService
+import local.intranet.bttf.api.service.CounterService
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoginAttemptService
 import local.intranet.bttf.api.service.LoggingEventService
@@ -60,6 +61,9 @@ public class InfoController {
     @Autowired
     private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var counterService: CounterService
+    
     @Autowired
     private lateinit var roleService: RoleService
 
@@ -330,4 +334,32 @@ public class InfoController {
     @ConditionalOnExpression("\${scheduler.enabled}")
     public fun countTotalMessageEvents(): List<MessageCount> = messageService.countTotalMessageEvents()
 
+    /**
+     *
+     * Count Total Message Events
+     * <p>
+     * Accessible to the
+     * <br>
+     * {@link local.intranet.bttf.api.domain.type.RoleType#MANAGER_ROLE}
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     * <p>
+     * Used {@link local.intranet.bttf.api.service.counterService#countTotalCounterName}.
+     * <p>
+     *
+     * @return {@link List}&lt;{@link LevelCount}&gt;
+     */
+    @GetMapping(value = arrayOf("/countTotalCounterName"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @Operation(
+    		operationId = "countTotalCounterName",
+    		summary = "Total Counter Name",
+    		description = "Count Total Counter Name\n\n"
+    				+ "This method is calling CounterService.countTotalCounterName\n\n",
+    				// + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+    				// + "countTotalCounterName()\" target=\"_blank\">InfoController.countTotalCounterName</a>",
+    				tags = arrayOf(BttfConst.INFO_TAG)
+    		)
+    @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    @ConditionalOnExpression("\${scheduler.enabled}")
+    public fun countTotalCounterName(): List<MessageCount> = counterService.countTotalCounterName()
+    
 }
