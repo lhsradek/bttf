@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.ServletContext
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.config.AuditorAwareImpl
+import local.intranet.bttf.api.config.ApplicationConfig
 import local.intranet.bttf.api.config.OpenApiConfig
 import local.intranet.bttf.api.controller.IndexController
 import local.intranet.bttf.api.domain.Contented
@@ -38,10 +39,12 @@ import local.intranet.bttf.api.redis.RedisConfig
 import local.intranet.bttf.api.redis.RedisMessagePublisher
 import local.intranet.bttf.api.redis.RedisMessageSubscriber
 import local.intranet.bttf.api.security.SecurityConfig
+import local.intranet.bttf.api.service.CounterService
 import local.intranet.bttf.api.service.JobService
 import local.intranet.bttf.api.service.LoggingEventService
 import local.intranet.bttf.api.service.MessageService
 import local.intranet.bttf.api.service.RoleService
+import local.intranet.bttf.api.service.UserService
 import local.intranet.bttf.api.scheduler.JobFactory
 import local.intranet.bttf.api.scheduler.SchedulerConfig
 import org.slf4j.LoggerFactory
@@ -58,6 +61,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.security.access.prepost.PreAuthorize
+
 
 /**
  *
@@ -168,7 +172,7 @@ public class StatusController : Statusable {
      *      target=
      *      "_blank">bttf/swagger-ui/#/status-controller/bttfEnvironment</a>
      *
-     * @return {@link List}&lt;{@link Map}&lt;{@link String},{@link String}&gt;&gt;
+     * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/environment"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -202,7 +206,7 @@ public class StatusController : Statusable {
      *      target=
      *      "_blank">bttf/swagger-ui/#/status-controller/bttfProperties</a>
      *
-     * @return {@link List}&lt;{@link Map}&lt;{@link String},{@link String}&gt;&gt;
+     * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/properties"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -257,7 +261,7 @@ public class StatusController : Statusable {
      *      target=
      *      "_blank">bttf/swagger-ui/#/status-controller/bttfHttpServletRequest</a>
      *
-     * @return {@link List}&lt;{@link Map}&lt;{@link String},{@link String}&gt;&gt;
+     * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/httpServletRequest"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -334,7 +338,7 @@ public class StatusController : Statusable {
      *      target=
      *      "_blank">bttf/swagger-ui/#/status-controller/bttfHttpServletRequest</a>
      *
-     * @return {@link List}&lt;{@link Map}&lt;{@link String},{@link String}&gt;&gt;
+     * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
     @GetMapping(value = arrayOf("/servletContext"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -379,6 +383,20 @@ public class StatusController : Statusable {
         return ret
     }
 
+    /**
+     *
+     * Info of Http servlet request
+     * <p>
+     * Accessible to the
+     * {@link local.intranet.bttf.api.domain.type.RoleType#ADMIN_ROLE}
+     *
+     * @see <a href=
+     *      "/bttf/swagger-ui/#/status-controller/propertiesAPIBean"
+     *      target=
+     *      "_blank">bttf/swagger-ui/#/status-controller/propertiesAPIBean</a>
+     *
+     * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
+     */
     @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun propertiesAPIBean(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
@@ -409,10 +427,10 @@ public class StatusController : Statusable {
         map.toSortedMap(java.lang.String.CASE_INSENSITIVE_ORDER).forEach {
             val s = it.value.split(BttfConst.PIPE_LINE)
             if (s.size == 2) {
-                ret.add(SimpleEntry<String, String>("${s.first()} ", s[1]))
+                ret.add(SimpleEntry<String, String>("${s[0]} ", s[1]))
             } else if (s.size == 1) {
                 if (emptyParams.toBoolean()) {
-                    ret.add(SimpleEntry<String, String>(s.first(), ""))
+                    ret.add(SimpleEntry<String, String>(s[0], ""))
                 }
             }
         }
@@ -684,8 +702,6 @@ public class StatusController : Statusable {
                 "plainStatus",
                 "clientIP",
                 "getIpv4HostAddress",
-                // {@link ApplicationConfig}
-                "isFlyway",
                 // {@link UserService}
                 "isAuthenticated" -> {
                     ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
@@ -745,6 +761,7 @@ public class StatusController : Statusable {
                     ret.add(String.format(strFormat, name, "${list}"))
                 }
 
+                // {@link UserService}
                 "operatingSystem" -> {
                     val events = mutableListOf<Map.Entry<String, String>>()
                     @Suppress("UNCHECKED_CAST")
@@ -764,7 +781,8 @@ public class StatusController : Statusable {
                         is IndexController,
                         is StatusController,
                         is JobService,
-                        is MessageService -> {
+                        is MessageService,
+                        is UserService -> {
                             val status = cl.getMethod(name).invoke(bean) as StatusType
                             ret.add(String.format(strFormat, name, "${status}"))
                         }
@@ -797,7 +815,6 @@ public class StatusController : Statusable {
                     when (bean) {
                         is MessageService -> {
                             val event = mutableListOf<Map.Entry<String, Long>>()
-
                             @Suppress("UNCHECKED_CAST")
                             val list = cl.getMethod(name).invoke(bean) as List<MessageCount>
                             list.forEach {
@@ -902,12 +919,14 @@ public class StatusController : Statusable {
         )
         with(cl.simpleName) {
             if (cl.name.startsWith(BttfApplication::class.java.`package`.name)
-            		&& !(arr.contains(cl.simpleName))
-                    && !(startsWith(BttfApplication::class.java.simpleName) ||
-                    	startsWith(OpenApiConfig::class.java.simpleName) ||            
+                && !(arr.contains(cl.simpleName))
+                && !(startsWith(BttfApplication::class.java.simpleName) ||
+                        startsWith(ApplicationConfig::class.java.simpleName) ||
+                        startsWith(OpenApiConfig::class.java.simpleName) ||
                         startsWith(RedisConfig::class.java.simpleName) ||
                         startsWith(SecurityConfig::class.java.simpleName) ||
-                        startsWith(RoleService::class.java.simpleName))
+                        startsWith(RoleService::class.java.simpleName) ||
+                        startsWith(CounterService::class.java.simpleName))
             ) {
                 // log.debug("{} {}", BttfApplication::class.java.`package`.name, cl.superclass.simpleName)
                 ret = true

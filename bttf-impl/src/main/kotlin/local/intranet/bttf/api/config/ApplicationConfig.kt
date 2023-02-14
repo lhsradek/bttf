@@ -10,7 +10,6 @@ import javax.sql.DataSource
 
 import org.slf4j.LoggerFactory
 
-import org.flywaydb.core.Flyway
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -44,9 +43,6 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     private val log = LoggerFactory.getLogger(javaClass)
 
     // @Value("\${bttf.app.debug:false}") private lateinit var dbg: String  // toBoolean
-
-    @Autowired(required = false)
-    private lateinit var flyway: Flyway
 
     @Autowired
     private lateinit var servletContext: ServletContext
@@ -82,31 +78,6 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
     @Bean
     @ConditionalOnExpression("\${bttf.envers.enabled}")
     public fun auditorProvider(): AuditorAware<String> = AuditorAwareImpl()
-
-    /**
-     *
-     * Set HttpSessionEventPublisher
-     * <p>
-     * https://www.baeldung.com/spring-security-session
-     *
-     * @return {@link HttpSessionEventPublisher}
-     */
-    @Bean
-    public fun sessionEventPublisher(): HttpSessionEventPublisher {
-        val ret = HttpSessionEventPublisher()
-        servletContext.setSessionTrackingModes(mutableSetOf(SessionTrackingMode.COOKIE))
-        // if (dbg.toBoolean()) log.debug("{}", ret)
-        return ret
-    }
-
-    /**
-     * 
-     * Is Flyway ?
-     * 
-     * @return true if flyway exists ${spring.flyway.enabled} == true
-     */
-    @Bean
-    public fun isFlyway(): Boolean = flyway.info() != null
 
     /**
      *

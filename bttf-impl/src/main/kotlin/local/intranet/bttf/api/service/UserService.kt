@@ -2,7 +2,9 @@ package local.intranet.bttf.api.service
 
 import javax.servlet.http.HttpSession
 import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.domain.type.RoleType
+import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.info.UserInfo
 import local.intranet.bttf.api.model.entity.User
 import local.intranet.bttf.api.model.repository.UserRepository
@@ -37,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional
  *
  */
 @Service
-public class UserService : UserDetailsService {
+public class UserService : UserDetailsService, Statusable {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -56,6 +58,14 @@ public class UserService : UserDetailsService {
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
 
+
+   /**
+     *
+     * Get status
+     *
+     * @return {@link StatusType}
+     */
+    public override fun getStatus(): StatusType = StatusType.UP
 
     /**
      *
