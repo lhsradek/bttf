@@ -78,6 +78,7 @@ public class LoginAttemptService {
      *
      * @param key {@link String}
      */
+    @Synchronized
     public fun loginSucceeded(@NotNull key: String) = loginAttempt.invalidateKey(key)
 
     /**
