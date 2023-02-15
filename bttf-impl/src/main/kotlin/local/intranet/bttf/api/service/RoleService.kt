@@ -41,7 +41,7 @@ public class RoleService {
 
     /**
      *
-     * Get userRole for {@link local.intranet.bttf.api.controller.InfoController#usersRoles}
+     * Get userRole
      *
      * @return {@link List}&lt;{@link RolePlain}&gt;
      */
