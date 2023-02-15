@@ -2,7 +2,7 @@ package local.intranet.bttf.api.model.repository
 
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
-import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.model.entity.Counter
 
 /**
@@ -19,13 +19,12 @@ public interface CounterRepository : CrudRepository<Counter, Long> {
      *
      * Count total CounterName
      *
-     * @return {@link List}&lt;{@link MessageCount}&gt;
+     * @return {@link List}&lt;{@link ServiceCount}&gt;
      */
-    @Query(
-        value = "select new local.intranet.bttf.api.info.MessageCount(u.counterName, u.cnt) " +
-                "from Counter u order by u.counterName asc"
+    @Query(value = "select new local.intranet.bttf.api.info.ServiceCount(u.counterName, u.cnt) " +
+            "from Counter u order by u.counterName asc"
     )
-    public fun countTotalCounterName(): List<MessageCount>
+    public fun countTotalCounterName(): List<ServiceCount>
 
  	/**
 	 *

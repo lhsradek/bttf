@@ -48,7 +48,7 @@ public class JobFactory : ApplicationContextAware, SchedulerContextAware, Spring
      * scheduler context, job data map and trigger data map.
      *
      * @param bundle {@link TriggerFiredBundle}
-     * @return {@link Object}
+     * @return {@link Any}
      */
     @Throws(Exception::class)
     protected override fun createJobInstance(bundle: TriggerFiredBundle): Any {

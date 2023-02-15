@@ -39,7 +39,7 @@ import org.hibernate.envers.RevisionType
 public data class CounterInfo (
 
     @Size(min = 0)
-    public val count: Long,
+    public var count: Long,
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
@@ -67,6 +67,9 @@ public data class CounterInfo (
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("count")
     public override fun countValue(): Long = count
+    
+    @JsonIgnore
+    public override fun incrementCounter(): Long = count++
     
     @JsonIgnore
     public override fun lastInvocation(): ZonedDateTime = date

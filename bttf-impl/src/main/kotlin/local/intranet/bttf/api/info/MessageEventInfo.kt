@@ -56,7 +56,7 @@ public data class MessageEventInfo (
 
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public val count: Long,
+    public var count: Long,
 
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -74,5 +74,8 @@ public data class MessageEventInfo (
         
     @JsonIgnore
     public override fun countValue(): Long = count
+    
+    @JsonIgnore
+    public override fun incrementCounter(): Long = count++
     
 }

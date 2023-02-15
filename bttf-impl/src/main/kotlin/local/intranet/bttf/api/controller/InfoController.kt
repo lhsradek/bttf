@@ -11,7 +11,7 @@ import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.BeanInfo
 import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.info.LevelCount
-import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.info.MessageEventInfo
 import local.intranet.bttf.api.info.RoleInfo
 import local.intranet.bttf.api.info.UserInfo
@@ -318,7 +318,7 @@ public class InfoController {
      * Used {@link local.intranet.bttf.api.service.MessageService#countTotalMessageEvents}.
      * <p>
      *
-     * @return {@link List}&lt;{@link LevelCount}&gt;
+     * @return {@link List}&lt;{@link ServiceCount}&gt;
      */
     @GetMapping(value = arrayOf("/countTotalMessageEvents"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -332,11 +332,11 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    public fun countTotalMessageEvents(): List<MessageCount> = messageService.countTotalMessageEvents()
+    public fun countTotalMessageEvents(): List<ServiceCount> = messageService.countTotalMessageEvents()
 
     /**
      *
-     * Count Total Message Events
+     * Count Total Counter Name
      * <p>
      * Accessible to the
      * <br>
@@ -346,7 +346,7 @@ public class InfoController {
      * Used {@link local.intranet.bttf.api.service.counterService#countTotalCounterName}.
      * <p>
      *
-     * @return {@link List}&lt;{@link LevelCount}&gt;
+     * @return {@link List}&lt;{@link ServiceCount}&gt;
      */
     @GetMapping(value = arrayOf("/countTotalCounterName"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
@@ -360,6 +360,6 @@ public class InfoController {
     		)
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
-    public fun countTotalCounterName(): List<MessageCount> = counterService.countTotalCounterName()
+    public fun countTotalCounterName(): List<ServiceCount> = counterService.countTotalCounterName()
     
 }

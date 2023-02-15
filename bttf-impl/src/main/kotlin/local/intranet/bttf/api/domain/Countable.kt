@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -23,5 +24,14 @@ public interface Countable {
 	 */
 	@JsonProperty("count")
 	public fun countValue(): Long
+    
+    /**
+     *
+     * Increment counter
+     *
+     * @return {@link Long}
+     */
+    @JsonIgnore
+    public fun incrementCounter(): Long
 
 }

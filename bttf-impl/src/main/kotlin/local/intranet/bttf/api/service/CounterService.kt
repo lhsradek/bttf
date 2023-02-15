@@ -1,12 +1,11 @@
 package local.intranet.bttf.api.service
 
 import local.intranet.bttf.api.domain.type.RoleType
-import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.info.RolePlain
 import local.intranet.bttf.api.model.repository.CounterRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,9 +29,9 @@ public class CounterService {
      *
      * Get userRole for {@link local.intranet.bttf.api.controller.InfoController#countTotalCounterName}
      *
-     * @return {@link List}&lt;{@link RolePlain}&gt;
+     * @return {@link List}&lt;{@link ServiceCount}&gt;
      */
     @Transactional(readOnly = true)
-    public fun countTotalCounterName(): List<MessageCount> = counterRepository.countTotalCounterName()
+    public fun countTotalCounterName(): List<ServiceCount> = counterRepository.countTotalCounterName()
 
 }

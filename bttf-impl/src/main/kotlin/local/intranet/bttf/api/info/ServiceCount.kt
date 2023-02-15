@@ -8,7 +8,7 @@ import javax.validation.constraints.Size
 
 /**
  *
- * {@link LevelCount} for
+ * {@link ServiceCount} for
  * {@link local.intranet.bttf.api.model.repository.MessageEventRepository},
  * {@link local.intranet.bttf.api.service.MessageEventService#countTotalMessageEvents}
  *
@@ -18,7 +18,7 @@ import javax.validation.constraints.Size
  * @param total {@link Long}
  */
 @JsonPropertyOrder("serviceName", "total")
-public data class MessageCount (
+public data class ServiceCount (
     
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

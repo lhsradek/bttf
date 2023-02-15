@@ -160,15 +160,14 @@ public class UserService : UserDetailsService, Statusable {
      * @return {@link String}
      */
     public fun username(): String {
-        var ret = ""
-        SecurityContextHolder.getContext().authentication?.let {
+        val ret = SecurityContextHolder.getContext().authentication?.let {
             httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
                 if (httpSession.maxInactiveInterval < 3600) {
                     httpSession.setMaxInactiveInterval(3600)
                 }
-                ret = SecurityContextHolder.getContext().authentication.name
+                SecurityContextHolder.getContext().authentication.name
             }
-        }
+        } ?: "" 
         // if (dbg.toBoolean()) log.debug("'{}'", ret)
         return ret
     }

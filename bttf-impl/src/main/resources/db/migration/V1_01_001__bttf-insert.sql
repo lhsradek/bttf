@@ -2,14 +2,14 @@
 -- BttfApplication 3.14.15 Flyway script 
 --
   
------ TABLE bttf_role -----
+-- TABLE bttf_role -----
   
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (1, 'adminRole', true);
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (2, 'managerRole', true);
 INSERT INTO bttf_role (id, role_name, enabled) VALUES (3, 'userRole', true);
 
 
------ TABLE bttf_user -----
+-- TABLE bttf_user -----
   
 INSERT INTO bttf_user
   (id, user_name, password, account_non_expired, account_non_locked, credentials_non_expired, enabled)
@@ -27,7 +27,7 @@ INSERT INTO bttf_user
     '$2a$04$CXVR7TLO8SuJoiUR8M8oW.RYi6rHlkkK6rAcT.bLKDqhx6ZsZ0jmu',
     true, true, true, true);
     
------ TABLE bttf_user_role -----
+-- TABLE bttf_user_role -----
   
     
 -- old

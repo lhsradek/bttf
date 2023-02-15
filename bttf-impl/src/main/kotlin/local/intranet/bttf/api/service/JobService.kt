@@ -12,7 +12,7 @@ import local.intranet.bttf.api.model.repository.CounterRepository
 import local.intranet.bttf.api.model.repository.MessageEventRepository
 import local.intranet.bttf.api.info.content.BttfCounter
 import local.intranet.bttf.api.info.CounterInfo
-import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.ServiceCount
 import org.hibernate.envers.RevisionType
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,6 +35,13 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
     @Autowired
     private lateinit var counterRepository: CounterRepository
 
+    @Autowired
+    private lateinit var messageEventRepository: MessageEventRepository
+    
+    // public override fun countValue(): Long = super.countValue()   
+    // public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
+    // public override fun getStatus(): StatusType = super.getStatus()
+       
     /**
      *
      * For {@link local.intranet.bttf.api.controller.InfoController#jobInfo}
@@ -46,7 +53,7 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
             with(counter) {
-                val (revisonNum, revisionType) = counterAudit(id)
+                val (revisonNum, revisionType) = counterAudit(id!!)
                 CounterInfo(
                     cnt,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
@@ -61,28 +68,9 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
         return ret
     }
 
-    @Transactional(readOnly = true)
-    public fun countTotalMessageEvents(): List<MessageCount> {
-        val ret = mutableListOf<MessageCount>()
-        countTotalMessageEvents().forEach {
-        	ret.add(MessageCount(it.serviceName, it.total))   
-        }
-        return ret
-    }
     
-    /**
-     *
-     * Get status
-     *
-     * @return {@link StatusType}
-     */
     @Transactional(readOnly = true)
-    public override fun getStatus(): StatusType {
-        val counter = counterRepository.findByName(javaClass.simpleName)
-        val ret = counter?.let {
-            StatusType.valueOf(with (counter) { status } )
-        } ?: StatusType.NONE
-        return ret
-    }
+    public fun countTotalMessageEvents(): List<ServiceCount> = messageEventRepository.countTotalMessageEvents()
+ 
     
 }

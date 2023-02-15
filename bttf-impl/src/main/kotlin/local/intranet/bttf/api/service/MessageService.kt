@@ -10,10 +10,9 @@ import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.model.entity.Counter
 import local.intranet.bttf.api.model.entity.MessageEvent
-import local.intranet.bttf.api.model.repository.CounterRepository
 import local.intranet.bttf.api.model.repository.MessageEventRepository
-import local.intranet.bttf.api.info.CounterInfo
-import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.content.BttfCounter
+import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.info.MessageEventInfo
 import local.intranet.bttf.api.info.content.Provider
 import org.jetbrains.annotations.NotNull
@@ -39,7 +38,7 @@ import org.springframework.data.domain.PageImpl
  */
 @Service
 @ConditionalOnExpression("\${scheduler.enabled}")
-public class MessageService : Countable, Invocationable, Statusable {
+public class MessageService : Countable, Invocationable, Statusable, BttfCounter() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -47,13 +46,37 @@ public class MessageService : Countable, Invocationable, Statusable {
     private lateinit var scheduler: String
     
     @Autowired
-    private lateinit var counterRepository: CounterRepository
-    
-    @Autowired
     private lateinit var messageEventRepository: MessageEventRepository
     
     @Autowired
     private lateinit var provider: Provider
+
+   /**
+     *
+     * Number of invocations
+     *
+     * @return number of invocations from count
+     */
+    @Transactional(readOnly = true)
+    public override fun countValue(): Long = messageEventRepository
+        .findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
+    
+    /**
+     *
+     * Time of last invocation
+     *
+     * @return {@link ZonedDateTime}
+     */
+    @Transactional(readOnly = true)
+    public override fun lastInvocation(): ZonedDateTime = super.lastInvocationFromAudit(MessageEvent::class.java)
+
+   /**
+     *
+     * Get status
+     *
+     * @return {@link StatusType}
+     */
+    public override fun getStatus(): StatusType = if (scheduler.toBoolean()) StatusType.UP else StatusType.DOWN
 
     /**
      *
@@ -68,16 +91,15 @@ public class MessageService : Countable, Invocationable, Statusable {
         val listPage = messageEventRepository.findByName(pageRequest, javaClass.simpleName)
         listPage.forEach {
             with(it) {
-                val (revisonNum, revisionType) = messageAudit(id)
+                val (revisonNum, revisionType) = counterAudit(MessageEvent::class.java, id!!)
                 list.add(MessageEventInfo(
-                    id!!, uuid, serviceName,
+                    id, uuid, serviceName,
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
                     cnt, message, revisonNum, revisionType)
                 )
             }
         }
         return PageImpl<MessageEventInfo>(list, pageRequest, listPage.totalElements)
-        // return ret
     }
     
     /**
@@ -98,161 +120,10 @@ public class MessageService : Countable, Invocationable, Statusable {
     @Transactional // write new message
     public fun sendMessage(message: String): MessageEvent = messageEventRepository
         .save(MessageEvent(
-            null, UUID.randomUUID().toString(), javaClass.simpleName, 0, System.currentTimeMillis(), message
+            null, "${UUID.randomUUID()}", javaClass.simpleName, 0, System.currentTimeMillis(), message
         ))
 
-    /**
-     *
-     * Number of invocations
-     *
-     * @return number of invocations from count
-     */
     @Transactional(readOnly = true)
-    public override fun countValue(): Long = messageEventRepository
-        .findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
-
-    /**
-     *
-     * Time of last invocation
-     *
-     * @return lastInvocation
-     */
-    @Transactional(readOnly = true)
-    public override fun lastInvocation(): ZonedDateTime {
-        var ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault())
-        val find = messageEventRepository.findByName(PageRequest.of(0, 1), javaClass.simpleName)
-        if (find.totalElements > 0) {
-            // ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault())
-            val reader: AuditReader = provider.auditReader()
-            val query: AuditQuery = reader.createQuery()
-            	.forRevisionsOfEntity(MessageEvent::class.java, true, true)
-                .setFirstResult(0)
-                .setMaxResults(1)
-                .addProjection(AuditEntity.property("timestmp"))
-            	.addProjection(AuditEntity.selectEntity(false))
-            	.addOrder(AuditEntity.revisionNumber().desc())
-            	.addOrder(AuditEntity.id().desc())
-            for (row in query.getResultList()) {
-            	val arr = row as Array<*>
-            	val timestmp = arr[0] as Long
-            	ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault())
-            	break // the first is last
-            }
-        }
-        return ret
-    }
-
-    @Transactional(readOnly = true)
-    public fun countTotalMessageEvents(): List<MessageCount> {
-    	val ret = messageEventRepository.countTotalMessageEvents()
-        // log.debug("CountTotalMessageEvents ret:'{}'", ret)
-        return ret
-    }
+    public fun countTotalMessageEvents(): List<ServiceCount> = messageEventRepository.countTotalMessageEvents()
     
-   /**
-     *
-     * Get status
-     *
-     * @return {@link StatusType}
-     */
-    public override fun getStatus(): StatusType = if (scheduler.toBoolean()) StatusType.UP else StatusType.DOWN
-
-    /**
-     *
-     * MessageEvent audit
-     *
-     * @param messageId {@link Long}
-     * @return {@link Pair}&lt;{@link Int}, {@link RevisionType}&gt;
-     */
-    @Transactional(readOnly = true)
-    protected fun messageAudit(@NotNull messageId: Long?): Pair<Int, RevisionType> {
-        // val ret: Pair<Int, RevisionType>
-        var ret = Pair(0, RevisionType.DEL)
-        val reader: AuditReader = provider.auditReader()
-        val query: AuditQuery = reader.createQuery()
-            .forRevisionsOfEntity(MessageEvent::class.java, true, true)
-            .setFirstResult(0)
-            .setMaxResults(1)
-            .addProjection(AuditEntity.revisionNumber())
-            .addProjection(AuditEntity.selectEntity(false))
-            .add(AuditEntity.id().eq(messageId))
-            .addOrder(AuditEntity.revisionNumber().desc())
-            .addOrder(AuditEntity.id().desc())
-        for (row in query.getResultList()) {
-            // row is Object[] in Java
-            // Object[] arr = (Object[]) row; in Java
-            val arr = row as Array<*>
-            val revisionNumber = arr[0] as Int
-            // Map<String, Object> entity = (Map<String, Object>) arr[1]; in Java
-            val entity = arr[1] as Map<*, *>
-            ret = entity["REVTYPE"]?.let {
-                Pair(revisionNumber, entity["REVTYPE"] as RevisionType) // It should be a MOD
-            } ?: Pair(revisionNumber, RevisionType.ADD) // I know it went this way
-            break // the first is enough for openAPI info
-        }
-        
-        // If RevisionType it's DEL, it wasn't in the for cycle
-        // log.debug("MessageAudit messageId:{} ret:{}", messageId, ret)
-        return ret
-    }
-
-    /**
-     *
-     * getCounter
-     * // Increment counter
-     *
-     * @param external boolean
-     * @return {@link Counter}
-     */
-    @Transactional  // write
-    public fun getCounter(): CounterInfo {
-    // public fun incrementCounter(): CounterInfo {
-        /*
-        val ret = counter?.let {
-            with(counter) {
-                cnt++
-                timestmp = System.currentTimeMillis()
-            }
-			with(counterRepository.save(counter)) {
-                val (revisonNum, revisionType) = counterAudit(id)
-                CounterInfo(
-                    cnt,
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    StatusType.valueOf(status), counterName, revisonNum, revisionType
-                )
-            }
-        } ?: with(
-                counterRepository.save(Counter(null, javaClass.simpleName, 1L, System.currentTimeMillis(),
-                        StatusType.UP.status))) {
-                CounterInfo(
-                    cnt,
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    StatusType.valueOf(status),
-                    counterName,
-                    0,
-                    RevisionType.DEL // If it's DEL, it wasn't in getCounterAudit
-                )
-        }
-        */
-        val counter = counterRepository.findByName(javaClass.simpleName)
-        val ret = counter?.let {
-            with(counter) {
-                val (revisonNum, revisionType) = messageAudit(id)
-                CounterInfo(
-                    cnt,
-                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-                    counterName, StatusType.valueOf(status), revisonNum, revisionType)
-            }
-        } ?: with(counterRepository.save(
-            Counter(null, javaClass.simpleName, 0, System.currentTimeMillis(),StatusType.UP.status))) {
-            val (revisonNum, revisionType) = messageAudit(id)
-            CounterInfo(
-                cnt,
-                ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestmp), ZoneId.systemDefault()),
-        		counterName, StatusType.valueOf(status), revisonNum, revisionType)
-        }
-        // log.debug("GetCounter ret:{}",  ret)
-        return ret
-    }
-
 }

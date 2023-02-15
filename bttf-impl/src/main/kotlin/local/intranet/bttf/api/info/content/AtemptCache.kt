@@ -57,12 +57,10 @@ public class AttemptCache() : LoginCache {
     public override fun getById(@NotNull key: String): Int? {
         val timedEntry = hashMap[key]
         val ret: Int? = timedEntry?.let {
-            with(timedEntry) {
-                if (isExpired()) {
-                    null
-                } else {
-                    value
-                }
+            if (timedEntry.isExpired()) {
+                null
+            } else {
+                timedEntry.value
             }
         }
         return ret
@@ -76,11 +74,9 @@ public class AttemptCache() : LoginCache {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             timedEntry?.let {
-                with(timedEntry) {
-                    value++
-                    creationTime = System.currentTimeMillis()
-                    log.debug("KeyToCache key:'{}' value:{}", key, value)
-                }
+                timedEntry.value++
+                timedEntry.creationTime = System.currentTimeMillis()
+                log.debug("KeyToCache key:'{}' value:{}", key, timedEntry.value)
             }
         } else {
             hashMap.put(key, TimedEntry(key, 1, cacheTimeValidityInMillis))
@@ -112,18 +108,16 @@ public class AttemptCache() : LoginCache {
         if (hashMap.containsKey(key)) {
             val timedEntry = hashMap[key]
             ret = timedEntry?.let {
-                with(timedEntry) {
-                    if (isExpired()) {
-                        invalidateKey(key)
-                        false
-                    } else if (value >= maxAtempt) {
-                        
-                    	log.debug("IsBlocked key:'{}'", key)
-                        true  // is blocked !!!
-                        
-                    } else {
-                        false
-                    }
+                if (timedEntry.isExpired()) {
+                    invalidateKey(key)
+                    false
+                } else if (timedEntry.value >= maxAtempt) {
+
+                    log.debug("IsBlocked key:'{}'", key)
+                    true  // is blocked !!!
+
+                } else {
+                    false
                 }
             } ?: false
         } else {

@@ -10,7 +10,6 @@ import java.time.ZonedDateTime
 import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -38,9 +37,6 @@ public class LoggingEventService {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
-
     @Autowired
     private lateinit var loggingEventRepository: LoggingEventRepository
 
@@ -54,12 +50,7 @@ public class LoggingEventService {
      * @return {@link List}&lt;{@link LevelCount}&gt;
      */
     @Transactional(readOnly = true)
-    public fun countTotalLoggingEvents(): List<LevelCount> {
-        val ret = loggingEventRepository.countTotalLoggingEvents()
-        // log.debug("CountTotalLoggingEvents ret:'{}'", ret)
-        return ret
-    }
-
+    public fun countTotalLoggingEvents(): List<LevelCount> = loggingEventRepository.countTotalLoggingEvents()
 
     /**
      *

@@ -30,7 +30,7 @@ import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.info.BeanInfo
 import local.intranet.bttf.api.info.LevelCount
-import local.intranet.bttf.api.info.MessageCount
+import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.listener.AuthenticationSuccessEventListener
 import local.intranet.bttf.api.listener.AuthenticationFailureListener
@@ -61,7 +61,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.security.access.prepost.PreAuthorize
-
 
 /**
  *
@@ -512,12 +511,8 @@ public class StatusController : Statusable {
      *
      * @return {@link String}
      */
-    public fun implementationVersion(): String =
-        Optional.ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse("unknown")
-    // val list: MutableMap<String, Any> = applicationContext.getBeansWithAnnotation(SpringBootApplication::class.java)
-    // val keyFirstElement: String = list.keys.first()
-    // val valueOfFirstElement: Any = list.getValue(keyFirstElement);
-    // return Optional.ofNullable(valueOfFirstElement::class.java.`package`.implementationVersion).orElse("unknown")
+    public fun implementationVersion(): String = Optional
+        .ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse("unknown")
 
     /**
      *
@@ -689,9 +684,7 @@ public class StatusController : Statusable {
         }
         val name = method.name
         val strFormat = if (isFormat) STATUS_FORMAT_BEAN else STATUS_BEAN
-        if (isNiceBeanName(name)) {
-            when (name) {
-                // {@link StatusController}
+        val arr = arrayOf(// {@link StatusController}
                 "timeZone",
                 "activeProfiles",
                 "implementationVersion",
@@ -703,36 +696,39 @@ public class StatusController : Statusable {
                 "clientIP",
                 "getIpv4HostAddress",
                 // {@link UserService}
-                "isAuthenticated" -> {
-                    ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
-                }
-
+                "isAuthenticated")
+        if (isNiceBeanName(name)) {
+            if (arr.contains(name)) {
+                // for methods returning String
+                ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
+            } else when (name) {
+                
                 "springBeanJobFactory" -> {
                     val any = cl.getMethod(name).invoke(bean) as Any
                     ret.add(String.format(strFormat, name, "${any.javaClass.simpleName}"))
                 }
 
                 "jobDetail" -> {
-                	val any = cl.getMethod(name).invoke(bean) as Any
-        			ret.add(String.format(strFormat, name, "${any.javaClass.superclass.simpleName}"))
+                    val any = cl.getMethod(name).invoke(bean) as Any
+                    ret.add(String.format(strFormat, name, "${any.javaClass.superclass.simpleName}"))
                 }
                 
                 "username",
-                "sessionId" -> {
+                "sessionId" -> { // no epmty String
                     val str = cl.getMethod(name).invoke(bean) as String
                     if (str.length > 0) {
                         ret.add(String.format(strFormat, name, str))
                     }
                 }
 
-                "countValue" -> {
+                "countValue" -> { // no zerro Long
                     val long = cl.getMethod(name).invoke(bean) as Long
                     if (long > 0) {
                         ret.add(String.format(strFormat, name, "${long}"))
                     }
                 }
 
-                "lastInvocation",
+                "lastInvocation",  // as date
                 "startupDate" -> {
                     val zoneDateTime = cl.getMethod(name).invoke(bean) as ZonedDateTime
                     ret.add(String.format(
@@ -744,7 +740,7 @@ public class StatusController : Statusable {
                     )
                 }
                 
-                "bttfEnvironment",
+                "bttfEnvironment", // size of list
                 "bttfHttpServletRequest",
                 "bttfServletContext",
                 "bttfProperties",
@@ -755,7 +751,7 @@ public class StatusController : Statusable {
                 }
 
                 // {@link UserService}
-                "authoritiesRoles" -> {
+                "authoritiesRoles" -> { // list of String
                     @Suppress("UNCHECKED_CAST")
                     val list = cl.getMethod(name).invoke(bean) as List<String>
                     ret.add(String.format(strFormat, name, "${list}"))
@@ -774,9 +770,12 @@ public class StatusController : Statusable {
                     } else ret.add(name)
                 }
 
-                // {@link MessageService}
+                // {@link IndexController}
+                // {@link StatusController}
                 // {@link JobService}
-                "getStatus" -> {
+                // {@link MessageService}
+                // {@link UserService}
+                "getStatus" -> {  // StatusType
                     when (bean) {
                         is IndexController,
                         is StatusController,
@@ -816,7 +815,7 @@ public class StatusController : Statusable {
                         is MessageService -> {
                             val event = mutableListOf<Map.Entry<String, Long>>()
                             @Suppress("UNCHECKED_CAST")
-                            val list = cl.getMethod(name).invoke(bean) as List<MessageCount>
+                            val list = cl.getMethod(name).invoke(bean) as List<ServiceCount>
                             list.forEach {
                                 event.add(SimpleEntry<String, Long>(it.serviceName, it.total))
                             }

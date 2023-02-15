@@ -102,7 +102,11 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
 
     @Autowired
     private lateinit var provider: Provider
-
+    
+    // public override fun countValue(): Long = super.countValue()   
+    // public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
+    // public override fun getStatus(): StatusType = super.getStatus()
+       
     /**
      *
      * HTML License info
@@ -183,6 +187,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
     @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun properties(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
+        incrementCounter()
         with(model) {
             addAttribute("bttfBeans", statusController.propertiesAPIBean())
             addAttribute("hostName", statusController.hostName())
@@ -268,6 +273,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                 is InternalServerError -> {
                     log.error(e.message, e)
                 }
+                else -> log.error(e.message, e)
             }
             throw e
         }
@@ -334,6 +340,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                 is IllegalBlockSizeException -> {
                     log.warn("PostPlay error:'{}' message:'{}'", e::class.java.simpleName, e.message)
                 }
+                else -> log.warn("PostPlay error:'{}' message:'{}'", e::class.java.simpleName, e.message)
             }
             throw e
         }
@@ -704,7 +711,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                         log.error(e.message, e)
                     }
                 }
-                // else -> if (dbg.toBoolean()) throw e
+                else -> log.error(e.message, e)
             }
         }
         return "error"
@@ -752,7 +759,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                 is InternalServerError -> {
                     log.warn(ex.message + " " + ex.stackTrace, ex)
                     ret = BttfConst.ERROR_INTERNAL
-                }
+                } else -> log.error(ex.message, ex)
             }
         }
         if (!ret.equals("OK")) {
@@ -792,13 +799,5 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         // if (dbg.toBoolean()) log.debug("AddModel model:'{}'", request.toString())
     }
-
-   /**
-     *
-     * Get status
-     *
-     * @return {@link StatusType}
-     */
-    public override fun getStatus(): StatusType = StatusType.UP
 
 }

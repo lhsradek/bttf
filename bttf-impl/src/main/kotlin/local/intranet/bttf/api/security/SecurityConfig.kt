@@ -93,8 +93,7 @@ public class SecurityConfig {
     @Primary
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
         try {
-            val ret: AuthenticationManager = authenticationConfiguration.authenticationManager
-            return ret
+            return authenticationConfiguration.authenticationManager 
         } catch (e: Exception) {
             // A disguised exception
             e.message?.let {

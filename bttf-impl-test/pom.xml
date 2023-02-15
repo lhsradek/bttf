@@ -130,5 +130,11 @@
                 <spring.profiles.active>default</spring.profiles.active>
             </properties>
         </profile>
+        <profile>
+            <id>dev-mariadb</id>
+            <properties>
+                <spring.profiles.active>dev-mariadb</spring.profiles.active>
+            </properties>
+        </profile>
     </profiles>
 </project>

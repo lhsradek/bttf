@@ -123,11 +123,6 @@ public class ApplicationConfig : WebApplicationInitializer, AbstractHttpSessionA
      * @param objectMapper {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
     @Autowired
-    public fun configureJackson(objectMapper: ObjectMapper) {
-        // val tzd = TimeZone.getDefault()
-        // objectMapper.setTimeZone(tzd)
-        // if (dbg.toBoolean()) log.debug("{}", tzd)
-        objectMapper.setTimeZone(TimeZone.getDefault())
-    }
+    public fun configureJackson(objectMapper: ObjectMapper) = objectMapper.setTimeZone(TimeZone.getDefault())
 
 }
