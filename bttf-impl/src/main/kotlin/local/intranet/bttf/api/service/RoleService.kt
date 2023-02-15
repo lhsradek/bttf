@@ -31,7 +31,7 @@ public class RoleService {
 
     /**
      *
-     * For {@link local.intranet.bttf.api.controller.InfoController#userInfo}
+     * For {@link local.intranet.bttf.api.controller.InfoController#roleInfo}
      *
      * @return {@link UserInfo}
      */
