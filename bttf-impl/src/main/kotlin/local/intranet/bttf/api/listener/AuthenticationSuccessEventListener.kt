@@ -43,8 +43,8 @@ public class AuthenticationSuccessEventListener : ApplicationListener<Authentica
             e.authentication.authorities.forEach {
                 arr.add(it.authority.replace(BttfConst.ROLE_PREFIX, ""))
             }
+            arr.sort()
         }
-        arr.sort()
         val id: Int? = loginAttemptService.findById(ip)
         loginAttemptService.loginSucceeded(ip)
         id?.let {

@@ -42,8 +42,8 @@ public class AuthenticationFailureListener : ApplicationListener<AuthenticationF
             e.authentication.authorities.forEach {
                 arr.add(it.authority.replace(BttfConst.ROLE_PREFIX, ""))
             }
+            arr.sort()
         }
-        arr.sort()
         val id: Int? = loginAttemptService.findById(ip)
         id?.let {
             log.warn("Failed username:'{}' authorities:'{}' attempt:{}",
