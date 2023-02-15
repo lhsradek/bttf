@@ -65,6 +65,7 @@ public class UserService : UserDetailsService, Statusable {
      *
      * @return {@link StatusType}
      */
+    @Synchronized
     public override fun getStatus(): StatusType = StatusType.UP
 
     /**
@@ -92,6 +93,7 @@ public class UserService : UserDetailsService, Statusable {
      *                                   Makes no assertion as to whether or not the credentials were valid.
      */
     @Transactional(readOnly = true)
+    @Synchronized
     @Throws(
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
@@ -111,6 +113,7 @@ public class UserService : UserDetailsService, Statusable {
      *                                   Makes no assertion as to whether or not the credentials were valid.
      */
     @Transactional(readOnly = true)
+    @Synchronized
     @Throws(
         UsernameNotFoundException::class, LockedException::class, BadCredentialsException::class,
         AccountExpiredException::class
@@ -159,6 +162,7 @@ public class UserService : UserDetailsService, Statusable {
      *
      * @return {@link String}
      */
+    @Synchronized
     public fun username(): String {
         val ret = SecurityContextHolder.getContext().authentication?.let {
             httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
@@ -178,6 +182,7 @@ public class UserService : UserDetailsService, Statusable {
      *
      * @return {@link Boolean}
      */
+    @Synchronized
     public fun isAuthenticated(): Boolean {
         val list = authoritiesRoles()
         val ret = if (list.size > 0 && !list.first().equals(RoleType.ANONYMOUS_ROLE.role)) true else false
@@ -191,6 +196,7 @@ public class UserService : UserDetailsService, Statusable {
      *
      * @return {@link List}&lt;{@link String}&gt;
      */
+    @Synchronized
     public fun authoritiesRoles(): List<String> {
         val ret = mutableListOf<String>()
         httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)?.let {
@@ -221,6 +227,7 @@ public class UserService : UserDetailsService, Statusable {
      *         {@link local.intranet.bttf.api.controller.IndexController#getLogin}
      *         if user is logged.
      */
+    @Synchronized
     public fun userRoles(): Map<String, Boolean> {
         val ret = mutableMapOf<String, Boolean>()
         val list = authoritiesRoles()

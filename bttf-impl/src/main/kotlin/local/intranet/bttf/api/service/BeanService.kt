@@ -28,6 +28,7 @@ public class BeanService {
      *
      * @return {@link UserInfo}
      */
+    @Synchronized
     public fun beanInfo(): BeanInfo = statusController.bttfAPIBean()
 
 }

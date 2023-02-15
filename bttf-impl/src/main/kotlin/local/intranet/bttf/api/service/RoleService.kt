@@ -35,6 +35,7 @@ public class RoleService {
      *
      * @return {@link UserInfo}
      */
+    @Synchronized
     @Transactional(readOnly = true)
     public fun roleInfo(): RoleInfo = RoleInfo(usersRoles())
 
@@ -44,6 +45,7 @@ public class RoleService {
      *
      * @return {@link List}&lt;{@link RolePlain}&gt;
      */
+    @Synchronized
     @Transactional(readOnly = true)
     protected fun usersRoles(): List<RolePlain> {
         val ret = arrayListOf<RolePlain>()

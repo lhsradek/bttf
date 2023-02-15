@@ -48,6 +48,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return number of invocations from count
      */
     @Transactional(readOnly = true)
+    @Synchronized
     public open override fun countValue(): Long {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
@@ -64,6 +65,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return {@link Long}
      */
     @Transactional  // write
+    @Synchronized
     public open override fun incrementCounter(): Long {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
@@ -98,6 +100,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return {@link StatusType}
      */
     @Transactional(readOnly = true)
+    @Synchronized
     public open override fun getStatus(): StatusType {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
@@ -114,6 +117,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return {@link ZonedDateTime}
      */
     @Transactional(readOnly = true)
+    @Synchronized
     public open override fun lastInvocation(): ZonedDateTime {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
@@ -132,6 +136,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return {@link ZonedDateTime}
      */
     @Transactional(readOnly = true)
+    @Synchronized
     public open fun lastInvocationFromAudit(): ZonedDateTime = lastInvocationFromAudit(Counter::class.java)
 
     /**
@@ -145,6 +150,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return {@link ZonedDateTime}
      */
     @Transactional(readOnly = true)
+    @Synchronized
     public open fun lastInvocationFromAudit(@NotNull cl: Class<*>): ZonedDateTime {
     	var ret = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault())
     			val reader: AuditReader = provider.auditReader()
@@ -175,6 +181,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @param counterId {@link Long}
      * @return {@link Map.Entry}&lt;{@link Int}, {@link RevisionType}&gt;
      */
+    @Synchronized
     protected open fun counterAudit(@NotNull counterId: Long): Map.Entry<Int, RevisionType> {
         val ret = counterAudit(Counter::class.java, counterId)
         // log.debug("CounterAudit counterId:{} ret:{}", counterId, ret)
@@ -193,6 +200,7 @@ public abstract class BttfCounter() : Countable, Invocationable, Statusable {
      * @return {@link Map.Entry}&lt;{@link Int}, {@link RevisionType}&gt;
      */
     @Transactional(readOnly = true)
+    @Synchronized
     protected open fun counterAudit(@NotNull cl: Class<*>, @NotNull counterId: Long): Map.Entry<Int, RevisionType> {
         var ret = SimpleEntry<Int, RevisionType>(0, RevisionType.DEL)
         val reader: AuditReader = provider.auditReader()

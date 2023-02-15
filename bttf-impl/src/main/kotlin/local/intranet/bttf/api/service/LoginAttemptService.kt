@@ -58,6 +58,7 @@ public class LoginAttemptService {
      * @param printBlocked {@link Boolean?} as filter if not null
      * @return {@link List}&lt;{@link AttemptInfo}&gt;
      */
+    @Synchronized
     public fun loginAttempts(printBlocked: Boolean?):
         List<AttemptInfo> = loginAttempt.getCache(printBlocked)
 
@@ -68,6 +69,7 @@ public class LoginAttemptService {
      * @param key {@link String}
      * @return {@link Int?}
      */
+    @Synchronized
     public fun findById(@NotNull key: String): Int? = loginAttempt.getById(key)
 
     /**
@@ -84,6 +86,7 @@ public class LoginAttemptService {
      *
      * @param key {@link String}
      */
+    @Synchronized
     public fun loginFailed(@NotNull key: String) = loginAttempt.keyToCache(key)
 
     /**
@@ -93,12 +96,14 @@ public class LoginAttemptService {
      * @param key {@link String}
      * @return {@link Boolean}
      */
+    @Synchronized
     public fun isBlocked(@NotNull key: String): Boolean = loginAttempt.isBlocked(key)
 
     /**
      *
      * for scheduler {@link local.intranet.bttf.api.scheduler.BttfJob}
      */
+    @Synchronized
     public fun flushCache() = loginAttempt.removeExpiredKeys()
 
 }

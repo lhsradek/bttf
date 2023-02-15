@@ -31,6 +31,7 @@ public class CounterService {
      *
      * @return {@link List}&lt;{@link ServiceCount}&gt;
      */
+    @Synchronized
     @Transactional(readOnly = true)
     public fun countTotalCounterName(): List<ServiceCount> = counterRepository.countTotalCounterName()
 

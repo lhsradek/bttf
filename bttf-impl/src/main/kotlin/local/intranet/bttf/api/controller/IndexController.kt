@@ -186,6 +186,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      */
     @GetMapping(value = arrayOf("/properties"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("hasRole('ROLE_adminRole')")
+    @Synchronized
     public fun properties(request: HttpServletRequest, model: Model): String {
         addModel(request, model)
         incrementCounter()
@@ -222,6 +223,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      */
     @GetMapping(value = arrayOf("/play"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
     @PreAuthorize("permitAll()")
+    @Synchronized
     public fun play(request: HttpServletRequest, model: Model): String {
         try {
             with(request) {
@@ -295,6 +297,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("permitAll()")
+    @Synchronized
     public fun postPlay(
         @PathVariable(value = "year", required = false) cryptedYear: String?, request: HttpServletRequest
     ): String {
@@ -376,6 +379,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
+    @Synchronized
     public fun bttfLog(
         @PathVariable(value = "page", required = false) pg: Int?,
         @PathVariable(value = "sort", required = false) srt: String?,
@@ -451,6 +455,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @param srt {@link String} Sort by [idD, idU, mD, mU, a0D, a0U, a1D, a1U, a2D, a2U, a3D, a3U, cU, cD, lU, lD]
      * @return {@link List}&lt;{@link Order}&gt;
      */
+    @Synchronized
     protected fun logSortByParam(srt: String): List<Order> {
         val ret = mutableListOf<Order>()
         with(ret) {
@@ -527,6 +532,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @param max   {@link Int}
      * @return      {@link AtomicInteger}
      */
+    @Synchronized
     protected fun loadPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
         pg?.let {
@@ -544,6 +550,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @param max   int
      * @param model {@link Model}
      */
+    @Synchronized
     protected fun savePage(page: AtomicInteger, max: Int, model: Model) = with(model) {
         if (page.get() > 0) {
             addAttribute("prev", page.get() - 1)
@@ -568,6 +575,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @return "login" for thymeleaf login.html {@link String}
      */
     @GetMapping(value = arrayOf("/login"), produces = arrayOf(MediaType.TEXT_HTML_VALUE))
+    @Synchronized
     public fun login(request: HttpServletRequest, model: Model): String {
         val err = errorMessage(request, model)
         with(request) {
@@ -608,6 +616,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @return redirect url {@link String}
      */
     @PostMapping(path = arrayOf("/login/signin"), consumes = arrayOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
+    @Synchronized
     public fun signin(
         @RequestParam @NotNull username: String,
         @RequestParam @NotNull password: String,
@@ -675,6 +684,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         method = arrayOf(RequestMethod.GET, RequestMethod.POST),
         produces = arrayOf(MediaType.TEXT_HTML_VALUE)
     )
+    @Synchronized
     public fun error(request: HttpServletRequest, model: Model): String {
         try {
             val status: Any? = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
@@ -726,6 +736,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @param model   {@link Model}
      * @return error message {@link String}
      */
+    @Synchronized
     protected fun errorMessage(request: HttpServletRequest, model: Model): String {
         var ret = "OK"
         val ex: Any? = request.session.getAttribute(BttfConst.LAST_EXCEPTION)
@@ -775,6 +786,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
      */
+    @Synchronized
     protected fun addModel(request: HttpServletRequest, model: Model) = with(model) {
         addAttribute("headerSoftware", headerSoftware)
         addAttribute("activeProfiles", statusController.activeProfiles())

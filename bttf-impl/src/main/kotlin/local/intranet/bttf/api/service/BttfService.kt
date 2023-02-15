@@ -52,6 +52,7 @@ public class BttfService {
          * @throws BttfException
          */
         @JvmStatic
+        @Synchronized
         @Throws(BttfException::class)
         public fun secForPlayer(id: Long, secretKey: SecretKey, iv: IvParameterSpec): String {
             try {

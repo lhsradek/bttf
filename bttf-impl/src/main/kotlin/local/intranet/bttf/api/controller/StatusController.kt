@@ -47,7 +47,6 @@ import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
 import local.intranet.bttf.api.scheduler.JobFactory
 import local.intranet.bttf.api.scheduler.SchedulerConfig
-import org.quartz.CronTrigger
 import org.quartz.JobDetail
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

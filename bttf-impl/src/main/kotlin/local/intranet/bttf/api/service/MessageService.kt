@@ -50,10 +50,12 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
      *
      * @return number of invocations from count
      */
+    @Synchronized
     @Transactional(readOnly = true)
     public override fun countValue(): Long = messageEventRepository
         .findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
 
+    @Synchronized
     public override fun incrementCounter(): Long = countValue()
 
     /**
@@ -62,6 +64,7 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
      *
      * @return {@link ZonedDateTime}
      */
+    @Synchronized
     @Transactional(readOnly = true)
     public override fun lastInvocation(): ZonedDateTime = super.lastInvocationFromAudit(MessageEvent::class.java)
 
@@ -71,6 +74,7 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
      *
      * @return {@link StatusType}
      */
+    @Synchronized
     public override fun getStatus(): StatusType = if (scheduler.toBoolean()) StatusType.UP else StatusType.DOWN
 
     /**
@@ -79,6 +83,7 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
      *
      * @return {@link CounterInfo}
      */
+    @Synchronized
     @Transactional(readOnly = true)
     public fun messageInfo(page: Int, size: Int): Page<MessageEventInfo> {
         val pageRequest = PageRequest.of(page, size)
@@ -105,6 +110,7 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
      *
      * @return {@link CounterInfo}
      */
+    @Synchronized
     @Transactional(readOnly = true)
     public fun messageByUuid(uuid: String): MessageEvent = messageEventRepository.findByUuid(uuid)
 
@@ -114,6 +120,7 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
      *
      * @return {@link StatusType}
      */
+    @Synchronized
     @Transactional // write new message
     public fun sendMessage(message: String): MessageEvent = messageEventRepository
         .save(
@@ -122,6 +129,7 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
             )
         )
 
+    @Synchronized
     @Transactional(readOnly = true)
     public fun countTotalMessageEvents(): List<ServiceCount> = messageEventRepository.countTotalMessageEvents()
 

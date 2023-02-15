@@ -51,6 +51,7 @@ public class LoggingEventService {
      * @return {@link List}&lt;{@link LevelCount}&gt;
      */
     @Transactional(readOnly = true)
+    @Synchronized
     public fun countTotalLoggingEvents(): List<LevelCount> = loggingEventRepository.countTotalLoggingEvents()
 
     /**
@@ -65,6 +66,7 @@ public class LoggingEventService {
      *
      * @return {@link Page}&lt;{@link LoggingEventInfo}&gt;
      */
+    @Synchronized
     @Transactional(readOnly = true)
     @Throws(Exception::class)
     public fun findPageByLevelString(pageable: Pageable, messageString: List<String>): Page<LoggingEventInfo> {
@@ -96,6 +98,7 @@ public class LoggingEventService {
      * @param callerMethod {@link List}&lt;{@link String}&gt;
      * @return {@link Page}&lt;{@link LoggingEventInfo}&gt;
      */
+    @Synchronized
     @Transactional(readOnly = true)
     @Throws(Exception::class)
     public fun findPageByCaller(
@@ -132,6 +135,7 @@ public class LoggingEventService {
      * @param loggingEvent {@link LoggingEvent}
      * @return {@link LoggingEventInfo}
      */
+    @Synchronized
     protected fun makeLoggingEventInfo(loggingEvent: LoggingEvent): LoggingEventInfo {
         val s: List<String> = loggingEvent.callerClass.split("\\.")
         // if (dbg.toBoolean()) logger.debug("arg0:{} arg1:{} arg2:{} arg3:{}", arg0, arg1, arg2, arg3)
