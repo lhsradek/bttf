@@ -102,14 +102,14 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
 
     @Autowired
     private lateinit var provider: Provider
-    
+
     /*
     public override fun countValue(): Long = super.countValue()   
     public override fun incrementCounter(): Long = super.incrementCounter()
     public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
     public override fun getStatus(): StatusType = super.getStatus()
     */
-       
+
     /**
      *
      * HTML License info
@@ -174,14 +174,14 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
     }
 
     /**
-     * 
+     *
      * HTML Properties
      * <p>
      * The method get Properties for /properties
      * <p>
      * Accessible to the
      * {@link local.intranet.tombola.api.domain.type.RoleType#ADMIN_ROLE}.
-     * 
+     *
      * @param request {@link HttpServletRequest}
      * @param model   {@link Model}
      * @return "properties" for thymeleaf properties.html {@link String}
@@ -423,7 +423,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         val order = logSortByParam(sort)
         val pageable = PageRequest.of(page.get(), logCnt.toInt(), Sort.by(order))
         var lg: Page<LoggingEventInfo> = loggingEventService.findPageByLevelString(pageable, levelString)
-        val cnt= lg.totalElements
+        val cnt = lg.totalElements
         val max = if (lg.totalPages > 0) (lg.totalPages - 1) else 0
         val newPage = loadPage(page.get(), max).get()
         if (newPage != page.get()) {
@@ -641,10 +641,12 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                 is AccountExpiredException,
                 is AuthenticationCredentialsNotFoundException,
                 is BadCredentialsException -> {
-                    val ret = "/bttf/login" + provider.queryProvider(listOf(
-                        	SimpleEntry<String, String>("error", "true"),
-                        	SimpleEntry<String, String>("exception", e::class.java.simpleName)
-                    ))
+                    val ret = "/bttf/login" + provider.queryProvider(
+                        listOf(
+                            SimpleEntry<String, String>("error", "true"),
+                            SimpleEntry<String, String>("exception", e::class.java.simpleName)
+                        )
+                    )
                     val attempt = loginAttemptService.findById(statusController.clientIP())
                     log.warn("Signin username:'{}' redirect:'{}' attempt:{}", username, ret, attempt)
                     // log.error(e::class.java.simpleName, e)
@@ -758,7 +760,8 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                 is InternalServerError -> {
                     log.warn(ex.message + " " + ex.stackTrace, ex)
                     ret = BttfConst.ERROR_INTERNAL
-                } else -> log.error(ex.message, ex)
+                }
+                else -> log.error(ex.message, ex)
             }
         }
         if (!ret.equals("OK")) {
