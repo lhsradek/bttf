@@ -1,6 +1,5 @@
-package local.intranet.bttf.api.info.content
+package local.intranet.bttf.api.domain
 
-import local.intranet.bttf.api.domain.DefaultFieldLengths
 import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.TimedEntry
 import com.fasterxml.jackson.annotation.JsonIgnore

@@ -1,6 +1,7 @@
 package local.intranet.bttf.api.redis
 
 import java.time.Duration
+import local.intranet.bttf.api.domain.MessagePublisher
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean

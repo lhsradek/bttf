@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.info.content
 
+import local.intranet.bttf.api.domain.LoginCache
 import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.TimedEntry
 import java.util.concurrent.ConcurrentHashMap

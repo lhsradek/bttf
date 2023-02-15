@@ -1,5 +1,7 @@
 package local.intranet.bttf.api.redis
 
+import local.intranet.bttf.api.domain.MessagePublisher
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.data.redis.core.RedisTemplate

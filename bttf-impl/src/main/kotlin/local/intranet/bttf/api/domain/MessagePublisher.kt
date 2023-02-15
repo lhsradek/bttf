@@ -1,4 +1,4 @@
-package local.intranet.bttf.api.redis
+package local.intranet.bttf.api.domain
 
 /**
  *
