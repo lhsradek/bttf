@@ -8,10 +8,10 @@ import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.model.entity.MessageEvent
 
 /**
- * 
+ *
  * {@link MessageEventRepository} is repository for JPA with
  * {@link local.intranet.bttf.api.model.entity.MessageEvent}
- * 
+ *
  * @author Radek Kádner
  *
  */
@@ -32,17 +32,17 @@ public interface MessageEventRepository : JpaRepository<MessageEvent, Long> {
     /**
      *
      * Find by uuid
-     * 
+     *
      * @param uuid {@link String}
      * @return {@link MessageEvent}?
      */
     @Query(value = "select u from MessageEvent u where u.uuid = ?1")
     public fun findByUuid(uuid: String): MessageEvent
-    
+
     /**
      *
      * Find by name
-     * 
+     *
      * @param uuid {@link String}
      * @return {@link MessageEvent}?
      */
