@@ -156,7 +156,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         with(model) {
             addAttribute("springBootVersion", statusController.springBootVersion())
             addAttribute("springVersion", statusController.springVersion())
-            addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+            addAttribute("bttfApi", BttfApplication::class.java.name.split(BttfConst.POINT).last())
             addAttribute("implementationVersion", statusController.implementationVersion())
             // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
             request.requestedSessionId?.let {
@@ -240,7 +240,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                 val salt = AESUtil.generateSalt()
                 val secretKey = AESUtil.getKeyFromPassword(key, salt)
                 with(model) {
-                    addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+                    addAttribute("bttfApi", BttfApplication::class.java.name.split(BttfConst.POINT).last())
                     addAttribute("implementationVersion", statusController.implementationVersion())
                     addAttribute("now", ZonedDateTime.now(ZoneId.systemDefault()))
                     addAttribute("time", time)
@@ -594,7 +594,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                     log.warn("queryString:{} path:'{}'", getQueryString(), "")
                 }
             }
-            addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
+            addAttribute("bttfApi", BttfApplication::class.java.name.split(BttfConst.POINT).last())
             addAttribute("invalidRole", "Invalid role for this page!")
             // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
         }

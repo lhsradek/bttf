@@ -48,6 +48,12 @@ public object BttfConst {
     
     /**
      *
+     * POINT = "."
+     */
+    public const val POINT: String = "."
+    
+    /**
+     *
      * PROTECTED = "[PROTECTED]"
      */
     public const val PROTECTED: String = "[PROTECTED]"

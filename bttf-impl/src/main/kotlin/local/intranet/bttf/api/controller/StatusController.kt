@@ -645,7 +645,7 @@ public class StatusController : Statusable {
      *
      * @return {@link String}
      */
-    public fun hostName(): String = serverName().split(".").first()
+    public fun hostName(): String = serverName().split(BttfConst.POINT).first()
 
     /**
      *
