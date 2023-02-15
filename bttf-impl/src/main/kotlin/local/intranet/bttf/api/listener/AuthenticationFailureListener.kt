@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 /**
  *
  * {@link AuthenticationFailureListener} for
- * {@link local.intranet.bttf.TombolaApplication}
+ * {@link local.intranet.bttf.BttfApplication}
  * <p>
  * https://www.baeldung.com/spring-security-block-brute-force-authentication-attempts
  *

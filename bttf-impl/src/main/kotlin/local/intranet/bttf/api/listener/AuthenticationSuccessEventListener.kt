@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 /**
  *
  * {@link AuthenticationSuccessEventListener} for
- * {@link local.intranet.tombola.TombolaApplication}
+ * {@link local.intranet.tombola.BttfApplication}
  * <p>
  * https://www.baeldung.com/spring-security-block-brute-force-authentication-attempts
  *
