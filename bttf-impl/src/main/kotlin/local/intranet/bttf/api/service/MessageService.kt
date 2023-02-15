@@ -61,6 +61,8 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
     public override fun countValue(): Long = messageEventRepository
         .findByName(PageRequest.of(0, 1), javaClass.simpleName).totalElements
     
+    public override fun incrementCounter(): Long = countValue()
+    
     /**
      *
      * Time of last invocation

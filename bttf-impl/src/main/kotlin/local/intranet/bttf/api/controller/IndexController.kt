@@ -103,9 +103,12 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
     @Autowired
     private lateinit var provider: Provider
     
-    // public override fun countValue(): Long = super.countValue()   
-    // public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
-    // public override fun getStatus(): StatusType = super.getStatus()
+    /*
+    public override fun countValue(): Long = super.countValue()   
+    public override fun incrementCounter(): Long = super.incrementCounter()
+    public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
+    public override fun getStatus(): StatusType = super.getStatus()
+    */
        
     /**
      *
@@ -528,12 +531,10 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
      */
     protected fun loadPage(@Nullable pg: Int?, max: Int): AtomicInteger {
         val page = AtomicInteger()
-        with(page) {
-            pg?.let {
-                set(pg)
-                if (get() < 0 || get() > max) set(0)
-            } ?: set(0)
-        }
+        pg?.let {
+            page.set(pg)
+            if (page.get() < 0 || page.get() > max) page.set(0)
+        } ?: page.set(0)
         return page
     }
 
@@ -619,10 +620,8 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
             val savedRequest: DefaultSavedRequest? =
                 request.session.getAttribute(BttfConst.SAVED_REQUEST) as DefaultSavedRequest
             savedRequest?.let {
-                with (savedRequest) {
-                    getRedirectUrl()?.let {
-                        redirect = getRedirectUrl()
-                    }
+                savedRequest.getRedirectUrl()?.let {
+                    redirect = savedRequest.getRedirectUrl()
                 }
             }
         }
