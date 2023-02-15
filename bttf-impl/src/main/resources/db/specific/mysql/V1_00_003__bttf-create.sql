@@ -55,7 +55,7 @@ CREATE TABLE bttf_message_a (
     id BIGINT(20) NOT NULL,
     rev BIGINT(20) REFERENCES revinfo (rev),
     revtype TINYINT(4) DEFAULT NULL,
-    uuid VARCHAR(16) DEFAULT NULL,
+    uuid VARCHAR(255) DEFAULT NULL,
     uuid_m BIT(1) DEFAULT NULL,
     cnt BIGINT(20) DEFAULT NULL,
     cnt_m BIT(1) DEFAULT NULL,
