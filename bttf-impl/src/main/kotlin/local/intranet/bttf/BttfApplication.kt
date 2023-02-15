@@ -73,7 +73,7 @@ public class BttfApplication : WebApplicationInitializer, SpringBootServletIniti
     public override fun configure(builder: SpringApplicationBuilder): SpringApplicationBuilder {
         log.info("Entering application.")
         builder.bannerMode(Banner.Mode.OFF)
-        return builder.sources(BttfApplication::class.java)
+        return builder.sources(javaClass)
     }
 
 }

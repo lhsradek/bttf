@@ -42,10 +42,28 @@ public object BttfConst {
     
     /**
      *
+     * SLASH = "/"
+     */
+    public const val SLASH: String = "/"
+    
+    /**
+     *
      * PROTECTED = "[PROTECTED]"
      */
     public const val PROTECTED: String = "[PROTECTED]"
 
+    /**
+     *
+     * NULL = "[NULL]"
+     */
+    public const val NULL: String = "[NULL]"
+    
+    /**
+     *
+     * UNKNOWN = "unknown"
+     */
+    public const val UNKNOWN: String = "unknown"
+    
     /**
      *
      * ROLE_PREFIX = "ROLE_"

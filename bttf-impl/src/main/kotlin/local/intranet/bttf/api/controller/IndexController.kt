@@ -38,8 +38,6 @@ import org.jetbrains.annotations.NotNull
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.SpringBootVersion
-import org.springframework.core.SpringVersion
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -156,8 +154,8 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         addModel(request, model)
         incrementCounter()
         with(model) {
-            addAttribute("springBootVersion", SpringBootVersion.getVersion())
-            addAttribute("springVersion", SpringVersion.getVersion())
+            addAttribute("springBootVersion", statusController.springBootVersion())
+            addAttribute("springVersion", statusController.springVersion())
             addAttribute("bttfApi", BttfApplication::class.java.name.split(".").last())
             addAttribute("implementationVersion", statusController.implementationVersion())
             // asMap().forEach { log.debug("key:{} value:{}", it.key, it.value.toString()) }
@@ -786,7 +784,7 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
         addAttribute("isAuthenticated", userService.isAuthenticated())
         addAttribute("username", userService.username())
         addAttribute("userRoles", userService.userRoles())
-        addAttribute("role", userService.authoritiesRoles().joinToString(separator = " "))
+        addAttribute("role", userService.authoritiesRoles().joinToString(separator = BttfConst.BLANK_SPACE))
         val methodName = Thread.currentThread().stackTrace[2].methodName
         if (methodName.equals("getError")) {
             val err = errorMessage(request, model)

@@ -47,11 +47,15 @@ import local.intranet.bttf.api.service.RoleService
 import local.intranet.bttf.api.service.UserService
 import local.intranet.bttf.api.scheduler.JobFactory
 import local.intranet.bttf.api.scheduler.SchedulerConfig
+import org.quartz.CronTrigger
+import org.quartz.JobDetail
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.SpringBootVersion
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.ApplicationContext
+import org.springframework.core.SpringVersion
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
 import org.springframework.core.env.MutablePropertySources
@@ -61,6 +65,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.scheduling.quartz.JobDetailFactoryBean
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean
+import org.springframework.scheduling.quartz.SpringBeanJobFactory
 
 /**
  *
@@ -77,11 +84,11 @@ public class StatusController : Statusable {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${bttf.app.debug:false}")
-    private lateinit var dbg: String // toBoolean
-
     @Value("\${bttf.app.stage}")
     private lateinit var stage: String
+
+    @Value("\${bttf.app.debug:false}")
+    private lateinit var dbg: String // toBoolean
 
     @Value("\${bttf.app.emptyParams:false}")
     private lateinit var emptyParams: String // toBoolean
@@ -273,6 +280,7 @@ public class StatusController : Statusable {
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
     @PreAuthorize("hasRole('ROLE_adminRole')")
+    @Synchronized
     public fun bttfHttpServletRequest(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val map = mutableMapOf<String, String>()
@@ -397,6 +405,7 @@ public class StatusController : Statusable {
      * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
     @PreAuthorize("hasRole('ROLE_adminRole')")
+    @Synchronized
     public fun propertiesAPIBean(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val map = mutableMapOf<String, String>()
@@ -446,6 +455,7 @@ public class StatusController : Statusable {
      * @return {@link Map}&lt;{@link String},{@link Any}&gt;
      */
     @PreAuthorize("hasRole('ROLE_adminRole')")
+    @Synchronized
     public fun bttfAPIBean(): BeanInfo {
         val ret = mutableMapOf<String, Any>()
         for (beanName in applicationContext.beanDefinitionNames) {
@@ -512,8 +522,34 @@ public class StatusController : Statusable {
      * @return {@link String}
      */
     public fun implementationVersion(): String = Optional
-        .ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse("unknown")
+        .ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse(BttfConst.UNKNOWN)
+    
+    /**
+     *
+     * SpringVersion version
+     *
+     * @return {@link String}
+     */
+    public fun springVersion(): String {
+        val ret = SpringVersion.getVersion()
+        ret?.let {
+        	return ret
+        } ?: return BttfConst.UNKNOWN
+    }
 
+    /**
+     *
+     * SpringBootVersion version
+     *
+     * @return {@link String}
+     */
+    public fun springBootVersion(): String {
+    	val ret = SpringBootVersion.getVersion()
+    	ret?.let {
+    		return ret
+    	} ?: return BttfConst.UNKNOWN
+    }
+    
     /**
      *
      * Get Operating System
@@ -521,6 +557,7 @@ public class StatusController : Statusable {
      * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
     @PreAuthorize("hasRole('ROLE_adminRole')")
+    @Synchronized
     public fun operatingSystem(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val system = ManagementFactory.getOperatingSystemMXBean()
@@ -539,6 +576,7 @@ public class StatusController : Statusable {
      *
      * @return {@link String}
      */
+    @Synchronized
     public fun sessionId(): String {
         val session = httpServletRequest.getSession(false)
         val ret = session?.let {
@@ -551,7 +589,7 @@ public class StatusController : Statusable {
 
     /**
      *
-    * Stage from ${bttf.app.stage}
+     * Stage from ${bttf.app.stage}
      *
      * @return {@link String}
      */
@@ -571,7 +609,7 @@ public class StatusController : Statusable {
      *
      * @return {@link String}
      */
-    public fun serverName(): String = virtualServerName().split("/").last()
+    public fun serverName(): String = virtualServerName().split(BttfConst.SLASH).last()
 
     /**
      *
@@ -579,7 +617,7 @@ public class StatusController : Statusable {
      *
      * @return {@link String}
      */
-    public fun serverSoftware(): String = serverInfo().split("/").first()
+    public fun serverSoftware(): String = serverInfo().split(BttfConst.SLASH).first()
 
     /**
      *
@@ -628,12 +666,13 @@ public class StatusController : Statusable {
      */
     public fun timeZone(): String = ZoneId.systemDefault().id
 
-    /**
+   /**
      *
      * client IP
      *
      * @return {@link String}
      */
+    @Synchronized
     public fun clientIP(): String {
         try {
             val xfHeader = httpServletRequest.getHeader("X-Forwarded-For")
@@ -650,6 +689,7 @@ public class StatusController : Statusable {
      *
      * https://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device-from-code
      */
+    @Synchronized
     public fun getIpv4HostAddress(): String {
         NetworkInterface.getNetworkInterfaces()?.toList()?.map { networkInterface ->
             networkInterface.inetAddresses?.toList()?.find {
@@ -658,7 +698,7 @@ public class StatusController : Statusable {
                 return it.hostAddress
             }
         }
-        return ""
+        return BttfConst.UNKNOWN
     }
 
     /**
@@ -674,8 +714,9 @@ public class StatusController : Statusable {
      * @param method   {@link Method}
      * @param bean     {@link Object}
      * @param isFormat {@link Boolean}
-     * @return       {@link Set}&lt;{@link String}&gt;
+     * @return {@link Set}&lt;{@link String}&gt;
      */
+    @Synchronized
     public fun makeAPIBeans(method: Method, bean: Any, isFormat: Boolean): Set<String> {
         val ret = mutableSetOf<String>()
         var cl = bean.javaClass.superclass
@@ -684,35 +725,55 @@ public class StatusController : Statusable {
         }
         val name = method.name
         val strFormat = if (isFormat) STATUS_FORMAT_BEAN else STATUS_BEAN
-        val arr = arrayOf(// {@link StatusController}
-                "timeZone",
-                "activeProfiles",
-                "implementationVersion",
-                "hostName",
-                "serverName",
-                "serverSoftware",
-                "stage",
-                "plainStatus",
-                "clientIP",
-                "getIpv4HostAddress",
-                // {@link UserService}
-                "isAuthenticated")
-        if (isNiceBeanName(name)) {
-            if (arr.contains(name)) {
-                // for methods returning String
+        // methods without parameters returning non empty String
+		val met = arrayOf(
+            // {@link StatusController}
+            "timeZone",
+            "activeProfiles",
+            "implementationVersion",
+            "springVersion",
+            "springBootVersion",
+            "hostName",
+            "serverName",
+            "stage",
+            "serverSoftware",
+            "plainStatus",
+            "clientIP",
+            "getIpv4HostAddress",
+            // {@link UserService}
+            "isAuthenticated"
+        )
+		if (isNiceBeanName(name)) {
+            if (met.contains(name)) {
                 ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
             } else when (name) {
-                
+
                 "springBeanJobFactory" -> {
-                    val any = cl.getMethod(name).invoke(bean) as Any
-                    ret.add(String.format(strFormat, name, "${any.javaClass.simpleName}"))
+                    // val any = cl.getMethod(name).invoke(bean) as Any
+                    // ret.add(String.format(strFormat, name, any.javaClass.simpleName))
+                    val jobFactory = cl.getMethod(name).invoke(bean) as SpringBeanJobFactory
+                    ret.add(String.format(strFormat, name, jobFactory.javaClass.simpleName))
                 }
 
                 "jobDetail" -> {
-                    val any = cl.getMethod(name).invoke(bean) as Any
-                    ret.add(String.format(strFormat, name, "${any.javaClass.superclass.simpleName}"))
+                    // val any = cl.getMethod(name).invoke(bean) as Any
+                    // ret.add(String.format(strFormat, name, any.javaClass.superclass.simpleName))
+                    val jobDetail = cl.getMethod(name).invoke(bean) as JobDetailFactoryBean
+                    jobDetail.`object`?.let {
+                    	ret.add(String.format(strFormat, name, jobDetail.`object`!!.jobClass.simpleName))
+                    } ?: ret.add(String.format(strFormat, name))
                 }
-                
+
+                "trigger" -> {
+                    val jobDetail = cl.getMethod("jobDetail").invoke(bean) as JobDetailFactoryBean
+                    val trigger = cl.getMethod(name, JobDetail::class.java)
+                        .invoke(bean, jobDetail.`object`) as CronTriggerFactoryBean
+                    trigger.`object`?.let {
+                    ret.add(String.format(strFormat, name,
+                        trigger.`object`!!.jobKey.name.replaceFirst("DEFAULT\\.", "")))
+                    } ?: ret.add(String.format(strFormat, name))
+                }
+
                 "username",
                 "sessionId" -> { // no epmty String
                     val str = cl.getMethod(name).invoke(bean) as String
@@ -728,7 +789,7 @@ public class StatusController : Statusable {
                     }
                 }
 
-                "lastInvocation",  // as date
+                "lastInvocation",  // as ZonedDateTime
                 "startupDate" -> {
                     val zoneDateTime = cl.getMethod(name).invoke(bean) as ZonedDateTime
                     ret.add(String.format(
@@ -739,7 +800,7 @@ public class StatusController : Statusable {
                             } else Contented.CONTENT_DATE_REST_FORMAT)))
                     )
                 }
-                
+
                 "bttfEnvironment", // size of list
                 "bttfHttpServletRequest",
                 "bttfServletContext",
@@ -751,15 +812,16 @@ public class StatusController : Statusable {
                 }
 
                 // {@link UserService}
-                "authoritiesRoles" -> { // list of String
+                "authoritiesRoles" -> { // as List<String>
                     @Suppress("UNCHECKED_CAST")
                     val list = cl.getMethod(name).invoke(bean) as List<String>
                     ret.add(String.format(strFormat, name, "${list}"))
                 }
 
                 // {@link UserService}
-                "operatingSystem" -> {
+                "operatingSystem" -> {  // as Map.Entry
                     val events = mutableListOf<Map.Entry<String, String>>()
+
                     @Suppress("UNCHECKED_CAST")
                     val list = cl.getMethod(name).invoke(bean) as List<Map.Entry<String, String>>
                     list.forEach {
@@ -775,7 +837,7 @@ public class StatusController : Statusable {
                 // {@link JobService}
                 // {@link MessageService}
                 // {@link UserService}
-                "getStatus" -> {  // StatusType
+                "getStatus" -> {  // as StatusType
                     when (bean) {
                         is IndexController,
                         is StatusController,
@@ -790,10 +852,11 @@ public class StatusController : Statusable {
                 }
 
                 // {@link LoggingEventService}
-                "countTotalLoggingEvents" -> {
+                "countTotalLoggingEvents" -> {  // as Map.Entry
                     when (bean) {
                         is LoggingEventService -> {
                             val event = mutableListOf<Map.Entry<String, Long>>()
+
                             @Suppress("UNCHECKED_CAST")
                             val list = cl.getMethod(name).invoke(bean) as List<LevelCount>
                             list.forEach {
@@ -808,12 +871,12 @@ public class StatusController : Statusable {
                     }
                 }
 
-                // log.debug("MakeApiBeans {}", ret)
                 // {@link MessageService}
-                "countTotalMessageEvents" -> { // is disabled by isNiceBeanName for duplicity info
+                "countTotalMessageEvents" -> {  // as Map.Entry - is disabled by isNiceBeanName for duplicity info
                     when (bean) {
                         is MessageService -> {
                             val event = mutableListOf<Map.Entry<String, Long>>()
+
                             @Suppress("UNCHECKED_CAST")
                             val list = cl.getMethod(name).invoke(bean) as List<ServiceCount>
                             list.forEach {
@@ -829,8 +892,8 @@ public class StatusController : Statusable {
                 }
                 else -> ret.add(name)
             }
-            // log.debug("MakeApiBeans {}", ret)
         }
+        // log.debug("MakeApiBeans {}", ret)
         return ret
     }
 
@@ -924,8 +987,8 @@ public class StatusController : Statusable {
                         startsWith(OpenApiConfig::class.java.simpleName) ||
                         startsWith(RedisConfig::class.java.simpleName) ||
                         startsWith(SecurityConfig::class.java.simpleName) ||
-                        startsWith(RoleService::class.java.simpleName) ||
-                        startsWith(CounterService::class.java.simpleName))
+                        startsWith(CounterService::class.java.simpleName) ||
+                        startsWith(RoleService::class.java.simpleName))
             ) {
                 // log.debug("{} {}", BttfApplication::class.java.`package`.name, cl.superclass.simpleName)
                 ret = true

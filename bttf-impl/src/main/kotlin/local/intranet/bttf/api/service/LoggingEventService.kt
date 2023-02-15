@@ -1,5 +1,6 @@
 package local.intranet.bttf.api.service
 
+import local.intranet.bttf.api.domain.BttfConst
 import local.intranet.bttf.api.info.LevelCount
 import local.intranet.bttf.api.info.LoggingEventInfo
 import local.intranet.bttf.api.model.entity.LoggingEvent
@@ -140,10 +141,10 @@ public class LoggingEventService {
             loggingEvent.levelString,
             if (s.size > 0) s.last() else "",
             loggingEvent.callerMethod,
-            loggingEvent.arg0?.let { loggingEvent.arg0 } ?: "[NULL]",
-            loggingEvent.arg1?.let { loggingEvent.arg1 } ?: "[NULL]",
-            loggingEvent.arg2?.let { loggingEvent.arg2 } ?: "[NULL]",
-            loggingEvent.arg3?.let { loggingEvent.arg3 } ?: "[NULL]",
+            loggingEvent.arg0?.let { loggingEvent.arg0 } ?: BttfConst.NULL,
+            loggingEvent.arg1?.let { loggingEvent.arg1 } ?: BttfConst.NULL,
+            loggingEvent.arg2?.let { loggingEvent.arg2 } ?: BttfConst.NULL,
+            loggingEvent.arg3?.let { loggingEvent.arg3 } ?: BttfConst.NULL,
             ZonedDateTime.ofInstant(Instant.ofEpochMilli(loggingEvent.timestmp), ZoneId.systemDefault()))
         // if (dbg.toBoolean()) log.debug("{}", ret)
         // return ret
