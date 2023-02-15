@@ -52,8 +52,8 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
      *
      * @return {@link CounterInfo}
      */
-    @Transactional(readOnly = true)
     @Synchronized
+    @Transactional(readOnly = true)
     public fun jobInfo(): CounterInfo {
         val counter = counterRepository.findByName(javaClass.simpleName)
         val ret = counter?.let {
@@ -74,8 +74,8 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
     }
 
 
-    @Transactional(readOnly = true)
     @Synchronized
+    @Transactional(readOnly = true)
     public fun countTotalMessageEvents(): List<ServiceCount> = messageEventRepository.countTotalMessageEvents()
 
 

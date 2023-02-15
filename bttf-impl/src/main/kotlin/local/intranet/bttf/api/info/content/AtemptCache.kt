@@ -159,7 +159,7 @@ public class AttemptCache() : LoginCache {
      *
      * Remove Expired Keys
      */
-    public fun removeExpiredKeys() {
+    public override fun removeExpiredKeys() {
         val i = AtomicInteger()
         for (item in hashMap) {
             val timedEntry = item.value

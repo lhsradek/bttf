@@ -3,6 +3,7 @@ package local.intranet.bttf.api.info.content
 import local.intranet.bttf.api.domain.DefaultFieldLengths
 import local.intranet.bttf.api.info.AttemptInfo
 import local.intranet.bttf.api.info.TimedEntry
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.ZonedDateTime
 import javax.validation.constraints.Size
@@ -65,5 +66,12 @@ public interface LoginCache {
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     public fun getCache(printBlocked: Boolean?): List<AttemptInfo>
+    
+    /**
+     *
+     * Remove Expired Keys
+     */
+    @JsonIgnore
+    public fun removeExpiredKeys()
     
 }
