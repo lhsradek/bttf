@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
+
 /**
  *
  * {@link JobService} for {@link local.intranet.bttf.BttfApplication}
@@ -71,9 +72,9 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
         return ret
     }
 
-    
+
     @Transactional(readOnly = true)
     public fun countTotalMessageEvents(): List<ServiceCount> = messageEventRepository.countTotalMessageEvents()
- 
-    
+
+
 }
