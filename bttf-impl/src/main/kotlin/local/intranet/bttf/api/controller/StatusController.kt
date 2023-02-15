@@ -101,7 +101,7 @@ public class StatusController : Statusable {
 
     @Autowired
     private lateinit var schedulerConfig: SchedulerConfig
-    
+
     @Autowired
     private lateinit var environment: Environment
 
@@ -139,7 +139,7 @@ public class StatusController : Statusable {
     private val STATUS_BEAN: String = "%s:%s"
     private val STATUS_FORMAT_BEAN: String = "%s:<strong class=\"data\">%s</strong>"
 
-   /**
+    /**
      *
      * Get status
      *
@@ -287,43 +287,44 @@ public class StatusController : Statusable {
         for (key in httpServletRequest.attributeNames.toList()) {
             val value = httpServletRequest.getAttribute(key).toString()
             if ((value.length > 0 || emptyParams.toBoolean()) && !(key.startsWith(STATUS_BRACKET) ||
-                key.contains("@") || value.contains("@") ||
-                /*
-                 * __spring_security_filterSecurityInterceptor_filterApplied:true
-                 * __spring_security_scpf_applied:true
-                 * __spring_security_session_mgmt_filter_applied:true
-                     */
-                key.equals(STATUS_ORG_APACHE_TOMCAT_UTIL_NET_SECURE_REQUESTED_CIPHERS) ||
-                /*
-                 * org.springframework.web.servlet.DispatcherServlet.OUTPUT_FLASH_MAP: FlashMap
-                 * [attributes={}, targetRequestPath=null, targetRequestParams={}]
-                 */
-                key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_DISPATCHERSERVLET_OUTPUT_FLASH_MAP) ||
-                /*
-                 * org.springframework.web.servlet.HandlerMapping.bestMatchingHandler:
-                 */
-                key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_BESTMATCHINGHANDLER) ||
-                /*
-                 * duplicity /status in
-                 * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping
-                 * org.springframework.web.servlet.HandlerMapping.bestMatchingPattern:/status
-                 * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping:/
-                 * status:/status
-                 */
-                key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_PATHWITHINHANDLERMAPPING) ||
-                /*
-                 * empty {}
-                 * org.springframework.web.servlet.HandlerMapping.uriTemplateVariables:{}
-                 */
-                key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_URITEMPLATEVARIABLES) ||
-                /*
-                 * duplicity /status in
-                 * org.apache.tomcat.util.net.secure_protocol_version:TLSv1.3
-                 * org.apache.tomcat.util.net.secure_requested_protocol_versions:Unknown(0x9a9a)
-                 * ,TLSv1.3,TLSv1.2
-                 */
-                key.equals(STATUS_ORG_APACHE_TOMCAT_UTIL_NET_SECURE_REQUESTED_PROTOCOL_VERSIONS) ||
-                key.equals(STATUS_JAVAX_SERVLET_REQUEST_SSL_SESSION_ID))) { // nelíbí
+                        key.contains("@") || value.contains("@") ||
+                        /*
+                         * __spring_security_filterSecurityInterceptor_filterApplied:true
+                         * __spring_security_scpf_applied:true
+                         * __spring_security_session_mgmt_filter_applied:true
+                             */
+                        key.equals(STATUS_ORG_APACHE_TOMCAT_UTIL_NET_SECURE_REQUESTED_CIPHERS) ||
+                        /*
+                         * org.springframework.web.servlet.DispatcherServlet.OUTPUT_FLASH_MAP: FlashMap
+                         * [attributes={}, targetRequestPath=null, targetRequestParams={}]
+                         */
+                        key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_DISPATCHERSERVLET_OUTPUT_FLASH_MAP) ||
+                        /*
+                         * org.springframework.web.servlet.HandlerMapping.bestMatchingHandler:
+                         */
+                        key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_BESTMATCHINGHANDLER) ||
+                        /*
+                         * duplicity /status in
+                         * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping
+                         * org.springframework.web.servlet.HandlerMapping.bestMatchingPattern:/status
+                         * org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping:/
+                         * status:/status
+                         */
+                        key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_PATHWITHINHANDLERMAPPING) ||
+                        /*
+                         * empty {}
+                         * org.springframework.web.servlet.HandlerMapping.uriTemplateVariables:{}
+                         */
+                        key.equals(STATUS_ORG_SPRINGFRAMEWORK_WEB_SERVLET_HANDLERMAPPING_URITEMPLATEVARIABLES) ||
+                        /*
+                         * duplicity /status in
+                         * org.apache.tomcat.util.net.secure_protocol_version:TLSv1.3
+                         * org.apache.tomcat.util.net.secure_requested_protocol_versions:Unknown(0x9a9a)
+                         * ,TLSv1.3,TLSv1.2
+                         */
+                        key.equals(STATUS_ORG_APACHE_TOMCAT_UTIL_NET_SECURE_REQUESTED_PROTOCOL_VERSIONS) ||
+                        key.equals(STATUS_JAVAX_SERVLET_REQUEST_SSL_SESSION_ID))
+            ) { // nelíbí
                 map[key] = value
             }
         }
@@ -523,7 +524,7 @@ public class StatusController : Statusable {
      */
     public fun implementationVersion(): String = Optional
         .ofNullable(BttfApplication::class.java.`package`.implementationVersion).orElse(BttfConst.UNKNOWN)
-    
+
     /**
      *
      * SpringVersion version
@@ -533,7 +534,7 @@ public class StatusController : Statusable {
     public fun springVersion(): String {
         val ret = SpringVersion.getVersion()
         ret?.let {
-        	return ret
+            return ret
         } ?: return BttfConst.UNKNOWN
     }
 
@@ -544,12 +545,12 @@ public class StatusController : Statusable {
      * @return {@link String}
      */
     public fun springBootVersion(): String {
-    	val ret = SpringBootVersion.getVersion()
-    	ret?.let {
-    		return ret
-    	} ?: return BttfConst.UNKNOWN
+        val ret = SpringBootVersion.getVersion()
+        ret?.let {
+            return ret
+        } ?: return BttfConst.UNKNOWN
     }
-    
+
     /**
      *
      * Get Operating System
@@ -562,8 +563,12 @@ public class StatusController : Statusable {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val system = ManagementFactory.getOperatingSystemMXBean()
         ret.add(SimpleEntry<String, String>("name", "${system.name}"))
-        ret.add(SimpleEntry<String, String>("loadAverage",
-            DecimalFormat("#.##", DecimalFormatSymbols(Locale.US)).format(system.systemLoadAverage)))
+        ret.add(
+            SimpleEntry<String, String>(
+                "loadAverage",
+                DecimalFormat("#.##", DecimalFormatSymbols(Locale.US)).format(system.systemLoadAverage)
+            )
+        )
         // ret.add(SimpleEntry<String, String>("arch", "${system.arch}"))
         // ret.add(SimpleEntry<String, String>("processors", "${system.availableProcessors}"))
         // ret.add(SimpleEntry<String, String>("version", "${system.version}"))
@@ -654,8 +659,12 @@ public class StatusController : Statusable {
         if (applicationContext.getStartupDate() == 0L) {
             implementationVersion()
         }
-        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-            applicationContext.getStartupDate()), ZoneId.systemDefault())
+        return ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(
+                applicationContext.getStartupDate()
+            ),
+            ZoneId.systemDefault()
+        )
     }
 
     /**
@@ -666,7 +675,7 @@ public class StatusController : Statusable {
      */
     public fun timeZone(): String = ZoneId.systemDefault().id
 
-   /**
+    /**
      *
      * client IP
      *
@@ -684,7 +693,7 @@ public class StatusController : Statusable {
             return getIpv4HostAddress()
         }
     }
-    
+
     /**
      *
      * https://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device-from-code
@@ -726,7 +735,7 @@ public class StatusController : Statusable {
         val name = method.name
         val strFormat = if (isFormat) STATUS_FORMAT_BEAN else STATUS_BEAN
         // methods without parameters returning non empty String
-		val met = arrayOf(
+        val met = arrayOf(
             // {@link StatusController}
             "timeZone",
             "activeProfiles",
@@ -743,7 +752,7 @@ public class StatusController : Statusable {
             // {@link UserService}
             "isAuthenticated"
         )
-		if (isNiceBeanName(name)) {
+        if (isNiceBeanName(name)) {
             if (met.contains(name)) {
                 ret.add(String.format(strFormat, name, cl.getMethod(name).invoke(bean)))
             } else when (name) {
@@ -760,7 +769,7 @@ public class StatusController : Statusable {
                     // ret.add(String.format(strFormat, name, any.javaClass.superclass.simpleName))
                     val jobDetail = cl.getMethod(name).invoke(bean) as JobDetailFactoryBean
                     jobDetail.`object`?.let {
-                    	ret.add(String.format(strFormat, name, jobDetail.`object`!!.jobClass.simpleName))
+                        ret.add(String.format(strFormat, name, jobDetail.`object`!!.jobClass.simpleName))
                     } ?: ret.add(String.format(strFormat, name))
                 }
 
@@ -769,8 +778,12 @@ public class StatusController : Statusable {
                     val trigger = cl.getMethod(name, JobDetail::class.java)
                         .invoke(bean, jobDetail.`object`) as CronTriggerFactoryBean
                     trigger.`object`?.let {
-                    ret.add(String.format(strFormat, name,
-                        trigger.`object`!!.jobKey.name.replaceFirst("DEFAULT\\.", "")))
+                        ret.add(
+                            String.format(
+                                strFormat, name,
+                                trigger.`object`!!.jobKey.name.replaceFirst("DEFAULT\\.", "")
+                            )
+                        )
                     } ?: ret.add(String.format(strFormat, name))
                 }
 
@@ -792,12 +805,17 @@ public class StatusController : Statusable {
                 "lastInvocation",  // as ZonedDateTime
                 "startupDate" -> {
                     val zoneDateTime = cl.getMethod(name).invoke(bean) as ZonedDateTime
-                    ret.add(String.format(
-                        strFormat, name,
-                        zoneDateTime.format(DateTimeFormatter.ofPattern(
-                            if (isFormat) {
-                                Contented.CONTENT_DATE_FORMAT
-                            } else Contented.CONTENT_DATE_REST_FORMAT)))
+                    ret.add(
+                        String.format(
+                            strFormat, name,
+                            zoneDateTime.format(
+                                DateTimeFormatter.ofPattern(
+                                    if (isFormat) {
+                                        Contented.CONTENT_DATE_FORMAT
+                                    } else Contented.CONTENT_DATE_REST_FORMAT
+                                )
+                            )
+                        )
                     )
                 }
 
@@ -951,6 +969,7 @@ public class StatusController : Statusable {
             "isBeanSuitable",
             "logoutSuccess",
             "loadUserByUsername",
+            "lastInvocationFromAudit",
             "countTotalMessageEvents",  // for duplicity info
             "makeAPIBeans",
             "propertiesAPIBean",
