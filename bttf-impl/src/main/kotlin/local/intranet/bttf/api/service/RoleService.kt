@@ -41,7 +41,7 @@ public class RoleService {
 
     /**
      *
-     * Get userRole
+     * Get users roles
      *
      * @return {@link List}&lt;{@link RolePlain}&gt;
      */
