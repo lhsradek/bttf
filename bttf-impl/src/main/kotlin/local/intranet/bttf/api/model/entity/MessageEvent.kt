@@ -36,7 +36,7 @@ public data class MessageEvent(
     @Audited
     @NotNull
     @Column(name = "uuid", nullable = false)
-    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     public val uuid: String,
 
     @NotNull

@@ -42,7 +42,7 @@ public data class MessageEventInfo (
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val id: Long,
 
-    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_STATUS)
+    @Size(min = 0, max = DefaultFieldLengths.DEFAULT_NAME)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val uuid: String,
 
