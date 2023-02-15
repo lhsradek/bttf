@@ -8,7 +8,6 @@ import local.intranet.bttf.api.domain.Invocationable
 import local.intranet.bttf.api.domain.Statusable
 import local.intranet.bttf.api.domain.Countable
 import local.intranet.bttf.api.domain.type.StatusType
-import local.intranet.bttf.api.info.content.Provider
 import local.intranet.bttf.api.info.CounterInfo
 import local.intranet.bttf.api.model.entity.Counter
 import local.intranet.bttf.api.model.repository.CounterRepository

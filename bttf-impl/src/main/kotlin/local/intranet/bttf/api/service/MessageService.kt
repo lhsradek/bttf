@@ -14,12 +14,7 @@ import local.intranet.bttf.api.model.repository.MessageEventRepository
 import local.intranet.bttf.api.info.content.BttfCounter
 import local.intranet.bttf.api.info.ServiceCount
 import local.intranet.bttf.api.info.MessageEventInfo
-import local.intranet.bttf.api.info.content.Provider
 import org.jetbrains.annotations.NotNull
-import org.hibernate.envers.AuditReader
-import org.hibernate.envers.RevisionType
-import org.hibernate.envers.query.AuditEntity
-import org.hibernate.envers.query.AuditQuery
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -48,9 +43,6 @@ public class MessageService : Countable, Invocationable, Statusable, BttfCounter
 
     @Autowired
     private lateinit var messageEventRepository: MessageEventRepository
-
-    @Autowired
-    private lateinit var provider: Provider
 
     /**
      *
