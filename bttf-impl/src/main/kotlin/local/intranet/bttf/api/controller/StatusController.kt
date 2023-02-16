@@ -482,9 +482,9 @@ public class StatusController : Statusable {
                 val map = mutableMapOf<String, Any>()
                 if (str.toString().length > 0) {
                     for (s in str.toString().split(BttfConst.PIPE_LINE)) {
-                        val l = s.split(":")
+                        val l = s.split(BttfConst.COLON)
                         if (l.size > 1) {
-                            val exp = l.subList(1, l.size).joinToString(separator = ":")
+                            val exp = l.subList(1, l.size).joinToString(separator = BttfConst.COLON)
                             if (l.first().equals("authoritiesRoles")) {
                                 val m = mutableListOf<String>()
                                 if (exp.length > 2) {

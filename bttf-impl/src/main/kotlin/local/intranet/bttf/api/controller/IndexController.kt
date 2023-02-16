@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse
 import local.intranet.bttf.BttfApplication
 import local.intranet.bttf.api.domain.type.StatusType
 import local.intranet.bttf.api.domain.BttfConst
+import local.intranet.bttf.api.domain.Contented
 import local.intranet.bttf.api.domain.Countable
 import local.intranet.bttf.api.domain.Invocationable
 import local.intranet.bttf.api.domain.Statusable
@@ -253,12 +254,12 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                         log.info(
                             "GetPlay username:'{}' ip:'{}' time:{} session:{}",
                             asMap().get("username"), statusController.clientIP(),
-                            time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")), requestedSessionId
+                            time.format(DateTimeFormatter.ofPattern(Contented.CONTENT_LOG_FORMAT)), requestedSessionId
                         )
                     } ?: log.info(
                         "GetPlay username:'{}' ip:'{}' time:{}",
                         asMap().get("username"), statusController.clientIP(),
-                        time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+                        time.format(DateTimeFormatter.ofPattern(Contented.CONTENT_LOG_FORMAT))
                     )
                 }
             }
@@ -326,11 +327,11 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
                     log.info(
                         "PostPlay username:'{}' ip:'{}' time:{} session:{}",
                         username, statusController.clientIP(), requestedSessionId,
-                        time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+                        time.format(DateTimeFormatter.ofPattern(Contented.CONTENT_LOG_FORMAT))
                     )
                 } ?: log.info(
                     "PostPlay username:'{}' ip:'{}' time:{}", username, statusController.clientIP(),
-                    time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z"))
+                    time.format(DateTimeFormatter.ofPattern(Contented.CONTENT_LOG_FORMAT))
                 )
             }
         } catch (e: Exception) {

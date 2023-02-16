@@ -28,4 +28,10 @@ public object Contented {
      */
     public const val CONTENT_TIME_REST_FORMAT = "'T'HH:mm:ssXXX"
 
+    /**
+     *
+     * CONTENT_LOG_FORMAT = "'T'HH:mm:ssXXX"
+     */
+    public const val CONTENT_LOG_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
+    
 }

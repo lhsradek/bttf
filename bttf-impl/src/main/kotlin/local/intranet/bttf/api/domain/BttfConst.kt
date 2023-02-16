@@ -54,6 +54,12 @@ public object BttfConst {
     
     /**
      *
+     * COLON = "."
+     */
+    public const val COLON: String = ":"
+    
+    /**
+     *
      * PROTECTED = "[PROTECTED]"
      */
     public const val PROTECTED: String = "[PROTECTED]"
