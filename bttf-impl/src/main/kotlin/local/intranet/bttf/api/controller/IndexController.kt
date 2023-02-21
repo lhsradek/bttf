@@ -102,12 +102,15 @@ public class IndexController : Countable, Invocationable, Statusable, BttfCounte
     @Autowired
     private lateinit var provider: Provider
 
-/*
-    public override fun countValue(): Long = super.countValue()   
-    public override fun incrementCounter(): Long = super.incrementCounter()
-    public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
-    public override fun getStatus(): StatusType = super.getStatus()
-*/
+/**
+ *
+ *   These methods already are overridden by the parent {@link BttfCounter}
+ * 
+ *   public override fun countValue(): Long = super.countValue()   
+ *   public override fun incrementCounter(): Long = super.incrementCounter()
+ *   public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
+ *   public override fun getStatus(): StatusType = super.getStatus()
+ */
 
     /**
      *

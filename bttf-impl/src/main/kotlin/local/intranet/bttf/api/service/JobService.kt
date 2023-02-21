@@ -39,12 +39,15 @@ public class JobService : Countable, Invocationable, Statusable, BttfCounter() {
     @Autowired
     private lateinit var messageEventRepository: MessageEventRepository
 
-/*
-    public override fun countValue(): Long = super.countValue()
-    public override fun incrementCounter(): Long = super.incrementCounter()
-    public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
-    public override fun getStatus(): StatusType = super.getStatus()
-*/
+/**
+ *
+ *   These methods already are overridden by the parent {@link BttfCounter}
+ * 
+ *   public override fun countValue(): Long = super.countValue()   
+ *   public override fun incrementCounter(): Long = super.incrementCounter()
+ *   public override fun lastInvocation(): ZonedDateTime = super.lastInvocation()
+ *   public override fun getStatus(): StatusType = super.getStatus()
+ */
 
     /**
      *

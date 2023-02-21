@@ -57,13 +57,13 @@ import org.springframework.web.bind.annotation.RestController
 public class InfoController {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    
+
     @Autowired
     private lateinit var userService: UserService
 
     @Autowired
     private lateinit var counterService: CounterService
-    
+
     @Autowired
     private lateinit var roleService: RoleService
 
@@ -75,35 +75,36 @@ public class InfoController {
 
     @Autowired
     private lateinit var beanService: BeanService
-    
+
     @Autowired
     private lateinit var loginAttemptService: LoginAttemptService
-    
+
     @Autowired
     private lateinit var loggingEventService: LoggingEventService
 
     /**
-     * 
+     *
      * Bean informations
      * <p>
      * Used {@link local.intranet.bttf.api.service.BeanService#beanInfo}.
      * <p>
-     * 
+     *
      * @see <a href="/bttf/swagger-ui/#/info-controller/beanInfo" target=
      *      "_blank">swagger-ui/#/info-controller/beanInfo</a>
      * @return {@link BeanInfo}
      */
-     @Operation(
-         operationId = "beanInfo",
-         summary = "Bean Info",
-         description = "Get Bean Info\n\n" + "This method is calling BeanService.beanInfo\n\n",
-                 // "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#" +
-                 // "beanInfo()\" target=\"_blank\">InfoController.beanInfo</a>",
-         tags = arrayOf(BttfConst.INFO_TAG))
+    @Operation(
+        operationId = "beanInfo",
+        summary = "Bean Info",
+        description = "Get Bean Info\n\n" + "This method is calling BeanService.beanInfo\n\n",
+        // "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#" +
+        // "beanInfo()\" target=\"_blank\">InfoController.beanInfo</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
     @PreAuthorize("hasRole('ROLE_userRole')")
     @GetMapping(value = arrayOf("/bean"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     public fun beanInfo(): BeanInfo = beanService.beanInfo()
-    
+
     /**
      *
      * User informations
@@ -230,25 +231,31 @@ public class InfoController {
      * @param size {@link Int}
      * @return {@link Page}&lt;{@link MessageEvent}&gt;
      */
-    @GetMapping(value = arrayOf("/message/page/{page}/size/{size}"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @GetMapping(
+        value = arrayOf("/message/page/{page}/size/{size}"),
+        produces = arrayOf(MediaType.APPLICATION_JSON_VALUE)
+    )
     @Operation(
-    		operationId = "MessageInfo",
-    		summary = "Message Info",
-    		description = "Get Message Info\n\n"
-    				+ "This method is calling MessageService.messageInfo\n\n",
-    				// + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-    				// + "messageInfo()\" target=\"_blank\">InfoController.messageInfo</a>",
-    				tags = arrayOf(BttfConst.INFO_TAG)
-    		)
+        operationId = "MessageInfo",
+        summary = "Message Info",
+        description = "Get Message Info\n\n"
+                + "This method is calling MessageService.messageInfo\n\n",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "messageInfo()\" target=\"_blank\">InfoController.messageInfo</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
     public fun messageInfo(
         @PathVariable @Parameter(
-            allowEmptyValue = true, example = "0", description = "Zero-based page index (0..N)") page :Int,
+            allowEmptyValue = true, example = "0", description = "Zero-based page index (0..N)"
+        ) page: Int,
         @PathVariable @Parameter(
-            example = "20", description = "The size of the page to be returned") size: Int):
+            example = "20", description = "The size of the page to be returned"
+        ) size: Int
+    ):
             Page<MessageEventInfo> = messageService.messageInfo(page, size)
-    
+
     /**
      *
      * Get attempts
@@ -277,7 +284,7 @@ public class InfoController {
     )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     public fun loginAttempts(@Parameter(allowEmptyValue = true, example = "") printBlocked: Boolean?):
-    	List<AttemptInfo> = loginAttemptService.loginAttempts(printBlocked)
+            List<AttemptInfo> = loginAttemptService.loginAttempts(printBlocked)
 
     /**
      *
@@ -350,16 +357,16 @@ public class InfoController {
      */
     @GetMapping(value = arrayOf("/countTotalCounterName"), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
     @Operation(
-    		operationId = "countTotalCounterName",
-    		summary = "Total Counter Name",
-    		description = "Count Total Counter Name\n\n"
-    				+ "This method is calling CounterService.countTotalCounterName\n\n",
-    				// + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
-    				// + "countTotalCounterName()\" target=\"_blank\">InfoController.countTotalCounterName</a>",
-    				tags = arrayOf(BttfConst.INFO_TAG)
-    		)
+        operationId = "countTotalCounterName",
+        summary = "Total Counter Name",
+        description = "Count Total Counter Name\n\n"
+                + "This method is calling CounterService.countTotalCounterName\n\n",
+        // + "See <a href=\"/bttf-javadoc/local/intranet/bttf/api/controller/InfoController.html#"
+        // + "countTotalCounterName()\" target=\"_blank\">InfoController.countTotalCounterName</a>",
+        tags = arrayOf(BttfConst.INFO_TAG)
+    )
     @PreAuthorize("hasAnyRole('ROLE_managerRole', 'ROLE_adminRole')")
     @ConditionalOnExpression("\${scheduler.enabled}")
     public fun countTotalCounterName(): List<ServiceCount> = counterService.countTotalCounterName()
-    
+
 }
