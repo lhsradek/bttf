@@ -36,7 +36,7 @@ import org.hibernate.envers.RevisionType
  * @param revisionType   {@RevisionType}
  */
 @JsonPropertyOrder("name", "count", "date", "status", "revisionNum", "revisionType")
-public data class CounterInfo (
+public data class CounterInfo(
 
     @Size(min = 0)
     public var count: Long,
@@ -61,16 +61,18 @@ public data class CounterInfo (
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val revisionType: RevisionType
+// constructor's end
+) : Countable, Invocationable, Statusable {
 
-)  : Countable, Invocationable, Statusable {
-    
+// methods:
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("count")
     public override fun countValue(): Long = count
-    
+
     @JsonIgnore
     public override fun incrementCounter(): Long = count++
-    
+
     @JsonIgnore
     public override fun lastInvocation(): ZonedDateTime = date
 

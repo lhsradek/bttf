@@ -37,7 +37,11 @@ public data class Role(
 
     @NotNull
     @Column(nullable = false)
-    public val enabled: Boolean = true) {
+    public val enabled: Boolean = true
+)
+// constructor's end
+{
+// method    
 
     @Column(nullable = true)
     @ManyToMany(cascade = [CascadeType.ALL])

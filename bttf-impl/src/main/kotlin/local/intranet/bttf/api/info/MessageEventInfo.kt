@@ -36,7 +36,7 @@ import org.hibernate.envers.RevisionType
  * @param revisionType   {@RevisionType}
  */
 @JsonPropertyOrder("id", "uuid", "name", "count", "date", "message", "revisionNum", "revisionType")
-public data class MessageEventInfo (
+public data class MessageEventInfo(
 
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -69,13 +69,14 @@ public data class MessageEventInfo (
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val revisionType: RevisionType
+// constructor's end
+) : Countable {
+// methods:
 
-)  : Countable {
-        
     @JsonIgnore
     public override fun countValue(): Long = count
-    
+
     @JsonIgnore
     public override fun incrementCounter(): Long = count++
-    
+
 }

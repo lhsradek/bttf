@@ -19,9 +19,9 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
  * @param ip      {@link String}
  * @param attempt {@link Int}
  * @param date    {@link ZonedDateTime}
-*/
+ */
 @JsonPropertyOrder("ip", "attempt", "date")
-public data class AttemptInfo (
+public data class AttemptInfo(
 
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -30,9 +30,9 @@ public data class AttemptInfo (
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val attempt: Int,
-    
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonFormat(timezone = JsonFormat.DEFAULT_TIMEZONE)
     public val date: ZonedDateTime
-    
+
 ) 

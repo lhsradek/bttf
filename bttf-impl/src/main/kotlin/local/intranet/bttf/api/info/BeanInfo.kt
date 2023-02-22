@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import local.intranet.bttf.api.domain.DefaultFieldLengths
 import local.intranet.bttf.api.service.BeanService
+
 /**
  *
  * {@link BeanInfo}
@@ -15,13 +16,17 @@ import local.intranet.bttf.api.service.BeanService
  * @constructor with parameters
  *
  * @param beans {@link Map}&lt;{@link String},{@link Any}&gt;
-*/
+ */
 @JsonPropertyOrder("name", "beans")
-public data class BeanInfo (
+public data class BeanInfo(
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public val beans: Map<String, Any>) {
-    
+    public val beans: Map<String, Any>
+)
+// constructor's end
+{
+// method:
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_NAME)
     public fun beanName(): String = BeanService::class.java.simpleName

@@ -24,7 +24,7 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
 @Entity
 @Table(name = "bttf_user")
 public data class User(
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public val id: Long? = null,
@@ -75,11 +75,15 @@ public data class User(
     public val credentialsNonExpired: Boolean = true,
 
     @Column(nullable = false)
-    public val enabled: Boolean = true) {
+    public val enabled: Boolean = true
+)
+// constructor's end
+{
+// method    
 
     @Column(nullable = true)
     @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(name = "bttf_user_role")
     public val role = mutableListOf<Role>()
-    
+
 }

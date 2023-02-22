@@ -16,19 +16,24 @@ import local.intranet.bttf.api.service.RoleService
  * @constructor with parameters
  *
  * @param role {@link List}&lt;{@link RolePlain}&gt;
-*/
+ */
 @JsonPropertyOrder("service", "roles")
-public data class RoleInfo (
+public data class RoleInfo(
 
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public val role: List<RolePlain>) {
+    public val role: List<RolePlain>
+)
+
+// constructor's end
+{
+// method:
 
     /**
      *
      * Returns the role service name
      *
-     * @return {@link String} 
+     * @return {@link String}
      */
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

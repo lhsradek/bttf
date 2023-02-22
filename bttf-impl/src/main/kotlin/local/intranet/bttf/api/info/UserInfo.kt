@@ -35,14 +35,16 @@ import javax.validation.constraints.Size
     "isAccountNonExpired",
     "isAccountNonLocked"
 )
-public data class UserInfo (
+public data class UserInfo(
     private val username: String,
     private val password: String,
     private val isEnabled: Boolean,
     private val isCredentialsNonExpired: Boolean,
     private val isAccountNonExpired: Boolean,
     private val isAccountNonLocked: Boolean,
-    private val authorities: List<GrantedAuthority>) : UserDetails {
+    private val authorities: List<GrantedAuthority>
+// constructor's end
+) : UserDetails {
 
     public companion object {
 
@@ -56,7 +58,8 @@ public data class UserInfo (
          */
         @JvmStatic
         public fun build(user: User, authorities: List<GrantedAuthority>): UserInfo = UserInfo(
-            user.userName, user.password, true, true, true, true, authorities)
+            user.userName, user.password, true, true, true, true, authorities
+        )
     }
 
     /**
@@ -141,6 +144,6 @@ public data class UserInfo (
      * @return {@String}
      */
     public override fun toString(): String = "UserInfo [username=" + username + ", password=" +
-    		BttfConst.PROTECTED + ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
-    
+            BttfConst.PROTECTED + ", enabled=" + isEnabled + ", authorities=" + authorities + "]"
+
 }

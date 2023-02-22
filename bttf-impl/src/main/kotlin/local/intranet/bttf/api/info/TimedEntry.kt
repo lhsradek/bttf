@@ -9,9 +9,19 @@ package local.intranet.bttf.api.info
  * @param key                 {@link String}
  * @param value               {@link Int}
  * @param maxDurationInMillis {@link Long}
- */ 
-public data class TimedEntry(val key: String, var value: Int, val maxDurationInMillis: Long) {
-    
+ */
+public data class TimedEntry(
+
+    val key: String,
+
+    var value: Int,
+
+    val maxDurationInMillis: Long
+)
+// constructor's end
+{
+// methods:
+
     public var creationTime: Long = now()
 
     /**
@@ -20,7 +30,7 @@ public data class TimedEntry(val key: String, var value: Int, val maxDurationInM
      * @return {@link Boolean}
      */
     public fun isExpired() = (now() - creationTime) > maxDurationInMillis
-        
+
     private fun now() = System.currentTimeMillis()
-    
+
 }

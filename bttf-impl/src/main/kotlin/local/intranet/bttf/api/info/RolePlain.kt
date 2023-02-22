@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import local.intranet.bttf.api.domain.DefaultFieldLengths
 
 /**
- * 
+ *
  * {@link RolePlain} for {@link local.intranet.tombola.api.info.RoleInfo}
- * 
+ *
  * @author Radek Kádner
  *
  * @constructor with parameters
@@ -20,19 +20,20 @@ import local.intranet.bttf.api.domain.DefaultFieldLengths
  *
  */
 @JsonPropertyOrder("id", "roleName", "enabled", "users")
-public data class RolePlain (
-    
+public data class RolePlain(
+
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val id: Long,
-    
+
     @Size(min = 0, max = DefaultFieldLengths.DEFAULT_ENUMERATION)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val roleName: String,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val enabled: Boolean,
-    
+
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public val users: List<String>)
+    public val users: List<String>
+)

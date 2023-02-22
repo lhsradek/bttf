@@ -31,7 +31,7 @@ public data class LoggingEvent(
     @Id
     @Column(name = "event_id")
     public val id: Long? = null,
-    
+
     @Column(name = "formatted_message")
     public val formattedMessage: String,
 
@@ -65,5 +65,5 @@ public data class LoggingEvent(
 
     @NotNull
     public val timestmp: Long
- 
+
 )

@@ -18,12 +18,12 @@ import javax.validation.constraints.Size
  * @param total {@link Long}
  */
 @JsonPropertyOrder("serviceName", "total")
-public data class ServiceCount (
-    
+public data class ServiceCount(
+
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public val serviceName: String,
-    
+
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val total: Long

@@ -19,12 +19,12 @@ import javax.validation.constraints.Size
  * @param total {@link Long}
  */
 @JsonPropertyOrder("level", "total")
-public data class LevelCount (
-    
+public data class LevelCount(
+
     @Size(min = 1, max = DefaultFieldLengths.DEFAULT_STATUS)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val level: String,
-    
+
     @Size(min = 0)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val total: Long
