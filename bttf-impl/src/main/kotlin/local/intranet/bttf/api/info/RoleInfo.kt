@@ -24,7 +24,6 @@ public data class RoleInfo(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public val role: List<RolePlain>
 )
-
 // constructor's end
 {
 // method:
