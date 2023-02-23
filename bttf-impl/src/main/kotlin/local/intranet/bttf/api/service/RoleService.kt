@@ -33,7 +33,7 @@ public class RoleService {
      *
      * For {@link local.intranet.bttf.api.controller.InfoController#roleInfo}
      *
-     * @return {@link UserInfo}
+     * @return {@link RoleInfo}
      */
     @Synchronized
     @Transactional(readOnly = true)
@@ -55,7 +55,7 @@ public class RoleService {
             }
         }
         // if (dbg.toBoolean()) log.debug("UserRoles ret:{}", ret)
-        return ret;
+        return ret
     }
 
 }
