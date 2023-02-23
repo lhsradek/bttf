@@ -68,9 +68,7 @@ public class BttfService {
                         // A disguised exception
                         e.message?.let {
                             throw BttfException(e.message!!, e)
-                        } ?: run {
-                            throw BttfException(e::class.java.simpleName, e)
-                        }
+                        } ?: throw BttfException(e::class.java.simpleName, e)
                     }
                     else -> throw e
                 }
