@@ -102,7 +102,8 @@ services:
       - "traefik.http.services.webbttf-tomcat.loadbalancer.server.scheme=https"
       - "traefik.http.services.webbttf-tomcat.loadbalancer.server.port=8443"
     healthcheck:
-     test: "curl -s -I http://${APP_ID}.${APP_HOST}:8080/${APP_ID}/actuator/health | grep -q 'HTTP/1.1 200'"
+     test: "curl -s -I http://localhost:8080/${APP_ID}/actuator/health | grep -q 'HTTP/1.1 200'"
+     # test: "curl -s -I http://${APP_ID}.${APP_HOST}:8080/${APP_ID}/actuator/health | grep -q 'HTTP/1.1 200'"
      # test: "curl -s -I http://${APP_ID}.${APP_HOST}:8080/favicon.ico | grep -q 'HTTP/1.1 200'"
      interval: 10s
      timeout: 2s
