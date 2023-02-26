@@ -278,8 +278,8 @@ public class StatusController : Statusable {
         // + "target=\"_blank\">StatusController.bttfHttpServletRequest</a>",
         tags = arrayOf(BttfConst.STATUS_TAG)
     )
-    @PreAuthorize("hasRole('ROLE_adminRole')")
     @Synchronized
+    @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun bttfHttpServletRequest(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val map = mutableMapOf<String, String>()
@@ -404,8 +404,8 @@ public class StatusController : Statusable {
      *
      * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
-    @PreAuthorize("hasRole('ROLE_adminRole')")
     @Synchronized
+    @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun propertiesAPIBean(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val map = mutableMapOf<String, String>()
@@ -454,8 +454,8 @@ public class StatusController : Statusable {
      *
      * @return {@link Map}&lt;{@link String},{@link Any}&gt;
      */
-    @PreAuthorize("hasRole('ROLE_adminRole')")
     @Synchronized
+    @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun bttfAPIBean(): BeanInfo {
         val ret = mutableMapOf<String, Any>()
         for (beanName in applicationContext.beanDefinitionNames) {
@@ -556,8 +556,8 @@ public class StatusController : Statusable {
      *
      * @return {@link List}&lt;{@link Map.Entry}&lt;{@link String},{@link String}&gt;&gt;
      */
-    @PreAuthorize("hasRole('ROLE_adminRole')")
     @Synchronized
+    @PreAuthorize("hasRole('ROLE_adminRole')")
     public fun operatingSystem(): List<Map.Entry<String, String>> {
         val ret = mutableListOf<Map.Entry<String, String>>()
         val system = ManagementFactory.getOperatingSystemMXBean()
