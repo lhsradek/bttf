@@ -24,7 +24,7 @@ services:
         condition: service_healthy
     image: nginx:alpine
     # image: lhsradek/lhsdock:v3
-    container_name: "${APP_HOST}-${APP_ID}-nginx"
+    container_name: "${APP_NICK}-${APP_ID}-nginx"
     hostname: "${APP_HOST}"
     restart: ${DOCKER_RESTART_POLICY}
     # ports:
@@ -66,7 +66,7 @@ services:
   webbttf-tomcat:
     # Ubuntu 22.04.1 LTS
     image: tomcat:9
-    container_name: "${APP_HOST}-${APP_ID}-tomcat"
+    container_name: "${APP_NICK}-${APP_ID}-tomcat"
     hostname: "bttf.${APP_HOST}"
     restart: ${DOCKER_RESTART_POLICY}
     networks:
@@ -115,7 +115,7 @@ services:
   webbttf-ad:
     # Alpine
     image: adminer:fastcgi
-    container_name: "${APP_HOST}-${APP_ID}-ad"
+    container_name: "${APP_NICK}-${APP_ID}-ad"
     hostname: "ad-php.${APP_HOST}"
     restart: ${DOCKER_RESTART_POLICY}
     networks:
@@ -136,7 +136,7 @@ services:
         limits:
           memory: ${MEM_LIMIT}
     restart: ${DOCKER_RESTART_POLICY}
-    container_name: "${APP_HOST}-${APP_ID}-filebeat"
+    container_name: "${APP_NICK}-${APP_ID}-filebeat"
     hostname: "filebeat.${APP_HOST}"
     networks:
       # for traefik or logstash
@@ -200,7 +200,7 @@ services:
         limits:
           memory: ${MEM_LIMIT}
     restart: ${DOCKER_RESTART_POLICY}
-    container_name: "${APP_HOST}-${APP_ID}-metricbeat"
+    container_name: "${APP_NICK}-${APP_ID}-metricbeat"
     hostname: "metricbeat.${APP_HOST}"
     networks:
       - default
@@ -265,7 +265,7 @@ services:
 #     # Ubuntu - fleet
 #     image: docker.elastic.co/beats/elastic-agent:${STACK_VERSION}
 #     restart: ${DOCKER_RESTART_POLICY}
-#     container_name: "${APP_HOST}-${APP_ID}-fleet"
+#     container_name: "${APP_NICK}-${APP_ID}-fleet"
 #     hostname: "fleet.${APP_HOST}"
 #     user: root # note, synthetic browser monitors require this set to `elastic-agent`
 #     networks:
@@ -363,7 +363,7 @@ services:
 #        
   postgres:
     image: postgres:14-alpine
-    container_name: "${APP_HOST}-${APP_ID}-db"
+    container_name: "${APP_NICK}-${APP_ID}-db"
     hostname: "db.${APP_HOST}"
     # hostname: "db.${INT_NETWORK}"
     restart: ${DOCKER_RESTART_POLICY}
@@ -390,7 +390,7 @@ services:
   redis:
     image: redis:7-alpine
     # Alpine Linux
-    container_name: "${APP_HOST}-${APP_ID}-redis"
+    container_name: "${APP_NICK}-${APP_ID}-redis"
     hostname: "redis"
     # hostname: "redis.${INT_NETWORK}"
     restart: ${DOCKER_RESTART_POLICY}
@@ -409,7 +409,7 @@ services:
 #        
 #   webbttf-rc:
 #     image: rediscommander/redis-commander:latest
-#     container_name: "${APP_HOST}-${APP_ID}-webrc"
+#     container_name: "${APP_NICK}-${APP_ID}-webrc"
 #     hostname: "webrc.${INT_NETWORK}"
 #     # build: .
 #     restart: ${DOCKER_RESTART_POLICY}
