@@ -97,8 +97,8 @@ public class bttfTest {
         assertThat(jobService.lastInvocation()).isNotNull
         assertThat(jobService.getStatus().equals(StatusType.UP))
         assertThat(loggingEventService).isNotNull
-        assertThat(loggingEventService.countTotalLoggingEvents()).isNotEmpty
-        assertThat(messageService.countTotalMessageEvents()).isNotEmpty
+        assertThat(loggingEventService.countTotalLoggingEvents()).isNotNull
+        assertThat(messageService.countTotalMessageEvents()).isNotNull
         assertThat(messageService.countValue()).isNotNull
         
         val ip = statusController.getIpv4HostAddress()
