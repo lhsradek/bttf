@@ -59,10 +59,10 @@
 <td th:class="'right nowrap'"><small><strong th:text="${k.id}"/></small></td>
 <td th:class="'center nowrap'"><small th:text="${#temporals.format(k.date, dateFormat)}"/></td><!--/* https://www.baeldung.com/dates-in-thymeleaf */-->
 <td th:class="'left'"><small th:utext="${k.formattedMessage}"/></td>
-<td th:class="'left'"><small><smaller th:if="${k.arg0 == '[NULL]'}" th:class="'data'" th:text="${k.arg0}"/><strong th:if="${k.arg0 != '[NULL]'}" th:utext="${k.arg0}"/></small></td>
-<td th:class="'left'"><small><smaller th:if="${k.arg1 == '[NULL]'}" th:class="'data'" th:text="${k.arg1}"/><strong th:if="${k.arg1 != '[NULL]'}" th:utext="${k.arg1}"/></small></td>
-<td th:class="'left'"><small><smaller th:if="${k.arg2 == '[NULL]'}" th:class="'data'" th:text="${k.arg2}"/><strong th:if="${k.arg2 != '[NULL]'}" th:utext="${k.arg2}"/></small></td>
-<td th:class="'left'"><small><smaller th:if="${k.arg3 == '[NULL]'}" th:class="'data'" th:text="${k.arg3}"/><strong th:if="${k.arg3 != '[NULL]'}" th:utext="${k.arg3}"/></small></td>
+<td th:class="'left'"><small th:if="${k.arg0 == '[NULL]'}" th:class="'data'" th:text="${k.arg0}"/><strong th:if="${k.arg0 != '[NULL]'}" th:utext="${k.arg0}"/></td>
+<td th:class="'left'"><small th:if="${k.arg1 == '[NULL]'}" th:class="'data'" th:text="${k.arg1}"/><strong th:if="${k.arg1 != '[NULL]'}" th:utext="${k.arg1}"/></td>
+<td th:class="'left'"><small th:if="${k.arg2 == '[NULL]'}" th:class="'data'" th:text="${k.arg2}"/><strong th:if="${k.arg2 != '[NULL]'}" th:utext="${k.arg2}"/></td>
+<td th:class="'left'"><small th:if="${k.arg3 == '[NULL]'}" th:class="'data'" th:text="${k.arg3}"/><strong th:if="${k.arg3 != '[NULL]'}" th:utext="${k.arg3}"/></td>
 <td th:class="'left'"><small th:utext="${k.callerClass}"/><br/><small><strong th:utext="${k.callerMethod}"/></small></td>
 <td th:class="'left'"><small><strong th:text="${k.levelString}"/></small></td>
 </tr></table></span></code>
