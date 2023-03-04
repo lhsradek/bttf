@@ -18,7 +18,7 @@ The technology used:
 * Kotlin therefore Java
 * Spring Boot (controllers, services, listeners, thymeleaf, flyway, quartz scheduler)
 * JPA (hibernate with envers audit)
-* DB: PostgreSQL, MariaDB, H2 (with human readable views) [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
+* DB: PostgreSQL, MariaDB, H2 [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
 * OpenAPI [See](https://github.com/lhsradek/bttf/blob/main/png/bttf03.png)
 * AES encrypted data
 * Redis (Sessions, Message broker)

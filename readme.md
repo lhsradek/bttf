@@ -18,7 +18,7 @@ The technology used:
 * Kotlin therefore Java
 * Spring Boot ([controllers](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/controller), [services](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/service), [listeners](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/listener), thymeleaf, flyway, [quartz scheduler](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/scheduler))
 * [JPA](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/model) (hibernate with envers audit)
-* DB: PostgreSQL, MariaDB, H2 (with human readable views) [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
+* DB: PostgreSQL, MariaDB, H2 (with human views) [See](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/resources/db/specific)
 * OpenAPI [See](https://github.com/lhsradek/bttf/blob/main/png/bttf03.png)
 * AES encrypted data
 * [Redis](https://github.com/lhsradek/bttf/tree/main/bttf-impl/src/main/kotlin/local/intranet/bttf/api/redis) (Sessions, Message broker)
