@@ -65,6 +65,9 @@ services:
 #         
   webbttf-tomcat:
     # Ubuntu 22.04.1 LTS
+    depends_on:
+      postgres:
+        condition: service_healthy
     image: tomcat:9
     container_name: "${APP_NICK}-${APP_ID}-tomcat"
     hostname: "bttf.${APP_HOST}"
@@ -114,6 +117,9 @@ services:
 #         
   webbttf-ad:
     # Alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
     image: adminer:fastcgi
     container_name: "${APP_NICK}-${APP_ID}-ad"
     hostname: "ad-php.${APP_HOST}"
@@ -370,8 +376,8 @@ services:
     environment:
       - POSTGRES_USERNAME=${POSTGRES_USERNAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     networks:
       # local network:
       - intnet
@@ -383,6 +389,11 @@ services:
       # only copy file after init db is better
       # - ./extras/var/lib/postgresql/data/postgresql.conf:/var/lib/postgresql/data/postgresql.conf:ro
       ## - ./extras/var/lib/postgresql/data/pg_hba.conf:/var/lib/postgresql/data/pg_hba.new.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bttf"]
+      interval: 30s
+      timeout: 30s
+      retries: 60
 
 #
 # === Redis ===
