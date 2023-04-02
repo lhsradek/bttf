@@ -18,7 +18,7 @@ CREATE SEQUENCE bttf_message_seq MINVALUE 1;
 ----- TABLE revinfo -----
 
 CREATE TABLE revinfo (
-    rev BIGINT DEFAULT nextval('revinfo_seq') PRIMARY KEY,
+    rev INTEGER DEFAULT nextval('revinfo_seq') PRIMARY KEY,
     revtstmp BIGINT
 );
 
@@ -37,7 +37,7 @@ CREATE TABLE bttf_counter (
 
 CREATE TABLE bttf_counter_a (
     id BIGINT NOT NULL,
-    rev BIGINT REFERENCES revinfo (rev),
+    rev INTEGER REFERENCES revinfo (rev),
     revtype TINYINT,
     counter_name VARCHAR(255) NULL,
     counter_name_m BOOLEAN,
@@ -68,7 +68,7 @@ CREATE TABLE bttf_message (
 
 CREATE TABLE bttf_message_a (
     id BIGINT NOT NULL,
-    rev BIGINT REFERENCES revinfo (rev),
+    rev INTEGER REFERENCES revinfo (rev),
     revtype TINYINT,
     uuid VARCHAR(255) NULL,
     uuid_m BOOLEAN,

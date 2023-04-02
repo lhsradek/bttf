@@ -12,7 +12,7 @@ CREATE SEQUENCE hibernate_sequence INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854
 ----- TABLE revinfo -----
 
 CREATE TABLE revinfo (
-    rev BIGINT NOT NULL,
+    rev INT NOT NULL,
     revtstmp BIGINT NULL,
     CONSTRAINT revinfo_rev_pkey PRIMARY KEY (rev)
 );
@@ -34,7 +34,7 @@ CREATE TABLE bttf_counter (
 
 CREATE TABLE bttf_counter_a (
     id BIGINT NOT NULL,
-    rev BIGINT REFERENCES revinfo (rev) NOT NULL,
+    rev INT REFERENCES revinfo (rev) NOT NULL,
     revtype SMALLINT NULL,
     counter_name VARCHAR(255) NULL,
     counter_name_m BOOLEAN NULL,
@@ -66,7 +66,7 @@ CREATE TABLE bttf_message (
 
 CREATE TABLE bttf_message_a (
     id BIGINT NOT NULL,
-    rev BIGINT REFERENCES revinfo (rev) NOT NULL,
+    rev INT REFERENCES revinfo (rev) NOT NULL,
     revtype SMALLINT NULL,
     uuid VARCHAR(255) NULL,
     uuid_m BOOLEAN NULL,

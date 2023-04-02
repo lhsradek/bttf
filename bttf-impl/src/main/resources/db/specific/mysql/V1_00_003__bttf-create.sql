@@ -8,7 +8,7 @@
 CREATE SEQUENCE hibernate_sequence MINVALUE 1;
 
 CREATE TABLE revinfo (
-  rev BIGINT(20) AUTO_INCREMENT,
+  rev INTEGER AUTO_INCREMENT,
   revtstmp BIGINT(20) DEFAULT NULL,
   PRIMARY KEY (rev)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -26,7 +26,7 @@ CREATE TABLE bttf_counter (
 
 CREATE TABLE bttf_counter_a (
     id BIGINT(20) NOT NULL,
-    rev BIGINT(20) REFERENCES revinfo (rev),
+    rev INTEGER REFERENCES revinfo (rev),
     revtype TINYINT(4) DEFAULT NULL,
     counter_name VARCHAR(255) DEFAULT NULL,
     counter_name_m BIT(1) DEFAULT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE bttf_message (
 
 CREATE TABLE bttf_message_a (
     id BIGINT(20) NOT NULL,
-    rev BIGINT(20) REFERENCES revinfo (rev),
+    rev INTEGER REFERENCES revinfo (rev),
     revtype TINYINT(4) DEFAULT NULL,
     uuid VARCHAR(255) DEFAULT NULL,
     uuid_m BIT(1) DEFAULT NULL,
