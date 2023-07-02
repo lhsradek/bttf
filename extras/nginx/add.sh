@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo == tombola add ==
+echo == nginx add ==
 
 apk add --update bash iproute2-ss
 # apk add --update vim mc iproute2-ss iptraf-ng openssh
