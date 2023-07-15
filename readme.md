@@ -3,11 +3,11 @@
 > „Programming described the three programmer's virtues: hubris, laziness, and impatience.“ *Larry Wall*
 
 <p>
-<img src="/src/main/webapp/res/Back-to-the-future-logo.svg" width="500px" th:height="222px" />
+<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Back-to-the-future-logo.svg" width="500px" th:height="222px" />
 </p>
 
 <p>
-<img src="/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project. Fasten your seatbelts. Let's start traveling through time!
+<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/Kotlin Full Color Logo on White RGB.svg" width="86px" height="16px"/> project. Fasten your seatbelts. Let's start traveling through time!
 </p>
 
 See:
@@ -35,5 +35,5 @@ Thank you all for these technologies. Thanks to Microsoft for finally making fri
 Development Plan: This recession game is supposed to be multiplayer and the manager will see who is playing in log. Whoever plays long enough will get the manager's password. Whoever lasts even longer gets and travels many years in time, gets an admin password and can try OpenAPI. You've probably already understood that I'm more focused on the backend, so wait for javascript or react or something from https://kotlinlang.org/docs/js-overview.html until later.
 
 <p>
-<img src="/src/main/webapp/res/bttf.png" width="400px" height="328px"/>
+<img src="https://github.com/lhsradek/bttf/blob/main/bttf-app/src/main/webapp/res/bttf.png" width="400px" height="328px"/>
 </p>
